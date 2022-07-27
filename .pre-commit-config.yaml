@@ -6,7 +6,7 @@ repos:
     rev: v2.37.1
     hooks:
       - id: pyupgrade
-        args: [ "--py38-plus" ]
+        args: [ "--py39-plus" ]
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.3.0
     hooks:
@@ -24,8 +24,11 @@ repos:
     rev: 4.0.1
     hooks:
       - id: flake8
-        additional_dependencies: [ 'flake8-rst-docstrings' ]
-        args: [ '--config=setup.cfg' ]
+        additional_dependencies: [ 'flake8-docstrings' ]
+        args:
+          - "--docstring-convention=numpy"
+          - "--max-line-length=120"
+          - "--ignore=E302"
   - repo: https://github.com/PyCQA/isort
     rev: 5.10.1
     hooks:
@@ -36,13 +39,3 @@ repos:
     hooks:
       - id: nbstripout
         files: ".ipynb"
-  - repo: https://github.com/pycqa/pydocstyle
-    rev: 6.1.1
-    hooks:
-      - id: pydocstyle
-        args: [ '--config=setup.cfg' ]
-  - repo: https://github.com/adrienverge/yamllint.git
-    rev: v1.27.1
-    hooks:
-      - id: yamllint
-        args: [ '--config-file=.yamllint.yaml' ]

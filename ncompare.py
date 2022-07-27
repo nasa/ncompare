@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+"""Compare the structure of two NetCDF files."""
 import argparse
 import logging
 import random
@@ -22,7 +23,7 @@ def compare(nc_a: str,
             comparison_var_name: str = None,
             no_color: bool = False
             ) -> int:
-    """Compare the variables contained within two different NetCDF datasets
+    """Compare the variables contained within two different NetCDF datasets.
 
     Parameters
     ----------
@@ -86,24 +87,29 @@ def compare(nc_a: str,
     return 0  # a clean, no-issue, exit
 
 def compare_dimensions(nc_a: Path, nc_b: Path) -> None:
+    """Show the dimensions of each file."""
     _print_dims(nc_a)
     _print_dims(nc_b)
 
 def compare_groups(nc_a: Path, nc_b: Path) -> None:
+    """Show the groups in each NetCDF file."""
     glist_a = _print_groups(nc_a)
     glist_b = _print_groups(nc_b)
     _lists_diff(glist_a, glist_b)
 
 def compare_ingroup_variables(nc_a: Path, nc_b: Path, groupname: str) -> None:
+    """Show the variables within the selected group."""
     vlist_a = _print_vars(nc_a, groupname)
     vlist_b = _print_vars(nc_b, groupname)
     _lists_diff(vlist_a, vlist_b)
 
 def compare_sample_values(nc_a: Path, nc_b: Path, groupname: str, varname: str) -> None:
+    """Print the first part of the values array for the selected variable."""
     _print_sample_values(nc_a, groupname, varname)
     _print_sample_values(nc_b, groupname, varname)
 
 def compare_multiple_random_values(nc_a: Path, nc_b: Path, groupname: str, varname: str, num_comparisons: int = 100):
+    """Iterate through N random samples, and evaluate whether the differences exceed a threshold."""
     # Open a variable from each NetCDF
     nc_var_a = xr.open_dataset(nc_a, backend_kwargs={"group": groupname})[varname]
     nc_var_b = xr.open_dataset(nc_b, backend_kwargs={"group": groupname})[varname]
@@ -118,10 +124,11 @@ def compare_multiple_random_values(nc_a: Path, nc_b: Path, groupname: str, varna
     if num_mismatches > 0:
         print(Fore.RED + f" {num_mismatches} mismatches, out of {num_comparisons} samples.")
     else:
-        print(Fore.CYAN + f" No mismatches.")
+        print(Fore.CYAN + " No mismatches.")
     print_normal("Done.")
 
 def compare_two_nc_files(nc_one: Path, nc_two: Path):
+    """Go through all groups and all variables, and show them side by side - whether they align and where they don't."""
     _side_by_side(' ', 'File A', 'File B')
     with netCDF4.Dataset(nc_one) as nc_a, netCDF4.Dataset(nc_two) as nc_b:
 
@@ -149,7 +156,7 @@ def _side_by_side_list_diff(list_a: list, list_b: list, counter_prefix=""):
         _side_by_side(f"{counter_prefix} #{i:02}", a.strip(), b.strip(), dash_line=True, highlight_diff=True)
 
 def _common_elements(sequence_a, sequence_b):
-    """Loop over the combined items of two lists, and return them aligned, whether matching or not"""
+    """Loop over the combined items of two lists, and return them aligned, whether matching or not."""
     a_sorted = sorted(sequence_a)
     b_sorted = sorted(sequence_b)
     all_items = sorted(set(a_sorted).union(set(b_sorted)))
@@ -195,7 +202,7 @@ def _print_var_properties_side_by_side(v_a, v_b, nc_a, nc_b, g_a=None, g_b=None)
     _side_by_side("sf:", str(sf_a), str(sf_b), highlight_diff=True)
 
 def _var_properties(ds: netCDF4.Dataset, varname: str, groupname: str = None) -> tuple:
-    """Get the properties of a variable
+    """Get the properties of a variable.
 
     Parameters
     ----------
@@ -273,8 +280,8 @@ def _match_random_value(nc_var_a: netCDF4.Variable,
             return True
 
 def _lists_diff(list_a, list_b):
-    """Compare two lists and state whether there are differences"""  # TODO: make this highlight the differences too.
-
+    """Compare two lists and state whether there are differences."""
+    # TODO: make this highlight the differences too.
     # Are these list contents the same?
     groups_are_same = set(list_a) == set(list_b)
     if groups_are_same:
@@ -315,7 +322,7 @@ def _print_dims(nc_filepath: Path) -> None:
         print_normal(str(sorted(ds.dims.items())))
 
 def _make_valid_path(should_be_path: Union[str, Path]) -> Path:
-    """Convert input to a pathlib.Path and check that the resulting filepath exists"""
+    """Convert input to a pathlib.Path and check that the resulting filepath exists."""
     fails_to_exist_msg = "Expected file does not exist: "
     wrong_type_msg = "Unexpected type for something that should be convertable to a Path: "
 
@@ -338,12 +345,14 @@ def _make_valid_path(should_be_path: Union[str, Path]) -> Path:
         raise TypeError(wrong_type_msg + str(type(should_be_path)))
 
 def print_normal(string, **kwargs):
-    """Print normal color and style text to the console"""
-    print(Fore.WHITE+Style.RESET_ALL+str(string), **kwargs)
+    """Print normal color and style text to the console."""
+    print(Fore.WHITE + Style.RESET_ALL + str(string), **kwargs)
 
-class Logger(object):
-    """Note: class derived from https://stackoverflow.com/a/14906787"""
+class Logger:
+    """Send print statements, i.e., stdout, to a file."""
+
     def __init__(self, filename):
+        """Note: this class is derived from https://stackoverflow.com/a/14906787."""
         self.terminal = sys.stdout
         filepath = Path(filename)
         if filepath.exists():
@@ -351,17 +360,22 @@ class Logger(object):
         self.log = open(filepath, "a")
 
     def write(self, message):
+        """Write message to output."""
         self.terminal.write(message)
         self.log.write(message)
 
     def flush(self):
-        # this flush method is needed for python 3 compatibility.
-        # this handles the flush command by doing nothing.
+        """Handle the flush command by doing nothing.
+
+        Note
+        ----
+        The flush method is needed for python 3 compatibility.
         # you might want to specify some extra behavior here.
+        """
         pass
 
 def _parse_cli() -> argparse.Namespace:
-    """Parse input arguments from the command line"""
+    """Parse input arguments from the command line."""
     parser = argparse.ArgumentParser(description="Compare the variables contained within two different NetCDF datasets")
     parser.add_argument("nc_a", help="First NetCDF file")
     parser.add_argument("nc_b", help="First NetCDF file")
