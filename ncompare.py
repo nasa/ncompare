@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""Compare the structure of two NetCDF files."""
+"""Command line interface for `ncompare` -- to compare the structure of two NetCDF files."""
 import argparse
 import sys
 from pathlib import Path
