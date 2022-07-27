@@ -69,7 +69,7 @@ def compare(nc_a: str,
                       % comparison_var_name)
                 compare_multiple_random_values(nc_a, nc_b, groupname=comparison_var_group, varname=comparison_var_name)
 
-            except KeyError as err:
+            except KeyError:
                 print(Style.BRIGHT + Fore.RED + "\nError when comparing values for variable <%s> in group <%s>." %
                       (comparison_var_name, comparison_var_group))
                 print(traceback.format_exc())
