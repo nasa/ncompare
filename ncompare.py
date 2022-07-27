@@ -1,17 +1,17 @@
 #!/usr/bin/env python
-import sys
-import random
-import logging
 import argparse
+import logging
+import random
+import sys
 import traceback
 from pathlib import Path
 from typing import Union
 
+import colorama
 import netCDF4
 import numpy as np
 import xarray as xr
-import colorama
-from colorama import Fore, Back, Style
+from colorama import Fore, Style
 
 logger = logging.getLogger(__name__)
 
