@@ -14,6 +14,7 @@ import numpy as np
 import xarray as xr
 from colorama import Fore, Style
 
+
 logger = logging.getLogger(__name__)
 
 
@@ -348,11 +349,15 @@ def print_normal(string, **kwargs):
     """Print normal color and style text to the console."""
     print(Fore.WHITE + Style.RESET_ALL + str(string), **kwargs)
 
-class Logger:
-    """Send print statements, i.e., stdout, to a file."""
+class _Logger:
 
     def __init__(self, filename):
-        """Note: this class is derived from https://stackoverflow.com/a/14906787."""
+        """Send print statements, i.e., stdout, to a file.
+
+        Note
+        ----
+        This class is derived from https://stackoverflow.com/a/14906787.
+        """
         self.terminal = sys.stdout
         filepath = Path(filename)
         if filepath.exists():
@@ -379,11 +384,11 @@ def _parse_cli() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Compare the variables contained within two different NetCDF datasets")
     parser.add_argument("nc_a", help="First NetCDF file")
     parser.add_argument("nc_b", help="First NetCDF file")
-    parser.add_argument("-g", "--comparison_var_group", help="Comparison variable group")
+    parser.add_argument("-r", "--report", help="A file to write the output to, as a report")
     parser.add_argument("-v", "--comparison_var_name", help="Comparison variable name")
+    parser.add_argument("-g", "--comparison_var_group", help="Comparison variable group")
     parser.add_argument("--no-color", action="store_true", default=False,
                         help="Turn off all colorized output")
-    parser.add_argument("-r", "--report", help="A file to write the output to, as a report")
 
     return parser.parse_args()
 
@@ -392,7 +397,7 @@ if __name__ == '__main__':
     args = _parse_cli()
 
     if args.report:
-        sys.stdout = Logger(args.report)
+        sys.stdout = _Logger(args.report)
     args.__delattr__("report")
 
     sys.exit(compare(**vars(args)))
