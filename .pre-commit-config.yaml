@@ -24,7 +24,7 @@ repos:
     rev: 4.0.1
     hooks:
       - id: flake8
-        exclude: setup.cfg, setup.py, .git, __pycache__, old, build, dist
+        exclude: setup.cfg, pyproject.toml, .git, __pycache__, old, build, dist
         additional_dependencies: [ 'flake8-docstrings' ]
         args:
           - "--docstring-convention=numpy"
