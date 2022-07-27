@@ -1,14 +1,10 @@
 #!/usr/bin/env python
 """Compare the structure of two NetCDF files."""
 import argparse
-import logging
 import sys
 from pathlib import Path
 
 from ncompare.core import compare
-
-
-logger = logging.getLogger(__name__)
 
 
 class _Logger:
