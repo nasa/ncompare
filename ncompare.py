@@ -7,6 +7,19 @@ from pathlib import Path
 from ncompare.core import compare
 
 
+def _parse_cli() -> argparse.Namespace:
+    """Parse input arguments from the command line."""
+    parser = argparse.ArgumentParser(description="Compare the variables contained within two different NetCDF datasets")
+    parser.add_argument("nc_a", help="First NetCDF file")
+    parser.add_argument("nc_b", help="First NetCDF file")
+    parser.add_argument("-r", "--report", help="A file to write the output to, as a report")
+    parser.add_argument("-v", "--comparison_var_name", help="Comparison variable name")
+    parser.add_argument("-g", "--comparison_var_group", help="Comparison variable group")
+    parser.add_argument("--no-color", action="store_true", default=False,
+                        help="Turn off all colorized output")
+
+    return parser.parse_args()
+
 class _Logger:
 
     def __init__(self, filename):
@@ -36,19 +49,6 @@ class _Logger:
         # you might want to specify some extra behavior here.
         """
         pass
-
-def _parse_cli() -> argparse.Namespace:
-    """Parse input arguments from the command line."""
-    parser = argparse.ArgumentParser(description="Compare the variables contained within two different NetCDF datasets")
-    parser.add_argument("nc_a", help="First NetCDF file")
-    parser.add_argument("nc_b", help="First NetCDF file")
-    parser.add_argument("-r", "--report", help="A file to write the output to, as a report")
-    parser.add_argument("-v", "--comparison_var_name", help="Comparison variable name")
-    parser.add_argument("-g", "--comparison_var_group", help="Comparison variable group")
-    parser.add_argument("--no-color", action="store_true", default=False,
-                        help="Turn off all colorized output")
-
-    return parser.parse_args()
 
 
 if __name__ == '__main__':
