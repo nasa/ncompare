@@ -19,7 +19,7 @@ pip install .
 
 ### Basic usage at a command line:
 ```
-./ncompare.py <netcdf file #1> <netcdf file #2>
+ncompare <netcdf file #1> <netcdf file #2>
 ```
 
 ### Options
