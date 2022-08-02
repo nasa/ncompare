@@ -51,7 +51,8 @@ class _Logger:
         pass
 
 
-if __name__ == '__main__':
+def main():
+    """Run from command line."""
     args = cli()
 
     if args.report:
@@ -59,3 +60,7 @@ if __name__ == '__main__':
     args.__delattr__("report")
 
     sys.exit(compare(**vars(args)))
+
+
+if __name__ == '__main__':
+    main()
