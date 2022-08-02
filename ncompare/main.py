@@ -7,7 +7,7 @@ from pathlib import Path
 from ncompare.core import compare
 
 
-def _parse_cli() -> argparse.Namespace:
+def cli() -> argparse.Namespace:
     """Parse input arguments from the command line."""
     parser = argparse.ArgumentParser(description="Compare the variables contained within two different NetCDF datasets")
     parser.add_argument("nc_a", help="First NetCDF file")
@@ -52,7 +52,7 @@ class _Logger:
 
 
 if __name__ == '__main__':
-    args = _parse_cli()
+    args = cli()
 
     if args.report:
         sys.stdout = _Logger(args.report)
