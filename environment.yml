@@ -1,0 +1,9 @@
+name: ncompare
+channels:
+- conda-forge
+- defaults
+dependencies:
+- numpy
+- netcdf4
+- xarray
+- colorama

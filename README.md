@@ -1,6 +1,21 @@
 # ncompare
-Compare the structure of two NetCDF files at the command line. 
+Compare the structure of two NetCDF files at the command line.
 `ncompare` generates a view of the matching and non-matching groups and variables between two NetCDF datasets.
+
+### Installation
+
+🌍 Using [conda](https://docs.conda.io/projects/conda/en/latest/index.html#),
+create a runtime/development environment with the dependencies.
+
+```shell script
+conda env create --file=environment.yml
+conda activate ncompare
+```
+
+💾 Install the package:
+```shell script
+pip install .
+```
 
 ### Basic usage at a command line:
 ```
