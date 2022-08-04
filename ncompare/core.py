@@ -16,7 +16,8 @@ def compare(nc_a: str,
             nc_b: str,
             comparison_var_group: str = None,
             comparison_var_name: str = None,
-            no_color: bool = False
+            no_color: bool = False,
+            show_chunks: bool = False
             ) -> int:
     """Compare the variables contained within two different NetCDF datasets.
 
@@ -31,6 +32,7 @@ def compare(nc_a: str,
     comparison_var_name : str, optional
         The name of a variable for which we want to compare values
     no_color : bool, default False
+    show_chunks : bool, default False
 
     Returns
     -------
@@ -76,7 +78,7 @@ def compare(nc_a: str,
         print(Fore.LIGHTBLACK_EX + "\nNo variable group selected for comparison. Skipping..")
 
     print(Fore.LIGHTBLUE_EX + "\nAll variables:")
-    compare_two_nc_files(nc_a, nc_b)
+    compare_two_nc_files(nc_a, nc_b, show_chunks=show_chunks)
 
     print(Fore.LIGHTBLUE_EX + "\nDone.")
     return 0  # a clean, no-issue, exit
@@ -122,7 +124,9 @@ def compare_multiple_random_values(nc_a: Path, nc_b: Path, groupname: str, varna
         print(Fore.CYAN + " No mismatches.")
     print_normal("Done.")
 
-def compare_two_nc_files(nc_one: Path, nc_two: Path):
+def compare_two_nc_files(nc_one: Path, nc_two: Path,
+                         show_chunks: bool = False
+                         ) -> None:
     """Go through all groups and all variables, and show them side by side - whether they align and where they don't."""
     _side_by_side(' ', 'File A', 'File B')
     with netCDF4.Dataset(nc_one) as nc_a, netCDF4.Dataset(nc_two) as nc_b:
@@ -130,7 +134,7 @@ def compare_two_nc_files(nc_one: Path, nc_two: Path):
         _side_by_side('-', '-', '-', dash_line=True)
         _side_by_side('num variables in root group:', len(nc_a.variables), len(nc_b.variables))
         for v_idx, v_a, v_b in _common_elements(nc_a.variables, nc_b.variables):
-            _print_var_properties_side_by_side(v_a, v_b, nc_a, nc_b)
+            _print_var_properties_side_by_side(v_a, v_b, nc_a, nc_b, show_chunks=show_chunks)
 
         for g_idx, g_a, g_b in _common_elements(nc_a.groups, nc_b.groups):
             _side_by_side(f"group #{g_idx:02}", g_a.strip(), g_b.strip(), dash_line=True, highlight_diff=False)
@@ -144,7 +148,7 @@ def compare_two_nc_files(nc_one: Path, nc_two: Path):
             _side_by_side('num variables in groups:', len(vars_a_sorted), len(vars_b_sorted))
 
             for v_idx, v_a, v_b in _common_elements(vars_a_sorted, vars_b_sorted):
-                _print_var_properties_side_by_side(v_a, v_b, nc_a, nc_b, g_a, g_b)
+                _print_var_properties_side_by_side(v_a, v_b, nc_a, nc_b, g_a=g_a, g_b=g_b, show_chunks=show_chunks)
 
 def _side_by_side_list_diff(list_a: list, list_b: list, counter_prefix=""):
     for i, a, b in _common_elements(list_a, list_b):
@@ -170,7 +174,10 @@ def _common_elements(sequence_a, sequence_b):
 
         yield i, item_a, item_b
 
-def _print_var_properties_side_by_side(v_a, v_b, nc_a, nc_b, g_a=None, g_b=None):
+def _print_var_properties_side_by_side(v_a, v_b, nc_a, nc_b,
+                                       g_a=None,
+                                       g_b=None,
+                                       show_chunks=False):
     # Variable name
     _side_by_side("var:", v_a[:47], v_b[:47], highlight_diff=False)
 
@@ -183,7 +190,8 @@ def _print_var_properties_side_by_side(v_a, v_b, nc_a, nc_b, g_a=None, g_b=None)
     # Shape
     _side_by_side("shape:", v_a_shape, v_b_shape, highlight_diff=False)
     # Chunking
-    _side_by_side("chunksize:", v_a_chunking, v_b_chunking, highlight_diff=False)
+    if show_chunks:
+        _side_by_side("chunksize:", v_a_chunking, v_b_chunking, highlight_diff=False)
 
     # Scale Factor
     if getattr(variable_a, 'scale_factor', None):

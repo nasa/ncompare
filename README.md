@@ -28,3 +28,4 @@ ncompare <netcdf file #1> <netcdf file #2>
 - `-v` (`--comparison_var_name`) : Compare specific values for this variable.
 - `-g` (`--comparison_var_group`) : Group that contains the `comparison_var_name`.
 - `--no-color` : Turn off all colorized output.
+- `--show-chunks` : Include chunk sizes in the table that compares variables.
