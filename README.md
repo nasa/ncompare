@@ -22,6 +22,9 @@ pip install .
 ncompare <netcdf file #1> <netcdf file #2>
 ```
 
+Example:
+`ncompare S001G01.nc S001G01_SUBSET.nc -g product -v ozone_profile --report subset_comparison.txt`
+
 ### Options
 
 - `-r` (`--report`) : A file to write the output to, as a report.
