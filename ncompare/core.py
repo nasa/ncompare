@@ -45,6 +45,8 @@ def compare(nc_a: str,
     if no_color:
         for k, v in Fore.__dict__.items():
             Fore.__dict__[k] = ""
+        for k, v in Style.__dict__.items():
+            Style.__dict__[k] = ""
     else:
         colorama.init(autoreset=True)
 
@@ -80,7 +82,8 @@ def compare(nc_a: str,
     print(Fore.LIGHTBLUE_EX + "\nAll variables:")
     compare_two_nc_files(nc_a, nc_b, show_chunks=show_chunks)
 
-    print(Fore.LIGHTBLUE_EX + "\nDone.")
+    print_normal("\nDone.")
+
     return 0  # a clean, no-issue, exit
 
 def compare_dimensions(nc_a: Path, nc_b: Path) -> None:
