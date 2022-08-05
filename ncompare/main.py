@@ -2,6 +2,7 @@
 """Command line interface for `ncompare` -- to compare the structure of two NetCDF files."""
 import argparse
 import sys
+import traceback
 from pathlib import Path
 
 from ncompare.core import compare
@@ -62,7 +63,12 @@ def main():
         sys.stdout = _Logger(args.report)
     args.__delattr__("report")
 
-    sys.exit(compare(**vars(args)))
+    try:
+        compare(**vars(args))
+        sys.exit(0)  # a clean, no-issue, exit
+    except Exception:
+        print(traceback.format_exc())
+        sys.exit(1)
 
 
 if __name__ == '__main__':

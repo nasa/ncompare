@@ -18,7 +18,7 @@ def compare(nc_a: str,
             comparison_var_name: str = None,
             no_color: bool = False,
             show_chunks: bool = False
-            ) -> int:
+            ) -> None:
     """Compare the variables contained within two different NetCDF datasets.
 
     Parameters
@@ -83,8 +83,6 @@ def compare(nc_a: str,
     compare_two_nc_files(nc_a, nc_b, show_chunks=show_chunks)
 
     print_normal("\nDone.")
-
-    return 0  # a clean, no-issue, exit
 
 def compare_dimensions(nc_a: Path, nc_b: Path) -> None:
     """Show the dimensions of each file."""
