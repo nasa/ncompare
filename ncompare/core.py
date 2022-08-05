@@ -2,6 +2,7 @@
 import random
 import traceback
 from pathlib import Path
+from typing import Union
 
 import colorama
 import netCDF4
@@ -114,9 +115,13 @@ def compare_multiple_random_values(nc_a: Path, nc_b: Path, groupname: str, varna
 
     num_mismatches = 0
     for i in range(num_comparisons):
-        if _match_random_value(nc_var_a, nc_var_b):
+        match_result = _match_random_value(nc_var_a, nc_var_b)
+        if match_result is True:
             print_normal(".", end="")
+        elif match_result is None:
+            print_normal("n", end="")
         else:
+            print_normal("x", end="")
             num_mismatches += 1
 
     if num_mismatches > 0:
@@ -256,7 +261,8 @@ def _side_by_side(str_a, str_b, str_c, dash_line=False, highlight_diff=False):
 
 def _match_random_value(nc_var_a: netCDF4.Variable,
                         nc_var_b: netCDF4.Variable,
-                        thresh: float = 1e-6):
+                        thresh: float = 1e-6
+                        ) -> Union[bool, None]:
     # Get a random indexer
     rand_index = []
     for d in nc_var_a.shape:
@@ -269,7 +275,7 @@ def _match_random_value(nc_var_a: netCDF4.Variable,
 
     # Evaluate the values
     if np.isnan(v1) or np.isnan(v2):
-        return True
+        return None
     else:
         diff = v2 - v1
         if abs(diff) > thresh:
