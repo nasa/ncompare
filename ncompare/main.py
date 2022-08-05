@@ -34,8 +34,9 @@ class _Logger:
         self.terminal = sys.stdout
         filepath = Path(filename)
         if filepath.exists():
-            raise FileExistsError("File selected for report already exists. Delete it or choose a different filename.")
-        self.log = open(filepath, "a")
+            pass
+        # This will overwrite any existing file at this path, if one exists.
+        self.log = open(filepath, "w")
 
     def write(self, message):
         """Write message to output."""
