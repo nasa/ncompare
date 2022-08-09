@@ -65,10 +65,10 @@ def main():
 
     try:
         compare(**vars(args))
-        sys.exit(0)  # a clean, no-issue, exit
     except Exception:
         print(traceback.format_exc())
         sys.exit(1)
+    sys.exit(0)  # a clean, no-issue, exit
 
 
 if __name__ == '__main__':
