@@ -92,8 +92,8 @@ def compare_dimensions(nc_a: Path, nc_b: Path) -> None:
 
 def compare_groups(nc_a: Path, nc_b: Path) -> None:
     """Show the groups in each NetCDF file."""
-    glist_a = _print_groups(nc_a)
-    glist_b = _print_groups(nc_b)
+    glist_a = _get_groups(nc_a, print_list=False)
+    glist_b = _get_groups(nc_b, print_list=False)
     _lists_diff(glist_a, glist_b)
 
 def compare_ingroup_variables(nc_a: Path, nc_b: Path, groupname: str) -> None:
@@ -289,22 +289,24 @@ def _match_random_value(nc_var_a: netCDF4.Variable,
         else:
             return True
 
-def _lists_diff(list_a, list_b):
+def _lists_diff(a: list, b: list) -> None:
     """Compare two lists and state whether there are differences."""
     # TODO: make this highlight the differences too.
     # Are these list contents the same?
-    groups_are_same = set(list_a) == set(list_b)
-    if groups_are_same:
-        print(Fore.CYAN + "Are lists the same? ---> %s." % str(groups_are_same))
+    contents_are_same = set(a) == set(b)
+    if contents_are_same:
+        print(Fore.CYAN + "Are lists the same? ---> %s." % str(contents_are_same))
+        print(Fore.CYAN + str(set(a)))
+
     else:
-        print(Fore.RED + "Are lists the same? ---> %s." % str(groups_are_same))
+        print(Fore.RED + "Are lists the same? ---> %s." % str(contents_are_same))
 
         # Which variables are different?
         print(Fore.RED + "Which items are different?")
         # print(Fore.RED + "Which items are different? ---> %s." %
         #       str(set(list_a).symmetric_difference(list_b)))
         _side_by_side(' ', 'File A', 'File B')
-        _side_by_side_list_diff(list_a, list_b)
+        _side_by_side_list_diff(a, b)
 
 def _print_sample_values(nc_filepath, groupname: str, varname: str) -> None:
     comparison_variable = xr.open_dataset(nc_filepath, backend_kwargs={"group": groupname})[varname]
@@ -320,11 +322,13 @@ def _print_vars(nc_filepath: Path, groupname: str) -> list:
     print_normal(grp_varlist)
     return grp_varlist
 
-def _print_groups(nc_filepath: Path) -> list:
+def _get_groups(nc_filepath: Path,
+                print_list: bool = True
+                ) -> list:
     with netCDF4.Dataset(nc_filepath) as ds:
         groups_list = list(ds.groups.keys())
-
-    print_normal(sorted(groups_list))
+    if print_list:
+        print_normal(sorted(groups_list))
     return groups_list
 
 def _print_dims(nc_filepath: Path) -> None:
