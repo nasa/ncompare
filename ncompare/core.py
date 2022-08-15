@@ -85,22 +85,26 @@ def compare(nc_a: str,
 
     print_normal("\nDone.")
 
-def compare_dimensions(nc_a: Path, nc_b: Path) -> None:
-    """Show the dimensions of each file."""
-    _print_dims(nc_a)
-    _print_dims(nc_b)
+def compare_dimensions(nc_a: Path, nc_b: Path
+                       ) -> tuple[int, int, int]:
+    """Show the dimensions of each file and evaluate differences."""
+    list_a = _print_dims(nc_a)
+    list_b = _print_dims(nc_b)
+    return lists_diff(list_a, list_b)
 
-def compare_groups(nc_a: Path, nc_b: Path) -> None:
-    """Show the groups in each NetCDF file."""
-    glist_a = _get_groups(nc_a, print_list=False)
-    glist_b = _get_groups(nc_b, print_list=False)
-    _lists_diff(glist_a, glist_b)
+def compare_groups(nc_a: Path, nc_b: Path
+                   ) -> tuple[int, int, int]:
+    """Show the groups in each NetCDF file and evaluate differences."""
+    list_a = _get_groups(nc_a, print_list=False)
+    list_b = _get_groups(nc_b, print_list=False)
+    return lists_diff(list_a, list_b)
 
-def compare_ingroup_variables(nc_a: Path, nc_b: Path, groupname: str) -> None:
+def compare_ingroup_variables(nc_a: Path, nc_b: Path, groupname: str
+                              ) -> tuple[int, int, int]:
     """Show the variables within the selected group."""
     vlist_a = _print_vars(nc_a, groupname)
     vlist_b = _print_vars(nc_b, groupname)
-    _lists_diff(vlist_a, vlist_b)
+    return lists_diff(vlist_a, vlist_b)
 
 def compare_sample_values(nc_a: Path, nc_b: Path, groupname: str, varname: str) -> None:
     """Print the first part of the values array for the selected variable."""
@@ -155,6 +159,36 @@ def compare_two_nc_files(nc_one: Path, nc_two: Path,
 
             for v_idx, v_a, v_b in _common_elements(vars_a_sorted, vars_b_sorted):
                 _print_var_properties_side_by_side(v_a, v_b, nc_a, nc_b, g_a=g_a, g_b=g_b, show_chunks=show_chunks)
+
+def lists_diff(a: list, b: list,
+               ignore_order: bool = True
+               ) -> tuple[int, int, int]:
+    """Compare two lists and state whether there are differences."""
+    # TODO: make this highlight the differences too.
+    # Are these list contents the same?
+    if ignore_order:
+        contents_are_same = set(a) == set(b)
+    else:
+        contents_are_same = a == b
+
+    # Display the comparison result
+    if contents_are_same:
+        print(Fore.CYAN + "Are lists the same? ---> %s." % str(contents_are_same))
+        print(Fore.CYAN + str(set(a)))
+        return 0, 0, len(a)
+
+    else:
+        print(Fore.RED + "Are lists the same? ---> %s." % str(contents_are_same))
+
+        # Which variables are different?
+        print(Fore.RED + "Which items are different?")
+        # print(Fore.RED + "Which items are different? ---> %s." %
+        #       str(set(list_a).symmetric_difference(list_b)))
+        _side_by_side(' ', 'File A', 'File B')
+        _side_by_side_list_diff(a, b)
+
+        left, right, both = _count_diffs(a, b)
+        return left, right, both
 
 def _side_by_side_list_diff(list_a: list, list_b: list, counter_prefix=""):
     for i, a, b in _common_elements(list_a, list_b):
@@ -289,24 +323,42 @@ def _match_random_value(nc_var_a: netCDF4.Variable,
         else:
             return True
 
-def _lists_diff(a: list, b: list) -> None:
-    """Compare two lists and state whether there are differences."""
-    # TODO: make this highlight the differences too.
-    # Are these list contents the same?
-    contents_are_same = set(a) == set(b)
-    if contents_are_same:
-        print(Fore.CYAN + "Are lists the same? ---> %s." % str(contents_are_same))
-        print(Fore.CYAN + str(set(a)))
+def _count_diffs(a: list[Union[str, int]],
+                 b: list[Union[str, int]]
+                 ) -> tuple[int, int, int]:
+    """Count how many elements are either uniquely in one list or the other, or in both.
 
-    else:
-        print(Fore.RED + "Are lists the same? ---> %s." % str(contents_are_same))
+    Note
+    ----
+    Duplicates are ignored, i.e. any elements present more than once in a list are treated as if they only occur once.
 
-        # Which variables are different?
-        print(Fore.RED + "Which items are different?")
-        # print(Fore.RED + "Which items are different? ---> %s." %
-        #       str(set(list_a).symmetric_difference(list_b)))
-        _side_by_side(' ', 'File A', 'File B')
-        _side_by_side_list_diff(a, b)
+    Returns
+    -------
+    int
+        Number of items only in the *left* ("a") list
+    int
+        Number of items only in the *right* ("b") list
+    int
+        Number of items only in both ("a" and "b") lists
+    """
+    def str_coercion(x: Union[str, int]):
+        if isinstance(x, str):
+            return x
+        elif isinstance(x, int):
+            return str(x)
+        else:
+            raise TypeError("Expected either str or int for diff counting.")
+
+    # Lists are converted to sets, with each element coerced to a string type.
+    sa = set(map(str_coercion, a))
+    sb = set(map(str_coercion, b))
+
+    # The number of differences are computed.
+    left = len(sa - sb)
+    right = len(sb - sa)
+    both = len(sa.intersection(sb))
+
+    return left, right, both
 
 def _print_sample_values(nc_filepath, groupname: str, varname: str) -> None:
     comparison_variable = xr.open_dataset(nc_filepath, backend_kwargs={"group": groupname})[varname]
