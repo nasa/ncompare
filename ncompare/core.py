@@ -91,8 +91,8 @@ def run_through_comparisons(nc_a: Union[str, Path],
 
         # Show the variables within the selected group.
         print(Fore.LIGHTBLUE_EX + "\nVariables within specified group <%s>:" % comparison_var_group)
-        vlist_a = _print_vars(nc_a, comparison_var_group)
-        vlist_b = _print_vars(nc_b, comparison_var_group)
+        vlist_a = _get_vars(nc_a, comparison_var_group, print_list=False)
+        vlist_b = _get_vars(nc_b, comparison_var_group, print_list=False)
         left, right, both = lists_diff(vlist_a, vlist_b)
 
         if comparison_var_name:
@@ -288,14 +288,19 @@ def _print_sample_values(nc_filepath, groupname: str, varname: str) -> None:
     comparison_variable = xr.open_dataset(nc_filepath, backend_kwargs={"group": groupname})[varname]
     print_normal(comparison_variable.values[0, :])
 
-def _print_vars(nc_filepath: Path, groupname: str) -> list:
+def _get_vars(nc_filepath: Path,
+              groupname: str,
+              print_list: bool = True
+              ) -> list:
     try:
         grp = xr.open_dataset(nc_filepath, backend_kwargs={"group": groupname})
     except OSError as err:
         print_normal("\nError occurred when attempting to open group within <%s>.\n" % nc_filepath)
         raise err
     grp_varlist = sorted(list(grp.variables.keys()))
-    print_normal(grp_varlist)
+
+    if print_list:
+        print_normal(grp_varlist)
     return grp_varlist
 
 def _get_groups(nc_filepath: Path,
