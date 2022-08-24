@@ -65,21 +65,19 @@ def lists_diff(a: list, b: list,
 
     # Display the comparison result
     if contents_are_same:
-        print("\t" + Fore.CYAN + "Are all items the same? ---> %s." % str(contents_are_same))
-        print("\t" + Fore.CYAN + str(sa))
+        msg = "\t" + Fore.CYAN + f"Are all items the same? ---> {str(contents_are_same)}."
+
+        if len(sa) > 0:
+            print(msg)
+            print("\t" + Fore.CYAN + str(sa))
+        else:
+            print(msg + "  (No items exist.)")
         return 0, 0, len(a)
 
     else:
-        print("\t" + "Are all items the same? ---> " + Fore.RED + "%s." % str(contents_are_same))
         left, right, both = count_diffs(a, b)
-
-        def _singular_or_plural(x):
-            if x == 1:
-                return f"{x} item is"
-            else:
-                return f"{x} items are"
-
-        print("\t" + f"({_singular_or_plural(both)} shared, out of a total of {len(s_union)}.)")
+        print("\t" + "Are all items the same? ---> " + Fore.RED + f"{str(contents_are_same)}."
+              f"  ({_singular_or_plural(both)} shared, out of {len(s_union)} total.)")
 
         # Which variables are different?
         print("\t" + Fore.RED + "Which items are different?")
@@ -87,10 +85,15 @@ def lists_diff(a: list, b: list,
         #       str(set(list_a).symmetric_difference(list_b)))
         side_by_side(' ', 'File A', 'File B')
         side_by_side_list_diff(a, b)
-        side_by_side('Number of unique items:', str(left), str(right))
+        side_by_side('Number of non-shared items:', str(left), str(right))
 
         return left, right, both
 
+def _singular_or_plural(x):
+    if x == 1:
+        return f"{x} item is"
+    else:
+        return f"{x} items are"
 
 def print_normal(string, **kwargs):
     """Print normal color and style text to the console."""

@@ -11,7 +11,7 @@ import xarray as xr
 from colorama import Fore, Style
 
 from ncompare.printing import lists_diff, print_normal, side_by_side
-from ncompare.sequence_operations import common_elements
+from ncompare.sequence_operations import common_elements, count_diffs
 from ncompare.utils import make_valid_path
 
 
@@ -145,19 +145,26 @@ def compare_multiple_random_values(nc_a: Path, nc_b: Path, groupname: str, varna
 
 def compare_two_nc_files(nc_one: Path, nc_two: Path,
                          show_chunks: bool = False
-                         ) -> None:
+                         ) -> tuple[int, int, int]:
     """Go through all groups and all variables, and show them side by side - whether they align and where they don't."""
     side_by_side(' ', 'File A', 'File B')
     with netCDF4.Dataset(nc_one) as nc_a, netCDF4.Dataset(nc_two) as nc_b:
 
         side_by_side('-', '-', '-', dash_line=True)
         side_by_side('num variables in root group:', len(nc_a.variables), len(nc_b.variables))
+
+        # Count differences between the lists of variables in the root group.
+        vars_left, vars_right, vars_both = count_diffs(nc_a.variables, nc_b.variables)
+
+        # Go through root-level variables.
         for v_idx, v_a, v_b in common_elements(nc_a.variables, nc_b.variables):
             _print_var_properties_side_by_side(v_a, v_b, nc_a, nc_b, show_chunks=show_chunks)
 
+        # Go through each group.
         for g_idx, g_a, g_b in common_elements(nc_a.groups, nc_b.groups):
             side_by_side(f"group #{g_idx:02}", g_a.strip(), g_b.strip(), dash_line=True, highlight_diff=False)
 
+            # Count the number of variables in this group as long as this group exists.
             vars_a_sorted = ""
             vars_b_sorted = ""
             if g_a:
@@ -166,8 +173,20 @@ def compare_two_nc_files(nc_one: Path, nc_two: Path,
                 vars_b_sorted = sorted(nc_b.groups[g_b].variables)
             side_by_side('num variables in group:', len(vars_a_sorted), len(vars_b_sorted))
 
+            # Count differences between the lists of variables in this group.
+            left, right, both = count_diffs(vars_a_sorted, vars_b_sorted)
+            vars_left += left
+            vars_right += right
+            vars_both += both
+
+            # Go through each variable in the current group.
             for v_idx, v_a, v_b in common_elements(vars_a_sorted, vars_b_sorted):
                 _print_var_properties_side_by_side(v_a, v_b, nc_a, nc_b, g_a=g_a, g_b=g_b, show_chunks=show_chunks)
+
+    side_by_side('-', '-', '-', dash_line=True)
+    side_by_side('Number of shared items:', str(vars_both), str(vars_both))
+    side_by_side('Number of non-shared items:', str(vars_left), str(vars_right))
+    return vars_left, vars_right, vars_both
 
 def _print_var_properties_side_by_side(v_a, v_b, nc_a, nc_b,
                                        g_a=None,
