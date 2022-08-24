@@ -56,20 +56,52 @@ def compare(nc_a: str,
     else:
         colorama.init(autoreset=True)
 
-    print(Fore.LIGHTBLUE_EX + "\nDimensions:")
-    compare_dimensions(nc_a, nc_b)
+    run_through_comparisons(nc_a, nc_b, comparison_var_group, comparison_var_name, show_chunks)
 
+    print_normal("\nDone.")
+
+def run_through_comparisons(nc_a: Union[str, Path],
+                            nc_b: Union[str, Path],
+                            comparison_var_group,
+                            comparison_var_name,
+                            show_chunks) -> None:
+    """Execute a series of comparisons between two NetCDF files.
+
+    Parameters
+    ----------
+    nc_a
+    nc_b
+    comparison_var_group
+    comparison_var_name
+    show_chunks
+    """
+    # Show the dimensions of each file and evaluate differences.
+    print(Fore.LIGHTBLUE_EX + "\nRoot-level Dimensions:")
+    list_a = _get_dims(nc_a, print_list=False)
+    list_b = _get_dims(nc_b, print_list=False)
+    left, right, both = lists_diff(list_a, list_b)
+
+    # Show the groups in each NetCDF file and evaluate differences.
     print(Fore.LIGHTBLUE_EX + "\nGroups:")
-    compare_groups(nc_a, nc_b)
+    list_a = _get_groups(nc_a, print_list=False)
+    list_b = _get_groups(nc_b, print_list=False)
+    left, right, both = lists_diff(list_a, list_b)
 
     if comparison_var_group:
+
+        # Show the variables within the selected group.
         print(Fore.LIGHTBLUE_EX + "\nVariables within specified group <%s>:" % comparison_var_group)
-        compare_ingroup_variables(nc_a, nc_b, groupname=comparison_var_group)
+        vlist_a = _print_vars(nc_a, comparison_var_group)
+        vlist_b = _print_vars(nc_b, comparison_var_group)
+        left, right, both = lists_diff(vlist_a, vlist_b)
 
         if comparison_var_name:
             try:
+                # Print the first part of the values array for the selected variable.
                 print(Fore.LIGHTBLUE_EX + "\nSample values within specified variable <%s>:" % comparison_var_name)
-                compare_sample_values(nc_a, nc_b, groupname=comparison_var_group, varname=comparison_var_name)
+                _print_sample_values(nc_a, comparison_var_group, comparison_var_name)
+                _print_sample_values(nc_b, comparison_var_group, comparison_var_name)
+                # compare_sample_values(nc_a, nc_b, groupname=comparison_var_group, varname=comparison_var_name)
 
                 print(Fore.LIGHTBLUE_EX + "\nChecking multiple random values within specified variable <%s>:"
                       % comparison_var_name)
@@ -87,34 +119,6 @@ def compare(nc_a: str,
 
     print(Fore.LIGHTBLUE_EX + "\nAll variables:")
     compare_two_nc_files(nc_a, nc_b, show_chunks=show_chunks)
-
-    print_normal("\nDone.")
-
-def compare_dimensions(nc_a: Path, nc_b: Path
-                       ) -> tuple[int, int, int]:
-    """Show the dimensions of each file and evaluate differences."""
-    list_a = _print_dims(nc_a)
-    list_b = _print_dims(nc_b)
-    return lists_diff(list_a, list_b)
-
-def compare_groups(nc_a: Path, nc_b: Path
-                   ) -> tuple[int, int, int]:
-    """Show the groups in each NetCDF file and evaluate differences."""
-    list_a = _get_groups(nc_a, print_list=False)
-    list_b = _get_groups(nc_b, print_list=False)
-    return lists_diff(list_a, list_b)
-
-def compare_ingroup_variables(nc_a: Path, nc_b: Path, groupname: str
-                              ) -> tuple[int, int, int]:
-    """Show the variables within the selected group."""
-    vlist_a = _print_vars(nc_a, groupname)
-    vlist_b = _print_vars(nc_b, groupname)
-    return lists_diff(vlist_a, vlist_b)
-
-def compare_sample_values(nc_a: Path, nc_b: Path, groupname: str, varname: str) -> None:
-    """Print the first part of the values array for the selected variable."""
-    _print_sample_values(nc_a, groupname, varname)
-    _print_sample_values(nc_b, groupname, varname)
 
 def compare_multiple_random_values(nc_a: Path, nc_b: Path, groupname: str, varname: str, num_comparisons: int = 100):
     """Iterate through N random samples, and evaluate whether the differences exceed a threshold."""
@@ -284,6 +288,12 @@ def _get_groups(nc_filepath: Path,
         print_normal(sorted(groups_list))
     return groups_list
 
-def _print_dims(nc_filepath: Path) -> None:
+def _get_dims(nc_filepath: Path,
+              print_list: bool = True
+              ) -> list:
     with xr.open_dataset(nc_filepath) as ds:
-        print_normal(str(sorted(ds.dims.items())))
+        dims_list = list(ds.dims.items())
+
+    if print_list:
+        print_normal(str(sorted(dims_list, key=lambda x: x[0])))
+    return dims_list
