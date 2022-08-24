@@ -164,7 +164,7 @@ def compare_two_nc_files(nc_one: Path, nc_two: Path,
                 vars_a_sorted = sorted(nc_a.groups[g_a].variables)
             if g_b:
                 vars_b_sorted = sorted(nc_b.groups[g_b].variables)
-            side_by_side('num variables in groups:', len(vars_a_sorted), len(vars_b_sorted))
+            side_by_side('num variables in group:', len(vars_a_sorted), len(vars_b_sorted))
 
             for v_idx, v_a, v_b in common_elements(vars_a_sorted, vars_b_sorted):
                 _print_var_properties_side_by_side(v_a, v_b, nc_a, nc_b, g_a=g_a, g_b=g_b, show_chunks=show_chunks)
