@@ -45,6 +45,9 @@ def compare(nc_a: str,
     nc_a = make_valid_path(nc_a)
     nc_b = make_valid_path(nc_b)
 
+    print(f"File A: {nc_a}")
+    print(f"File B: {nc_b}")
+
     if no_color:
         for k, v in Fore.__dict__.items():
             Fore.__dict__[k] = ""
