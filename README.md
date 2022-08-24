@@ -39,3 +39,6 @@ Example:
 - `-g` (`--comparison_var_group`) : Group that contains the `comparison_var_name`.
 - `--no-color` : Turn off all colorized output.
 - `--show-chunks` : Include chunk sizes in the table that compares variables.
+
+## Known limitations
+This currently works with NetCDF hierarchies containing no more than one level of groups.
