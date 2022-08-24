@@ -1,8 +1,6 @@
-"""Helper utilities; they don't directly compare two NetCDF datasets."""
+"""Helper utilities."""
 from pathlib import Path
 from typing import Union
-
-from colorama import Fore, Style
 
 
 def make_valid_path(should_be_path: Union[str, Path]) -> Path:
@@ -28,7 +26,13 @@ def make_valid_path(should_be_path: Union[str, Path]) -> Path:
     else:
         raise TypeError(wrong_type_msg + str(type(should_be_path)))
 
-
-def print_normal(string, **kwargs):
-    """Print normal color and style text to the console."""
-    print(Fore.WHITE + Style.RESET_ALL + str(string), **kwargs)
+def coerce_to_str(x: Union[str, int, tuple]):
+    """Ensure the type is a string."""
+    if isinstance(x, str):
+        return x
+    elif isinstance(x, int):
+        return str(x)
+    elif isinstance(x, tuple):
+        return str(x)
+    else:
+        raise TypeError("Unable to coerce value to str. Unexpected type <%s>.", type(x))

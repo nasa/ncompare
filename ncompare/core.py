@@ -10,7 +10,9 @@ import numpy as np
 import xarray as xr
 from colorama import Fore, Style
 
-from ncompare.utils import make_valid_path, print_normal
+from ncompare.printing import lists_diff, print_normal, side_by_side
+from ncompare.sequence_operations import common_elements
+from ncompare.utils import make_valid_path
 
 
 def compare(nc_a: str,
@@ -138,16 +140,16 @@ def compare_two_nc_files(nc_one: Path, nc_two: Path,
                          show_chunks: bool = False
                          ) -> None:
     """Go through all groups and all variables, and show them side by side - whether they align and where they don't."""
-    _side_by_side(' ', 'File A', 'File B')
+    side_by_side(' ', 'File A', 'File B')
     with netCDF4.Dataset(nc_one) as nc_a, netCDF4.Dataset(nc_two) as nc_b:
 
-        _side_by_side('-', '-', '-', dash_line=True)
-        _side_by_side('num variables in root group:', len(nc_a.variables), len(nc_b.variables))
-        for v_idx, v_a, v_b in _common_elements(nc_a.variables, nc_b.variables):
+        side_by_side('-', '-', '-', dash_line=True)
+        side_by_side('num variables in root group:', len(nc_a.variables), len(nc_b.variables))
+        for v_idx, v_a, v_b in common_elements(nc_a.variables, nc_b.variables):
             _print_var_properties_side_by_side(v_a, v_b, nc_a, nc_b, show_chunks=show_chunks)
 
-        for g_idx, g_a, g_b in _common_elements(nc_a.groups, nc_b.groups):
-            _side_by_side(f"group #{g_idx:02}", g_a.strip(), g_b.strip(), dash_line=True, highlight_diff=False)
+        for g_idx, g_a, g_b in common_elements(nc_a.groups, nc_b.groups):
+            side_by_side(f"group #{g_idx:02}", g_a.strip(), g_b.strip(), dash_line=True, highlight_diff=False)
 
             vars_a_sorted = ""
             vars_b_sorted = ""
@@ -155,83 +157,29 @@ def compare_two_nc_files(nc_one: Path, nc_two: Path,
                 vars_a_sorted = sorted(nc_a.groups[g_a].variables)
             if g_b:
                 vars_b_sorted = sorted(nc_b.groups[g_b].variables)
-            _side_by_side('num variables in groups:', len(vars_a_sorted), len(vars_b_sorted))
+            side_by_side('num variables in groups:', len(vars_a_sorted), len(vars_b_sorted))
 
-            for v_idx, v_a, v_b in _common_elements(vars_a_sorted, vars_b_sorted):
+            for v_idx, v_a, v_b in common_elements(vars_a_sorted, vars_b_sorted):
                 _print_var_properties_side_by_side(v_a, v_b, nc_a, nc_b, g_a=g_a, g_b=g_b, show_chunks=show_chunks)
-
-def lists_diff(a: list, b: list,
-               ignore_order: bool = True
-               ) -> tuple[int, int, int]:
-    """Compare two lists and state whether there are differences."""
-    # TODO: make this highlight the differences too.
-    # Are these list contents the same?
-    if ignore_order:
-        contents_are_same = set(a) == set(b)
-    else:
-        contents_are_same = a == b
-
-    # Display the comparison result
-    if contents_are_same:
-        print(Fore.CYAN + "Are lists the same? ---> %s." % str(contents_are_same))
-        print(Fore.CYAN + str(set(a)))
-        return 0, 0, len(a)
-
-    else:
-        print(Fore.RED + "Are lists the same? ---> %s." % str(contents_are_same))
-
-        # Which variables are different?
-        print(Fore.RED + "Which items are different?")
-        # print(Fore.RED + "Which items are different? ---> %s." %
-        #       str(set(list_a).symmetric_difference(list_b)))
-        _side_by_side(' ', 'File A', 'File B')
-        _side_by_side_list_diff(a, b)
-
-        left, right, both = _count_diffs(a, b)
-        return left, right, both
-
-def _side_by_side_list_diff(list_a: list, list_b: list, counter_prefix=""):
-    for i, a, b in _common_elements(list_a, list_b):
-        _side_by_side(f"{counter_prefix} #{i:02}", a.strip(), b.strip(), dash_line=True, highlight_diff=True)
-
-def _common_elements(sequence_a, sequence_b):
-    """Loop over the combined items of two lists, and return them aligned, whether matching or not."""
-    a_sorted = sorted(sequence_a)
-    b_sorted = sorted(sequence_b)
-    all_items = sorted(set(a_sorted).union(set(b_sorted)))
-
-    for i, item in enumerate(all_items):
-        item_a = item
-        item_b = item
-        if (item not in a_sorted) and (item not in b_sorted):
-            raise ValueError(
-                "Unexpected condition where an item was not found "
-                "but all items should exist in at least one list.")
-        elif item not in a_sorted:
-            item_a = ''
-        elif item not in b_sorted:
-            item_b = ''
-
-        yield i, item_a, item_b
 
 def _print_var_properties_side_by_side(v_a, v_b, nc_a, nc_b,
                                        g_a=None,
                                        g_b=None,
                                        show_chunks=False):
     # Variable name
-    _side_by_side("var:", v_a[:47], v_b[:47], highlight_diff=False)
+    side_by_side("var:", v_a[:47], v_b[:47], highlight_diff=False)
 
     # Get the properties of each variable
     variable_a, v_a_dtype, v_a_shape, v_a_chunking = _var_properties(nc_a, v_a, g_a)
     variable_b, v_b_dtype, v_b_shape, v_b_chunking = _var_properties(nc_b, v_b, g_b)
 
     # Data type
-    _side_by_side("dtype:", v_a_dtype, v_b_dtype, highlight_diff=False)
+    side_by_side("dtype:", v_a_dtype, v_b_dtype, highlight_diff=False)
     # Shape
-    _side_by_side("shape:", v_a_shape, v_b_shape, highlight_diff=False)
+    side_by_side("shape:", v_a_shape, v_b_shape, highlight_diff=False)
     # Chunking
     if show_chunks:
-        _side_by_side("chunksize:", v_a_chunking, v_b_chunking, highlight_diff=False)
+        side_by_side("chunksize:", v_a_chunking, v_b_chunking, highlight_diff=False)
 
     # Scale Factor
     if getattr(variable_a, 'scale_factor', None):
@@ -242,7 +190,7 @@ def _print_var_properties_side_by_side(v_a, v_b, nc_a, nc_b,
         sf_b = variable_b.scale_factor
     else:
         sf_b = ' '
-    _side_by_side("sf:", str(sf_a), str(sf_b), highlight_diff=True)
+    side_by_side("sf:", str(sf_a), str(sf_b), highlight_diff=True)
 
 def _var_properties(ds: netCDF4.Dataset, varname: str, groupname: str = None) -> tuple:
     """Get the properties of a variable.
@@ -280,19 +228,6 @@ def _var_properties(ds: netCDF4.Dataset, varname: str, groupname: str = None) ->
 
     return the_variable, v_dtype, v_shape, v_chunking
 
-def _side_by_side(str_a, str_b, str_c, dash_line=False, highlight_diff=False):
-    # If the 'b' and 'c' strings are different, then change the font of 'a' to the color red.
-    if highlight_diff and (str_b != str_c):
-        str_a = Fore.RED + str_a
-        print_func = print
-    else:
-        print_func = print_normal
-
-    if dash_line:
-        print_func(f" {str_a:>28} {str_b:->48} {str_c:->48}")
-    else:
-        print_func(f" {str_a:>28} {str_b:>48} {str_c:>48}")
-
 def _match_random_value(nc_var_a: netCDF4.Variable,
                         nc_var_b: netCDF4.Variable,
                         thresh: float = 1e-6
@@ -322,43 +257,6 @@ def _match_random_value(nc_var_a: netCDF4.Variable,
             return False
         else:
             return True
-
-def _count_diffs(a: list[Union[str, int]],
-                 b: list[Union[str, int]]
-                 ) -> tuple[int, int, int]:
-    """Count how many elements are either uniquely in one list or the other, or in both.
-
-    Note
-    ----
-    Duplicates are ignored, i.e. any elements present more than once in a list are treated as if they only occur once.
-
-    Returns
-    -------
-    int
-        Number of items only in the *left* ("a") list
-    int
-        Number of items only in the *right* ("b") list
-    int
-        Number of items only in both ("a" and "b") lists
-    """
-    def str_coercion(x: Union[str, int]):
-        if isinstance(x, str):
-            return x
-        elif isinstance(x, int):
-            return str(x)
-        else:
-            raise TypeError("Expected either str or int for diff counting.")
-
-    # Lists are converted to sets, with each element coerced to a string type.
-    sa = set(map(str_coercion, a))
-    sb = set(map(str_coercion, b))
-
-    # The number of differences are computed.
-    left = len(sa - sb)
-    right = len(sb - sa)
-    both = len(sa.intersection(sb))
-
-    return left, right, both
 
 def _print_sample_values(nc_filepath, groupname: str, varname: str) -> None:
     comparison_variable = xr.open_dataset(nc_filepath, backend_kwargs={"group": groupname})[varname]
