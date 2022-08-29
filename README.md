@@ -3,7 +3,13 @@ _____
 Compare the structure of two NetCDF files at the command line.
 `ncompare` generates a view of the matching and non-matching groups and variables between two NetCDF datasets.
 
+## Motivation
 
+The `cdo` (climate data operators) tool
+[does not support NetCDF4 groups](https://code.mpimet.mpg.de/boards/2/topics/12073).
+Moreover, `nco` operators' `ncdiff` function computes value differences, but
+--- as far as the developers of this tool are aware ---
+`nco` does not have a simple function to show structural differences between NetCDF4 datasets.
 
 ## Installation
 
