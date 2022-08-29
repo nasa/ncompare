@@ -1,8 +1,34 @@
+[tool.poetry]
+name = "ncompare"
+version = "0.1.0"
+description = "Compare the structure of two NetCDF files at the command line"
+authors = ["dkaufma3 <daniel.kaufman@nasa.gov>"]
+
+[tool.poetry.scripts]
+my-script = "ncompare.console:main"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+numpy = "^1.23.2"
+netCDF4 = "^1.6.0"
+xarray = "^2022.6.0"
+colorama = "^0.4.5"
+
+[tool.poetry.dev-dependencies]
+pytest = "^7.1.2"
+
 [build-system]
-requires = ["setuptools", "wheel"]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
 
 [tool.black]
 line-length = 100
 
 [tool.isort]
 profile = "black"
+line_length = 120
+multi_line_output = 3
+include_trailing_comma = "true"
+default_section = "THIRDPARTY"
+lines_after_imports = 2
+combine_as_imports = "true"

@@ -3,7 +3,4 @@ channels:
 - conda-forge
 - defaults
 dependencies:
-- numpy
-- netcdf4
-- xarray
-- colorama
+- python=3.10

@@ -7,24 +7,24 @@ Compare the structure of two NetCDF files at the command line.
 
 ## Installation
 
-🌍 Using [conda](https://docs.conda.io/projects/conda/en/latest/index.html#),
-create a runtime/development environment with the dependencies.
+🌍 Use [conda](https://docs.conda.io/projects/conda/en/latest/index.html#) to
+create a minimal Python environment:
 
 ```shell script
 conda env create --file=environment.yml
 conda activate ncompare
 ```
 
-💾 Install the package:
+🌍 Use [poetry](https://python-poetry.org) to
+install dependencies and the package:
+
 ```shell script
-pip install .
+poetry install
 ```
-
-
 
 ## Basic usage at a command line:
 ```
-ncompare <netcdf file #1> <netcdf file #2>
+poetry run ncompare <netcdf file #1> <netcdf file #2>
 ```
 
 Example:

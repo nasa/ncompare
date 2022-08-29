@@ -11,7 +11,6 @@ repos:
     rev: v4.3.0
     hooks:
       - id: trailing-whitespace
-        exclude: setup.cfg
       - id: end-of-file-fixer
         exclude: ".ipynb"
       - id: check-json
@@ -24,7 +23,7 @@ repos:
     rev: 4.0.1
     hooks:
       - id: flake8
-        exclude: setup.cfg, pyproject.toml, .git, __pycache__, old, build, dist
+        exclude: pyproject.toml, .git, __pycache__, old, build, dist
         additional_dependencies: [ 'flake8-docstrings' ]
         args:
           - "--docstring-convention=numpy"
@@ -34,7 +33,7 @@ repos:
     rev: 5.10.1
     hooks:
       - id: isort
-        args: [ '--settings-file=setup.cfg', "--add_imports='from __future__ import annotations'" ]
+        args: [ '--settings-file=pyproject.toml', "--add_imports='from __future__ import annotations'" ]
   - repo: https://github.com/kynan/nbstripout
     rev: 0.5.0
     hooks:
