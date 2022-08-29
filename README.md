@@ -11,20 +11,21 @@ Moreover, `nco` operators' `ncdiff` function computes value differences, but
 --- as far as the developers of this tool are aware ---
 `nco` does not have a simple function to show structural differences between NetCDF4 datasets.
 
-## Installation
+## Initial setup
 
-🌍 Use [conda](https://docs.conda.io/projects/conda/en/latest/index.html#) to
-create a minimal Python environment:
+🌍 Create a minimal Python environment, using [conda](https://docs.conda.io/projects/conda/en/latest/index.html#):
 
 ```shell script
 conda env create --file=environment.yml
 conda activate ncompare
 ```
 
-🌍 Use [poetry](https://python-poetry.org) to
-install dependencies and the package:
+💾 Install, using poetry:
 
-```shell script
+1. Follow the instructions for installing `poetry` [here](https://python-poetry.org/docs/).
+2. Install _ncompare_, with its dependencies, by running the following from the repository directory:
+
+```
 poetry install
 ```
 
