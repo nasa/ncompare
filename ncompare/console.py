@@ -3,7 +3,6 @@
 import argparse
 import sys
 import traceback
-from pathlib import Path
 
 from ncompare.core import compare
 
@@ -23,45 +22,10 @@ def _cli() -> argparse.Namespace:
 
     return parser.parse_args()
 
-class _Logger:
-
-    def __init__(self, filename):
-        """Send print statements, i.e., stdout, to a file.
-
-        Note
-        ----
-        This class is derived from https://stackoverflow.com/a/14906787.
-        """
-        self.terminal = sys.stdout
-        filepath = Path(filename)
-        if filepath.exists():
-            pass
-        # This will overwrite any existing file at this path, if one exists.
-        self.log = open(filepath, "w")
-
-    def write(self, message):
-        """Write message to output."""
-        self.terminal.write(message)
-        self.log.write(message)
-
-    def flush(self):
-        """Handle the flush command by doing nothing.
-
-        Note
-        ----
-        The flush method is needed for python 3 compatibility.
-        # you might want to specify some extra behavior here.
-        """
-        pass
-
 
 def main():
     """Run from command line."""
     args = _cli()
-
-    if args.report:
-        sys.stdout = _Logger(args.report)
-    args.__delattr__("report")
 
     try:
         compare(**vars(args))
