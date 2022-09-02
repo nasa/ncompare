@@ -35,8 +35,11 @@ def compare(nc_a: Union[str, Path],
     comparison_var_name : str, optional
         The name of a variable for which we want to compare values
     no_color : bool, default False
+        Turns off the use of ANSI escape character sequences for producing colored terminal text
     show_chunks : bool, default False
-    report
+        Whether to include data chunk sizes in the displayed comparison of variables
+    report : str
+        filepath destination to save captured text output
 
     Returns
     -------
