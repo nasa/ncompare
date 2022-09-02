@@ -173,9 +173,9 @@ class Outputter:
             extra_style_space = ""
 
         if dash_line:
-            self.print(f" {extra_style_space}{str_a:>28} {str_b:->48} {str_c:->48}", colors=colors)
+            self.print(f" {extra_style_space}{str_a:>33} {str_b:->48} {str_c:->48}", colors=colors)
         else:
-            self.print(f" {extra_style_space}{str_a:>28} {str_b:>48} {str_c:>48}", colors=colors)
+            self.print(f" {extra_style_space}{str_a:>33} {str_b:>48} {str_c:>48}", colors=colors)
 
         self._add_to_history(str_a, str_b, str_c)
 
