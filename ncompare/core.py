@@ -1,6 +1,8 @@
 """Compare the structure of two NetCDF files."""
 import random
 import traceback
+from collections import namedtuple
+from collections.abc import Iterable
 from pathlib import Path
 from typing import Union
 
@@ -14,12 +16,15 @@ from ncompare.sequence_operations import common_elements, count_diffs
 from ncompare.utils import make_valid_path
 
 
+VarProperties = namedtuple("VarProperties", "varname, variable, dtype, shape, chunking, attributes")
+
 def compare(nc_a: Union[str, Path],
             nc_b: Union[str, Path],
             comparison_var_group: str = None,
             comparison_var_name: str = None,
             no_color: bool = False,
             show_chunks: bool = False,
+            show_attributes: bool = False,
             report: str = None
             ) -> None:
     """Compare the variables contained within two different NetCDF datasets.
@@ -38,6 +43,8 @@ def compare(nc_a: Union[str, Path],
         Turns off the use of ANSI escape character sequences for producing colored terminal text
     show_chunks : bool, default False
         Whether to include data chunk sizes in the displayed comparison of variables
+    show_attributes : bool, default False
+        Whether to include variable attributes in the displayed comparison of variables
     report : str
         filepath destination to save captured text output
 
@@ -57,26 +64,29 @@ def compare(nc_a: Union[str, Path],
                                 nc_a, nc_b,
                                 comparison_var_group=comparison_var_group,
                                 comparison_var_name=comparison_var_name,
-                                show_chunks=show_chunks)
+                                show_chunks=show_chunks,
+                                show_attributes=show_attributes)
 
         out.print("\nDone.", colors=False)
 
 def run_through_comparisons(out: Outputter,
                             nc_a: Union[str, Path],
                             nc_b: Union[str, Path],
-                            comparison_var_group,
-                            comparison_var_name,
-                            show_chunks) -> None:
+                            comparison_var_group: str,
+                            comparison_var_name: str,
+                            show_chunks: bool,
+                            show_attributes: bool) -> None:
     """Execute a series of comparisons between two NetCDF files.
 
     Parameters
     ----------
+    out
     nc_a
     nc_b
     comparison_var_group
     comparison_var_name
     show_chunks
-    out
+    show_attributes
     """
     # Show the dimensions of each file and evaluate differences.
     out.print(Fore.LIGHTBLUE_EX + "\nRoot-level Dimensions:", add_to_history=True)
@@ -123,7 +133,8 @@ def run_through_comparisons(out: Outputter,
         out.print(Fore.LIGHTBLACK_EX + "\nNo variable group selected for comparison. Skipping..")
 
     out.print(Fore.LIGHTBLUE_EX + "\nAll variables:", add_to_history=True)
-    vars_left, vars_right, vars_both = compare_two_nc_files(out, nc_a, nc_b, show_chunks=show_chunks)
+    vars_left, vars_right, vars_both = compare_two_nc_files(out, nc_a, nc_b,
+                                                            show_chunks=show_chunks, show_attributes=show_attributes)
 
     # Write to CSV
     out.write_history_to_csv(filename='history_test-to-delete.csv')
@@ -160,6 +171,7 @@ def compare_multiple_random_values(out: Outputter,
 def compare_two_nc_files(out: Outputter,
                          nc_one: Path, nc_two: Path,
                          show_chunks: bool = False,
+                         show_attributes: bool = False
                          ) -> tuple[int, int, int]:
     """Go through all groups and all variables, and show them side by side - whether they align and where they don't."""
     out.side_by_side(' ', 'File A', 'File B')
@@ -174,7 +186,11 @@ def compare_two_nc_files(out: Outputter,
 
         # Go through root-level variables.
         for v_idx, v_a, v_b in common_elements(nc_a.variables, nc_b.variables):
-            _print_var_properties_side_by_side(out, v_a, v_b, nc_a, nc_b, show_chunks=show_chunks)
+            # Get the properties of each variable
+            var_a_props = _var_properties(nc_a, v_a)
+            var_b_props = _var_properties(nc_b, v_b)
+            _print_var_properties_side_by_side(out, var_a_props, var_b_props,
+                                               show_chunks=show_chunks, show_attributes=show_attributes)
 
         # Go through each group.
         for g_idx, g_a, g_b in common_elements(nc_a.groups, nc_b.groups):
@@ -198,7 +214,12 @@ def compare_two_nc_files(out: Outputter,
 
             # Go through each variable in the current group.
             for v_idx, v_a, v_b in common_elements(vars_a_sorted, vars_b_sorted):
-                _print_var_properties_side_by_side(out, v_a, v_b, nc_a, nc_b, g_a=g_a, g_b=g_b, show_chunks=show_chunks)
+                # Get the properties of each variable
+                var_a_props = _var_properties(nc_a, v_a, g_a)
+                var_b_props = _var_properties(nc_b, v_b, g_b)
+                # Print the properties
+                _print_var_properties_side_by_side(out, var_a_props, var_b_props,
+                                                   show_chunks=show_chunks, show_attributes=show_attributes)
 
     out.side_by_side('-', '-', '-', dash_line=True)
     out.side_by_side('Number of shared items:', str(vars_both), str(vars_both))
@@ -206,45 +227,58 @@ def compare_two_nc_files(out: Outputter,
     return vars_left, vars_right, vars_both
 
 def _print_var_properties_side_by_side(out,
-                                       v_a, v_b, nc_a, nc_b,
-                                       g_a=None,
-                                       g_b=None,
-                                       show_chunks=False):
+                                       v_a: VarProperties,
+                                       v_b: VarProperties,
+                                       show_chunks: bool = False,
+                                       show_attributes: bool = False):
     # Variable name
-    out.side_by_side("var:", v_a[:47], v_b[:47], highlight_diff=False)
-
-    # Get the properties of each variable
-    variable_a, v_a_dtype, v_a_shape, v_a_chunking = _var_properties(nc_a, v_a, g_a)
-    variable_b, v_b_dtype, v_b_shape, v_b_chunking = _var_properties(nc_b, v_b, g_b)
+    out.side_by_side("-----VARIABLE-----:", v_a.varname[:47], v_b.varname[:47], highlight_diff=False)
 
     # Data type
-    out.side_by_side("dtype:", v_a_dtype, v_b_dtype, highlight_diff=False)
+    out.side_by_side("dtype:", v_a.dtype, v_b.dtype, highlight_diff=True)
     # Shape
-    out.side_by_side("shape:", v_a_shape, v_b_shape, highlight_diff=False)
+    out.side_by_side("shape:", v_a.shape, v_b.shape, highlight_diff=True)
     # Chunking
     if show_chunks:
-        out.side_by_side("chunksize:", v_a_chunking, v_b_chunking, highlight_diff=False)
+        out.side_by_side("chunksize:", v_a.chunking, v_b.chunking, highlight_diff=True)
+    # Attributes
+    if show_attributes:
+        # Get name of attributes if they exist
+        attrs_a_names = []
+        if v_a.attributes:
+            attrs_a_names = v_a.attributes.keys()
+        attrs_b_names = []
+        if v_b.attributes:
+            attrs_b_names = v_b.attributes.keys()
+
+        # Iterate and print each attribute
+        for attr_idx, attr_a_key, attr_b_key in common_elements(attrs_a_names, attrs_b_names):
+            attr_a = _get_attribute_value_as_str(v_a, attr_a_key)
+            attr_b = _get_attribute_value_as_str(v_b, attr_b_key)
+            out.side_by_side(f"{attr_a_key}:", attr_a, attr_b, highlight_diff=True)
 
     # Scale Factor
-    if getattr(variable_a, 'scale_factor', None):
-        sf_a = variable_a.scale_factor
+    if getattr(v_a.variable, 'scale_factor', None):
+        sf_a = v_a.variable.scale_factor
     else:
         sf_a = ' '
-    if getattr(variable_b, 'scale_factor', None):
-        sf_b = variable_b.scale_factor
+    if getattr(v_b.variable, 'scale_factor', None):
+        sf_b = v_b.variable.scale_factor
     else:
         sf_b = ' '
     if (sf_a != " ") or (sf_b != " "):
         out.side_by_side("sf:", str(sf_a), str(sf_b), highlight_diff=True)
 
-def _var_properties(ds: netCDF4.Dataset, varname: str, groupname: str = None) -> tuple:
+def _var_properties(ds: netCDF4.Dataset,
+                    varname: str,
+                    groupname: str = None) -> VarProperties:
     """Get the properties of a variable.
 
     Parameters
     ----------
-    ds
-    varname
-    groupname : optional
+    ds : `netCDF4.Dataset`
+    varname : str
+    groupname : str, optional
         if None, the variable is retrieved from the 'root' group of the NetCDF
 
     Returns
@@ -256,6 +290,8 @@ def _var_properties(ds: netCDF4.Dataset, varname: str, groupname: str = None) ->
         shape of variable
     tuple
         chunking
+    dict
+        any other attributes for this variable
     """
     if varname:
         if groupname:
@@ -265,13 +301,16 @@ def _var_properties(ds: netCDF4.Dataset, varname: str, groupname: str = None) ->
         v_dtype = str(the_variable.dtype)
         v_shape = str(the_variable.shape).strip()
         v_chunking = str(the_variable.chunking()).strip()
+        v_attributes = {name: getattr(the_variable, name)
+                        for name in the_variable.ncattrs()}
     else:
         the_variable = None
         v_dtype = ""
         v_shape = ""
         v_chunking = ""
+        v_attributes = None
 
-    return the_variable, v_dtype, v_shape, v_chunking
+    return VarProperties(varname, the_variable, v_dtype, v_shape, v_chunking, v_attributes)
 
 def _match_random_value(out: Outputter,
                         nc_var_a: netCDF4.Variable,
@@ -307,6 +346,21 @@ def _match_random_value(out: Outputter,
 def _print_sample_values(out: Outputter, nc_filepath, groupname: str, varname: str) -> None:
     comparison_variable = xr.open_dataset(nc_filepath, backend_kwargs={"group": groupname})[varname]
     out.print(comparison_variable.values[0, :], colors=False)
+
+def _get_attribute_value_as_str(varprops: VarProperties,
+                                attribute_key: str) -> str:
+    if attribute_key and (attribute_key in varprops.attributes):
+        attr = varprops.attributes[attribute_key]
+        if isinstance(attr, Iterable) and not isinstance(attr, (str, float)):
+            # TODO: by truncating a list (or other iterable) here,
+            #  we are preventing any subsequent difference checker from detecting
+            #  differences past the 5th element in the iterable.
+            #  So, we need to figure out a way to still check for other differences past the 5th element.
+            return "[" + ", ".join([str(x) for x in attr[:5]]) + ", ..." + "]"
+        else:
+            return str(attr)
+    else:
+        return ""
 
 def _get_vars(nc_filepath: Path,
               groupname: str,
