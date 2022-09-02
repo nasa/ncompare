@@ -17,6 +17,8 @@ def _cli() -> argparse.Namespace:
     parser.add_argument("-g", "--comparison_var_group", help="Comparison variable group")
     parser.add_argument("--no-color", action="store_true", default=False,
                         help="Turn off all colorized output")
+    parser.add_argument("--show-attributes", action="store_true", default=False,
+                        help="Include variable attributes in comparison")
     parser.add_argument("--show-chunks", action="store_true", default=False,
                         help="Include chunk sizes in the table that compares variables")
 
