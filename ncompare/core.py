@@ -180,6 +180,7 @@ def compare_two_nc_files(out: Outputter,
         out.side_by_side('All Variables', ' ', ' ', dash_line=False)
         out.side_by_side('-', '-', '-', dash_line=True)
         out.side_by_side('num variables in root group:', len(nc_a.variables), len(nc_b.variables))
+        out.side_by_side('-', '-', '-', dash_line=True)
 
         # Count differences between the lists of variables in the root group.
         vars_left, vars_right, vars_both = count_diffs(nc_a.variables, nc_b.variables)
@@ -195,7 +196,7 @@ def compare_two_nc_files(out: Outputter,
         # Go through each group.
         for g_idx, g_a, g_b in common_elements(nc_a.groups, nc_b.groups):
             out.side_by_side(" ", " ", " ", dash_line=False, highlight_diff=False)
-            out.side_by_side(f"group #{g_idx:02}", g_a.strip(), g_b.strip(), dash_line=True, highlight_diff=False)
+            out.side_by_side(f"GROUP #{g_idx:02}", g_a.strip(), g_b.strip(), dash_line=True, highlight_diff=False)
 
             # Count the number of variables in this group as long as this group exists.
             vars_a_sorted = ""
@@ -205,6 +206,7 @@ def compare_two_nc_files(out: Outputter,
             if g_b:
                 vars_b_sorted = sorted(nc_b.groups[g_b].variables)
             out.side_by_side('num variables in group:', len(vars_a_sorted), len(vars_b_sorted))
+            out.side_by_side('-', '-', '-', dash_line=True)
 
             # Count differences between the lists of variables in this group.
             left, right, both = count_diffs(vars_a_sorted, vars_b_sorted)
@@ -222,8 +224,8 @@ def compare_two_nc_files(out: Outputter,
                                                    show_chunks=show_chunks, show_attributes=show_attributes)
 
     out.side_by_side('-', '-', '-', dash_line=True)
-    out.side_by_side('Number of shared items:', str(vars_both), str(vars_both))
-    out.side_by_side('Number of non-shared items:', str(vars_left), str(vars_right))
+    out.side_by_side('Total number of shared items:', str(vars_both), str(vars_both))
+    out.side_by_side('Total number of non-shared items:', str(vars_left), str(vars_right))
     return vars_left, vars_right, vars_both
 
 def _print_var_properties_side_by_side(out,
