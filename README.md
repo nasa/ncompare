@@ -45,6 +45,7 @@ Example:
 - `-v` (`--comparison_var_name`) : Compare specific values for this variable.
 - `-g` (`--comparison_var_group`) : Group that contains the `comparison_var_name`.
 - `--no-color` : Turn off all colorized output.
+- `--show-attributes` : Include variable attributes in the table that compares variables.
 - `--show-chunks` : Include chunk sizes in the table that compares variables.
 
 ## Known limitations
