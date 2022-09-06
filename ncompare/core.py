@@ -58,8 +58,10 @@ def compare(nc_a: Union[str, Path],
     # Check the validity of paths.
     nc_a = ensure_valid_path_exists(nc_a)
     nc_b = ensure_valid_path_exists(nc_b)
-    file_text = ensure_valid_path_with_suffix(file_text, ".txt")
-    file_csv = ensure_valid_path_with_suffix(file_csv, ".csv")
+    if file_text:
+        file_text = ensure_valid_path_with_suffix(file_text, ".txt")
+    if file_csv:
+        file_csv = ensure_valid_path_with_suffix(file_csv, ".csv")
 
     # The Outputter object is initialized to handle stdout and optional writing to a text file.
     with Outputter(keep_print_history=True, no_color=no_color, text_file=file_text) as out:
@@ -75,7 +77,8 @@ def compare(nc_a: Union[str, Path],
                                 show_attributes=show_attributes)
 
         # Write to CSV.
-        out.write_history_to_csv(filename=file_csv)
+        if file_csv:
+            out.write_history_to_csv(filename=file_csv)
 
         out.print("\nDone.", colors=False)
 
