@@ -9,7 +9,7 @@ classifiers = [
 ]
 
 [tool.poetry.scripts]
-my-script = "ncompare.console:main"
+ncompare = "ncompare.console:main"
 
 [tool.poetry.dependencies]
 python = "^3.9"
