@@ -3,6 +3,10 @@ name = "ncompare"
 version = "0.2.0"
 description = "Compare the structure of two NetCDF files at the command line"
 authors = ["<daniel.kaufman@nasa.gov>"]
+readme = "README.md"
+classifiers = [
+    "Topic :: Software Development :: Libraries :: Python Modules"
+]
 
 [tool.poetry.scripts]
 my-script = "ncompare.console:main"
