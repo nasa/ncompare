@@ -53,8 +53,7 @@ def compare(nc_a: Union[str, Path],
 
     Returns
     -------
-    int
-        Exit code: 0 for a no-issue exit, anything greater than 0 for a problematic exit.
+    None
     """
     # Check the validity of paths.
     nc_a = ensure_valid_path_exists(nc_a)
@@ -62,10 +61,12 @@ def compare(nc_a: Union[str, Path],
     file_text = ensure_valid_path_with_suffix(file_text, ".txt")
     file_csv = ensure_valid_path_with_suffix(file_csv, ".csv")
 
+    # The Outputter object is initialized to handle stdout and optional writing to a text file.
     with Outputter(keep_print_history=True, no_color=no_color, text_file=file_text) as out:
         out.print(f"File A: {nc_a}")
         out.print(f"File B: {nc_b}")
 
+        # Start the comparison process.
         run_through_comparisons(out,
                                 nc_a, nc_b,
                                 comparison_var_group=comparison_var_group,
@@ -73,7 +74,7 @@ def compare(nc_a: Union[str, Path],
                                 show_chunks=show_chunks,
                                 show_attributes=show_attributes)
 
-        # Write to CSV
+        # Write to CSV.
         out.write_history_to_csv(filename=file_csv)
 
         out.print("\nDone.", colors=False)
