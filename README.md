@@ -13,30 +13,24 @@ Moreover, `nco` operators' `ncdiff` function computes value differences, but
 
 ## Initial setup
 
-##### 1. 🌍 Create a minimal Python environment, using [conda](https://docs.conda.io/projects/conda/en/latest/index.html#):
+#### 1. 🌍 Create a minimal Python environment, using [conda](https://docs.conda.io/projects/conda/en/latest/index.html#):
 
 ```shell script
 conda env create --file=environment.yml
 conda activate ncompare
 ```
 
-##### 2a. 💾 Option A) Install, using poetry:
+#### 2. 💾 Install _ncompare_, with its dependencies
+
+###### Option A) Install using poetry:
 
 i) Follow the instructions for installing `poetry` [here](https://python-poetry.org/docs/).
 
-ii) Install _ncompare_, with its dependencies, by running the following from the repository directory:
+ii) Run ```poetry install``` from the repository directory.
 
-```
-poetry install
-```
+###### Option B) Install using pip:
 
-##### 2b. 💾 Option B) Install, using pip:
-
-i) Install _ncompare_, with its dependencies, by running the following from the repository directory:
-
-```
-pip install .
-```
+i) Run ```pip install .``` from the repository directory.
 
 ## Basic usage at a command line:
 
