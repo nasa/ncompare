@@ -13,7 +13,7 @@ from colorama import Fore, Style
 
 from ncompare.printing import Outputter
 from ncompare.sequence_operations import common_elements, count_diffs
-from ncompare.utils import make_valid_path
+from ncompare.utils import ensure_valid_path_exists
 
 
 VarProperties = namedtuple("VarProperties", "varname, variable, dtype, shape, chunking, attributes")
@@ -53,8 +53,8 @@ def compare(nc_a: Union[str, Path],
     int
         Exit code: 0 for a no-issue exit, anything greater than 0 for a problematic exit.
     """
-    nc_a = make_valid_path(nc_a)
-    nc_b = make_valid_path(nc_b)
+    nc_a = ensure_valid_path_exists(nc_a)
+    nc_b = ensure_valid_path_exists(nc_b)
 
     with Outputter(keep_print_history=True, no_color=no_color, text_file=report) as out:
         out.print(f"File A: {nc_a}")

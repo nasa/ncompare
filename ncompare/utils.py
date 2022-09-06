@@ -3,7 +3,7 @@ from pathlib import Path
 from typing import Union
 
 
-def make_valid_path(should_be_path: Union[str, Path]) -> Path:
+def ensure_valid_path_exists(should_be_path: Union[str, Path]) -> Path:
     """Convert input to a pathlib.Path and check that the resulting filepath exists."""
     fails_to_exist_msg = "Expected file does not exist: "
     wrong_type_msg = "Unexpected type for something that should be convertable to a Path: "
