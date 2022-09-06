@@ -1,8 +1,14 @@
-from ncompare.printing import lists_diff
+import pytest
+
+from ncompare.printing import Outputter
 
 
-def test_list_of_strings_diff():
-    left, right, both = lists_diff(['hey', 'yo', 'beebop'],
-                                   ['what', 'is', 'this', 'beebop'])
+@pytest.fixture
+def outputter_obj():
+    return Outputter()
+
+def test_list_of_strings_diff(outputter_obj):
+    left, right, both = outputter_obj.lists_diff(['hey', 'yo', 'beebop'],
+                                                 ['what', 'is', 'this', 'beebop'])
 
     assert (left, right, both) == (2, 3, 1)
