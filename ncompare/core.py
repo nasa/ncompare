@@ -25,7 +25,8 @@ def compare(nc_a: Union[str, Path],
             no_color: bool = False,
             show_chunks: bool = False,
             show_attributes: bool = False,
-            report: str = None
+            file_text: str = None,
+            file_csv: str = None
             ) -> None:
     """Compare the variables contained within two different NetCDF datasets.
 
@@ -45,8 +46,10 @@ def compare(nc_a: Union[str, Path],
         Whether to include data chunk sizes in the displayed comparison of variables
     show_attributes : bool, default False
         Whether to include variable attributes in the displayed comparison of variables
-    report : str
-        filepath destination to save captured text output
+    file_text : str
+        filepath destination to save captured text output as a TXT file.
+    file_csv : str
+        filepath destination to save comparison output as comma separated values (CSV).
 
     Returns
     -------
@@ -56,7 +59,7 @@ def compare(nc_a: Union[str, Path],
     nc_a = ensure_valid_path_exists(nc_a)
     nc_b = ensure_valid_path_exists(nc_b)
 
-    with Outputter(keep_print_history=True, no_color=no_color, text_file=report) as out:
+    with Outputter(keep_print_history=True, no_color=no_color, text_file=file_text) as out:
         out.print(f"File A: {nc_a}")
         out.print(f"File B: {nc_b}")
 
@@ -66,6 +69,9 @@ def compare(nc_a: Union[str, Path],
                                 comparison_var_name=comparison_var_name,
                                 show_chunks=show_chunks,
                                 show_attributes=show_attributes)
+
+        # Write to CSV
+        out.write_history_to_csv(filename=file_csv)
 
         out.print("\nDone.", colors=False)
 
@@ -135,10 +141,6 @@ def run_through_comparisons(out: Outputter,
     out.print(Fore.LIGHTBLUE_EX + "\nAll variables:", add_to_history=True)
     vars_left, vars_right, vars_both = compare_two_nc_files(out, nc_a, nc_b,
                                                             show_chunks=show_chunks, show_attributes=show_attributes)
-
-    # Write to CSV
-    out.write_history_to_csv(filename='history_test-to-delete.csv')
-
 
 def compare_multiple_random_values(out: Outputter,
                                    nc_a: Path,
