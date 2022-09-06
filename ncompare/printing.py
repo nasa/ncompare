@@ -132,7 +132,8 @@ class Outputter:
         else:
             raise TypeError("Invalid type <%s>. Expected a `str` or `list`.", type(args))
 
-        self._line_history.append(parsed_strings)
+        if self._line_history:
+            self._line_history.append(parsed_strings)
 
     def write_history_to_csv(self, filename: Union[str, Path] = "test.csv"):
         """Save the line history that's been stored to a CSV file."""
