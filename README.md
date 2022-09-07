@@ -51,14 +51,14 @@ Example:
 
 ## Options
 
-- `--file-text` : Text file to write output to.
-- `--file-csv` : Comma separated values (CSV) file to write output to.
-- `--file-xlsx` : Excel file to write output to.
+- `--file-text` [FILE_PATH]: Text file to write output to.
+- `--file-csv` [FILE_PATH]: Comma separated values (CSV) file to write output to.
+- `--file-xlsx` [FILE_PATH]: Excel file to write output to.
 - `--no-color` : Turn off all colorized output.
 - `--show-attributes` : Include variable attributes in the table that compares variables.
 - `--show-chunks` : Include chunk sizes in the table that compares variables.
-- `-v` (`--comparison_var_name`) : Compare specific values for this variable.
-- `-g` (`--comparison_var_group`) : Group that contains the `comparison_var_name`.
+- `-v` (`--comparison_var_name`) [VAR_NAME]: Compare specific values for this variable.
+- `-g` (`--comparison_var_group`) [VAR_GROUP]: Group that contains the `comparison_var_name`.
 
 ## Known limitations
 This currently works with NetCDF hierarchies containing no more than one level of groups.
