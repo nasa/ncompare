@@ -220,7 +220,7 @@ def compare_two_nc_files(out: Outputter,
                 vars_a_sorted = sorted(nc_a.groups[g_a].variables)
             if g_b:
                 vars_b_sorted = sorted(nc_b.groups[g_b].variables)
-            out.side_by_side('num variables in group:', len(vars_a_sorted), len(vars_b_sorted))
+            out.side_by_side('num variables in group:', len(vars_a_sorted), len(vars_b_sorted), highlight_diff=True)
             out.side_by_side('-', '-', '-', dash_line=True)
 
             # Count differences between the lists of variables in this group.
