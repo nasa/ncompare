@@ -16,6 +16,7 @@ def _cli() -> argparse.Namespace:
     parser.add_argument("-g", "--comparison_var_group", help="Comparison variable group")
     parser.add_argument("--file-text", help="A text file to which the output will be written.")
     parser.add_argument("--file-csv", help="A csv (comma separated values) file to which the output will be written.")
+    parser.add_argument("--file-xlsx", help="An Excel file to which the output will be written.")
     parser.add_argument("--no-color", action="store_true", default=False,
                         help="Turn off all colorized output")
     parser.add_argument("--show-attributes", action="store_true", default=False,
