@@ -58,7 +58,7 @@ def count_diffs(a: list[Union[str, int]],
     int
         Number of items only in the *right* ("b") list
     int
-        Number of items only in both ("a" and "b") lists
+        Number of items in both ("a" and "b") lists
     """
     # Lists are converted to sets, where each element is treated as a str.
     sa = set(map(coerce_to_str, a))
