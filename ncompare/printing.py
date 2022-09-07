@@ -6,7 +6,10 @@ from pathlib import Path
 from typing import Union
 
 import colorama
+import openpyxl
 from colorama import Fore, Style
+from openpyxl.cell import Cell
+from openpyxl.styles import Font
 
 from ncompare.sequence_operations import common_elements, count_diffs
 
@@ -27,6 +30,8 @@ ansi_escape = re.compile(r'''
 
 class Outputter:
     """Handler for print statements and saving to text and/or csv files."""
+
+    _difference_marker = "***"
 
     def __init__(self,
                  keep_print_history: bool = False,
@@ -153,24 +158,20 @@ class Outputter:
         highlight_diff : bool, default False
         """
         # If the 'b' and 'c' strings are different, then change the font of 'a' to the color red.
-        unequal_a_and_b = (str_b != str_c)
-        if highlight_diff and unequal_a_and_b:
+        if highlight_diff and (str_b != str_c):
             str_a = Fore.RED + str_a
             colors = False
             extra_style_space = " " * len(Fore.RED)
+            str_marker = self._difference_marker
         else:
             colors = True
             extra_style_space = ""
+            str_marker = ""
 
         if dash_line:
             self.print(f" {extra_style_space}{str_a:>33} {str_b:->48} {str_c:->48}", colors=colors)
         else:
             self.print(f" {extra_style_space}{str_a:>33} {str_b:>48} {str_c:>48}", colors=colors)
-
-        if unequal_a_and_b:
-            str_marker = "***"
-        else:
-            str_marker = ""
 
         self._add_to_history(str_a, str_b, str_c, str_marker)
 
@@ -237,8 +238,45 @@ class Outputter:
             writer.writerow(headers)
             writer.writerows(self._line_history)
 
+    def write_history_to_excel(self, filename: Union[str, Path] = "test.xlsx"):
+        """Save the line history that's been stored to a CSV file."""
+        workbook = openpyxl.Workbook()
+        sheet = workbook.active
+
+        # Add a header row
+        sheet.append(['Info', 'File A', 'File B'])
+
+        # Add rows and apply styles
+        for row in self._line_history:
+            if (len(row) > 3) and (row[3] == self._difference_marker):
+                # Remove the difference marker; it's not needed for Excel since we're applying styles to the row.
+                del row[3]
+                # This is the case when there is a difference that we want to highlight
+                sheet.append(_red_cells(row, sheet))
+            elif (len(row) == 1) or ((len(row) == 3) and ((row[1] == '') and (row[2] == ''))):
+                sheet.append(_bold_underline_cells(row, sheet))
+            else:
+                sheet.append(row)
+
+        # Wrap up
+        workbook.save(filename)
+
 def _singular_or_plural(x):
     if x == 1:
         return f"{x} item is"
     else:
         return f"{x} items are"
+
+def _red_cells(data, ws):
+    """Stylize cells in Excel with a red font."""
+    for c in data:
+        c = Cell(ws, column="A", row=1, value=c)
+        c.font = Font(bold=True, color="FFFF0000")
+        yield c
+
+def _bold_underline_cells(data, ws):
+    """Stylize cells in Excel with a bold and underlined font."""
+    for c in data:
+        c = Cell(ws, column="A", row=1, value=c)
+        c.font = Font(bold=True, underline='single')
+        yield c

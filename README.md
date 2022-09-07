@@ -53,6 +53,7 @@ Example:
 
 - `--file-text` : Text file to write output to.
 - `--file-csv` : Comma separated values (CSV) file to write output to.
+- `--file-xlsx` : Excel file to write output to.
 - `--no-color` : Turn off all colorized output.
 - `--show-attributes` : Include variable attributes in the table that compares variables.
 - `--show-chunks` : Include chunk sizes in the table that compares variables.

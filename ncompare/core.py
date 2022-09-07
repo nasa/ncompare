@@ -26,7 +26,8 @@ def compare(nc_a: Union[str, Path],
             show_chunks: bool = False,
             show_attributes: bool = False,
             file_text: str = None,
-            file_csv: str = None
+            file_csv: str = None,
+            file_xlsx: str = None
             ) -> None:
     """Compare the variables contained within two different NetCDF datasets.
 
@@ -50,6 +51,8 @@ def compare(nc_a: Union[str, Path],
         filepath destination to save captured text output as a TXT file.
     file_csv : str
         filepath destination to save comparison output as comma separated values (CSV).
+    file_xlsx : str
+        filepath destination to save comparison output as an Excel workbook.
 
     Returns
     -------
@@ -62,6 +65,8 @@ def compare(nc_a: Union[str, Path],
         file_text = ensure_valid_path_with_suffix(file_text, ".txt")
     if file_csv:
         file_csv = ensure_valid_path_with_suffix(file_csv, ".csv")
+    if file_xlsx:
+        file_xlsx = ensure_valid_path_with_suffix(file_xlsx, ".xlsx")
 
     # The Outputter object is initialized to handle stdout and optional writing to a text file.
     with Outputter(keep_print_history=True, no_color=no_color, text_file=file_text) as out:
@@ -79,6 +84,7 @@ def compare(nc_a: Union[str, Path],
         # Write to CSV.
         if file_csv:
             out.write_history_to_csv(filename=file_csv)
+            out.write_history_to_excel(filename=file_xlsx)
 
         out.print("\nDone.", colors=False)
 
