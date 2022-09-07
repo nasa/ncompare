@@ -135,14 +135,6 @@ class Outputter:
         if self._line_history:
             self._line_history.append(parsed_strings)
 
-    def write_history_to_csv(self, filename: Union[str, Path] = "test.csv"):
-        """Save the line history that's been stored to a CSV file."""
-        headers = ['Info', 'File A', 'File B']
-        with open(filename, 'w') as target:
-            writer = csv.writer(target)
-            writer.writerow(headers)
-            writer.writerows(self._line_history)
-
     @staticmethod
     def _make_normal(string):
         """Return text with normal color and style."""
@@ -164,11 +156,7 @@ class Outputter:
         if highlight_diff and (str_b != str_c):
             str_a = Fore.RED + str_a
             colors = False
-
             extra_style_space = " " * len(Fore.RED)
-            # print(f" {str_a:>28}")
-            # print(f" {extra_style_space}{str_a:>28}")
-            # print("done testing.")
         else:
             colors = True
             extra_style_space = ""
@@ -234,6 +222,14 @@ class Outputter:
             self.side_by_side('Number of non-shared items:', str(left), str(right))
 
             return left, right, both
+
+    def write_history_to_csv(self, filename: Union[str, Path] = "test.csv"):
+        """Save the line history that's been stored to a CSV file."""
+        headers = ['Info', 'File A', 'File B']
+        with open(filename, 'w') as target:
+            writer = csv.writer(target)
+            writer.writerow(headers)
+            writer.writerows(self._line_history)
 
 def _singular_or_plural(x):
     if x == 1:
