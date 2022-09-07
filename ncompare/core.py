@@ -72,6 +72,7 @@ def compare(nc_a: Union[str, Path],
     with Outputter(keep_print_history=True, no_color=no_color, text_file=file_text) as out:
         out.print(f"File A: {nc_a}")
         out.print(f"File B: {nc_b}")
+        out.side_by_side(' ', str(nc_a), str(nc_b))
 
         # Start the comparison process.
         run_through_comparisons(out,
