@@ -273,7 +273,8 @@ def _print_var_properties_side_by_side(out,
         for attr_idx, attr_a_key, attr_b_key in common_elements(attrs_a_names, attrs_b_names):
             attr_a = _get_attribute_value_as_str(v_a, attr_a_key)
             attr_b = _get_attribute_value_as_str(v_b, attr_b_key)
-            out.side_by_side(f"{attr_a_key}:", attr_a, attr_b, highlight_diff=True)
+            # Check whether attr_a_key is empty, because it might be if the variable doesn't exist in File A.
+            out.side_by_side(f"{attr_a_key if attr_a_key else attr_b_key}:", attr_a, attr_b, highlight_diff=True)
 
     # Scale Factor
     if getattr(v_a.variable, 'scale_factor', None):
