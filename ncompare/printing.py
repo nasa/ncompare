@@ -132,7 +132,7 @@ class Outputter:
         else:
             raise TypeError("Invalid type <%s>. Expected a `str` or `list`.", type(args))
 
-        if self._line_history:
+        if self._line_history is not None:
             self._line_history.append(parsed_strings)
 
     @staticmethod
