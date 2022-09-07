@@ -142,7 +142,7 @@ class Outputter:
 
     def side_by_side(self, str_a, str_b, str_c,
                      dash_line=False, highlight_diff=False) -> None:
-        """Print three strings on one line, with customized formatting.
+        """Print three strings on one line, with customized formatting and an optional marker in the fourth column.
 
         Parameters
         ----------
@@ -153,7 +153,8 @@ class Outputter:
         highlight_diff : bool, default False
         """
         # If the 'b' and 'c' strings are different, then change the font of 'a' to the color red.
-        if highlight_diff and (str_b != str_c):
+        unequal_a_and_b = (str_b != str_c)
+        if highlight_diff and unequal_a_and_b:
             str_a = Fore.RED + str_a
             colors = False
             extra_style_space = " " * len(Fore.RED)
@@ -166,7 +167,12 @@ class Outputter:
         else:
             self.print(f" {extra_style_space}{str_a:>33} {str_b:>48} {str_c:>48}", colors=colors)
 
-        self._add_to_history(str_a, str_b, str_c)
+        if unequal_a_and_b:
+            str_marker = "***"
+        else:
+            str_marker = ""
+
+        self._add_to_history(str_a, str_b, str_c, str_marker)
 
     def side_by_side_list_diff(self, list_a: list, list_b: list, counter_prefix="") -> None:
         """Print the items from two lists vertically (i.e., side by side), with customized formatting.
@@ -225,7 +231,7 @@ class Outputter:
 
     def write_history_to_csv(self, filename: Union[str, Path] = "test.csv"):
         """Save the line history that's been stored to a CSV file."""
-        headers = ['Info', 'File A', 'File B']
+        headers = ['Info', 'File A', 'File B', 'Other marks']
         with open(filename, 'w') as target:
             writer = csv.writer(target)
             writer.writerow(headers)
