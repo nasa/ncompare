@@ -82,9 +82,10 @@ def compare(nc_a: Union[str, Path],
                                 show_chunks=show_chunks,
                                 show_attributes=show_attributes)
 
-        # Write to CSV.
+        # Write to CSV and Excel files.
         if file_csv:
             out.write_history_to_csv(filename=file_csv)
+        if file_xlsx:
             out.write_history_to_excel(filename=file_xlsx)
 
         out.print("\nDone.", colors=False)
