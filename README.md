@@ -61,4 +61,7 @@ Example:
 - `-g` (`--comparison_var_group`) [VAR_GROUP]: Group that contains the `comparison_var_name`.
 
 ## Known limitations
-This currently works with NetCDF hierarchies containing no more than one level of groups.
+- This currently works with netCDF hierarchies containing no more than one level of groups.
+- This uses `xarray` to access the root-level dimensions.
+In some cases, `xarray` will miss dimensions whose names do not also exist as variable names in the dataset
+  (also known as non-coordinate dimensions).
