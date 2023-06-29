@@ -402,7 +402,17 @@ def _get_groups(nc_filepath: Path,
 
 def _get_dims(nc_filepath: Path,
               ) -> list:
-    with xr.open_dataset(nc_filepath) as ds:
-        dims_list = list(ds.dims.items())
+
+    def __get_dim_list(decode_times=True):
+        with xr.open_dataset(nc_filepath, decode_times=decode_times) as ds:
+            return list(ds.dims.items())
+
+    try:
+        dims_list = __get_dim_list()
+    except ValueError as err:
+        if "decode_times" in str(err):  # then try again without decoding the times
+            dims_list = __get_dim_list(decode_times=False)
+        else:
+            raise err from None  # "from None" prevents additional trace (see https://stackoverflow.com/a/18188660)
 
     return dims_list
