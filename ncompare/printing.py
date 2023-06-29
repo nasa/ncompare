@@ -249,12 +249,13 @@ class Outputter:
         # Add rows and apply styles
         for row in self._line_history:
             if (len(row) > 3) and (row[3] == self._difference_marker):
-                # Remove the difference marker; it's not needed for Excel since we're applying styles to the row.
+                # The case where there is a difference that we want to highlight
+                #   First, remove difference marker that is redundant with styles applied to the row (unlike in the CSV)
                 del row[3]
-                # This is the case when there is a difference that we want to highlight
-                sheet.append(_red_cells(row, sheet))
+                sheet.append(_excel_red_cells(row, sheet))
             elif (len(row) == 1) or ((len(row) == 3) and ((row[1] == '') and (row[2] == ''))):
-                sheet.append(_bold_underline_cells(row, sheet))
+                # The case where there is a subheader and no information in the second and third columns.
+                sheet.append(_excel_bold_underline_cells(row, sheet))
             else:
                 sheet.append(row)
 
@@ -267,14 +268,14 @@ def _singular_or_plural(x):
     else:
         return f"{x} items are"
 
-def _red_cells(data, ws):
+def _excel_red_cells(data, ws):
     """Stylize cells in Excel with a red font."""
     for c in data:
         c = Cell(ws, column="A", row=1, value=c)
         c.font = Font(bold=True, color="FFFF0000")
         yield c
 
-def _bold_underline_cells(data, ws):
+def _excel_bold_underline_cells(data, ws):
     """Stylize cells in Excel with a bold and underlined font."""
     for c in data:
         c = Cell(ws, column="A", row=1, value=c)
