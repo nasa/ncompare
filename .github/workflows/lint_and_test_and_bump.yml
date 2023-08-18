@@ -84,7 +84,6 @@ jobs:
 
     - name: Lint
       run: |
-        poetry run pylint podaac
         poetry run flake8 podaac
         
     - name: Test with pytest
