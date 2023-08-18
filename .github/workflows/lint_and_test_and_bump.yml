@@ -88,6 +88,7 @@ jobs:
         
     - name: Test with pytest
       run: |
+        poetry run pylint
         poetry run pytest
         
     - name: Commit Version Bump
