@@ -84,11 +84,11 @@ jobs:
 
     - name: Lint
       run: |
-        poetry run flake8 podaac
+        poetry run pylint ncompare
+        poetry run flake8 ncompare
         
     - name: Test with pytest
       run: |
-        poetry run pylint
         poetry run pytest
         
     - name: Commit Version Bump
