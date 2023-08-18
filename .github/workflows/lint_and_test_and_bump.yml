@@ -31,7 +31,7 @@ jobs:
     - name: Get version
       id: get-version
       run: |
-        echo "::set-output name=current_version::$(poetry version | awk '{print $2}')"
+        echo "current_version=$(poetry version | awk '{print $2}')" >> $GITHUB_OUTPUT
         echo "pyproject_name=$(poetry version | awk '{print $1}')" >> $GITHUB_ENV
         
     - name: Bump pre-alpha version
