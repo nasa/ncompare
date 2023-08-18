@@ -21,13 +21,12 @@ openpyxl = "^3.0.10"
 
 [tool.poetry.dev-dependencies]
 pytest = "^7.1.2"
+flake8 = "^3.7"
+pylint = "^2.4"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
-
-[tool.black]
-line-length = 100
 
 [tool.isort]
 profile = "black"
