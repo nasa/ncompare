@@ -25,22 +25,29 @@ def common_elements(sequence_a: Iterable,
     """
     a_sorted = sorted(map(coerce_to_str, sequence_a))
     b_sorted = sorted(map(coerce_to_str, sequence_b))
-    all_items = sorted(set(a_sorted).union(set(b_sorted)))
 
-    for i, item in enumerate(all_items):
-        item_a = item
-        item_b = item
-        if (item not in a_sorted) and (item not in b_sorted):
-            raise ValueError(
-                "Unexpected condition where an item was not found "
-                "but all items should exist in at least one list.")
+    iter_a = iter(a_sorted)
+    iter_b = iter(b_sorted)
 
-        if item not in a_sorted:
-            item_a = ''
-        elif item not in b_sorted:
-            item_b = ''
+    item_a = next(iter_a, None)
+    item_b = next(iter_b, None)
 
-        yield i, item_a, item_b
+    index = 0
+
+    while item_a is not None or item_b is not None:
+        if item_a == item_b:
+            yield index, item_a, item_b
+            item_a = next(iter_a, None)
+            item_b = next(iter_b, None)
+        elif item_a is None or (item_b is not None and item_a > item_b):
+            yield index, '', item_b
+            item_b = next(iter_b, None)
+        else:
+            yield index, item_a, ''
+            item_a = next(iter_a, None)
+
+        index += 1
+
 
 
 def count_diffs(list_a: list[Union[str, int]],
