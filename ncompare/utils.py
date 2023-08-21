@@ -16,14 +16,12 @@ def ensure_valid_path_exists(should_be_path: Union[str, Path]) -> Path:
 def ensure_valid_path_with_suffix(should_be_path: Union[str, Path],
                                   suffix: str = None) -> Path:
     """Coerce input to a pathlib.Path with given suffix."""
-    wrong_type_msg = "Unexpected type for something that should be convertable to a Path: "
-
-    if isinstance(should_be_path, str):
-        path_obj = Path(should_be_path)
-    elif isinstance(should_be_path, Path):
+    if isinstance(should_be_path, Path):
         path_obj = should_be_path
+    elif isinstance(should_be_path, str):
+        path_obj = Path(should_be_path)
     else:
-        raise TypeError(wrong_type_msg + str(type(should_be_path)))
+        raise TypeError(f"Unexpected type for something that should be convertable to a Path: {type(should_be_path)}")
 
     return path_obj.with_suffix(suffix)
 
