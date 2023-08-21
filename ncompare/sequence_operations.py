@@ -73,8 +73,8 @@ def count_diffs(list_a: list[Union[str, int]],
     set_b = set(map(coerce_to_str, list_b))
 
     # The number of differences are computed.
-    left = len(set_a - set_b)
-    right = len(set_b - set_a)
+    left = len(set_a.difference(set_b))
+    right = len(set_b.difference(set_a))
     both = len(set_a.intersection(set_b))
 
     return left, right, both
