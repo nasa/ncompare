@@ -421,11 +421,9 @@ def _get_dims(nc_filepath: Path,
             return list(dataset.dims.items())
 
     try:
-        dims_list = __get_dim_list()
+        return __get_dim_list(decode_times=True)
     except ValueError as err:
         if "decode_times" in str(err):  # then try again without decoding the times
-            dims_list = __get_dim_list(decode_times=False)
+            return __get_dim_list(decode_times=False)
         else:
-            raise err from None  # "from None" prevents additional trace (see https://stackoverflow.com/a/18188660)
-
-    return dims_list
+            raise err from None
