@@ -145,3 +145,4 @@ dmypy.json
 
 # Mac Finder
 .DS_Store
+*.prof
