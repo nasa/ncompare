@@ -34,7 +34,8 @@ def common_elements(sequence_a: Iterable,
             raise ValueError(
                 "Unexpected condition where an item was not found "
                 "but all items should exist in at least one list.")
-        elif item not in a_sorted:
+
+        if item not in a_sorted:
             item_a = ''
         elif item not in b_sorted:
             item_b = ''
@@ -42,8 +43,8 @@ def common_elements(sequence_a: Iterable,
         yield i, item_a, item_b
 
 
-def count_diffs(a: list[Union[str, int]],
-                b: list[Union[str, int]]
+def count_diffs(list_a: list[Union[str, int]],
+                list_b: list[Union[str, int]]
                 ) -> tuple[int, int, int]:
     """Count how many elements are either uniquely in one list or the other, or in both.
 
@@ -54,19 +55,19 @@ def count_diffs(a: list[Union[str, int]],
     Returns
     -------
     int
-        Number of items only in the *left* ("a") list
+        Number of items only in the *left* list ("a")
     int
-        Number of items only in the *right* ("b") list
+        Number of items only in the *right* list ("b")
     int
-        Number of items in both ("a" and "b") lists
+        Number of items in both lists ("a" and "b")
     """
     # Lists are converted to sets, where each element is treated as a str.
-    sa = set(map(coerce_to_str, a))
-    sb = set(map(coerce_to_str, b))
+    set_a = set(map(coerce_to_str, list_a))
+    set_b = set(map(coerce_to_str, list_b))
 
     # The number of differences are computed.
-    left = len(sa - sb)
-    right = len(sb - sa)
-    both = len(sa.intersection(sb))
+    left = len(set_a - set_b)
+    right = len(set_b - set_a)
+    both = len(set_a.intersection(set_b))
 
     return left, right, both
