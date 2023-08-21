@@ -400,12 +400,11 @@ def _get_vars(nc_filepath: Path,
               ) -> list:
     try:
         grp = xr.open_dataset(nc_filepath, backend_kwargs={"group": groupname})
+        return sorted(grp.variables.keys())
     except OSError as err:
         print("\nError occurred when attempting to open group within <%s>.\n" % nc_filepath)
         raise err
-    grp_varlist = sorted(list(grp.variables.keys()))
 
-    return grp_varlist
 
 def _get_groups(nc_filepath: Path,
                 ) -> list:
