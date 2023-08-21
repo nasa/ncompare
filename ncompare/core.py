@@ -382,15 +382,14 @@ def _print_sample_values(out: Outputter, nc_filepath, groupname: str, varname: s
 
 def _get_attribute_value_as_str(varprops: VarProperties,
                                 attribute_key: str) -> str:
-    if attribute_key and (attribute_key in varprops.attributes):
-        attr = varprops.attributes[attribute_key]
+    attr = varprops.attributes.get(attribute_key)
+    if attr is not None:
         if isinstance(attr, Iterable) and not isinstance(attr, (str, float)):
             # TODO: by truncating a list (or other iterable) here,
             #  we are preventing any subsequent difference checker from detecting
             #  differences past the 5th element in the iterable.
             #  So, we need to figure out a way to still check for other differences past the 5th element.
-            return "[" + ", ".join([str(x) for x in attr[:5]]) + ", ..." + "]"
-
+            return "[" + ", ".join(map(str, attr[:5])) + ", ...]"
         return str(attr)
 
     return ""
