@@ -1,0 +1,115 @@
+name: Lint and Test
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push events
+  push:
+    branches: [ develop, release/**, main, feature/**, issue/**, issues/** ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  build-linux:
+    runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 5
+
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: 3.9
+        
+    - name: Install Poetry
+      uses: abatilo/actions-poetry@v2.3.0
+      with:
+        poetry-version: 1.3.2
+        
+    - name: Get version
+      id: get-version
+      run: |
+        echo "current_version=$(poetry version | awk '{print $2}')" >> $GITHUB_OUTPUT
+        echo "pyproject_name=$(poetry version | awk '{print $1}')" >> $GITHUB_ENV
+        
+    - name: Bump pre-alpha version
+      # If triggered by push to a feature branch
+      if: |
+        ${{ startsWith(github.ref, 'refs/heads/issue') }}      ||
+        ${{ startsWith(github.ref, 'refs/heads/feature/') }}
+      run: |
+        new_ver="${{ steps.get-version.outputs.current_version }}+$(git rev-parse --short ${GITHUB_SHA})"
+        poetry version $new_ver
+        echo "software_version=$(poetry version | awk '{print $2}')" >> $GITHUB_ENV
+        
+    - name: Bump alpha version
+      # If triggered by push to the develop branch
+      if: ${{ github.ref == 'refs/heads/develop' }}
+      run: |
+        poetry version prerelease
+        echo "software_version=$(poetry version | awk '{print $2}')" >> $GITHUB_ENV
+        echo "venue=sit" >> $GITHUB_ENV
+        
+    - name: Bump rc version
+      # If triggered by push to a release branch
+      if: ${{ startsWith(github.ref, 'refs/heads/release/') }}
+      env:
+        # True if the version already has a 'rc' pre-release identifier
+        BUMP_RC: ${{ contains(steps.get-version.outputs.current_version, 'rc') }}
+      run: |
+        if [ "$BUMP_RC" = true ]; then
+          poetry version prerelease
+        else
+          poetry version ${GITHUB_REF#refs/heads/release/}rc1
+        fi
+        echo "software_version=$(poetry version | awk '{print $2}')" >> $GITHUB_ENV
+        echo "venue=uat" >> $GITHUB_ENV
+        
+    - name: Release version
+      # If triggered by push to the main branch
+      if: ${{ startsWith(github.ref, 'refs/heads/main') }}
+      env:
+        CURRENT_VERSION: ${{ steps.get-version.outputs.current_version }}
+      # Remove rc* from end of version string
+      # The ${string%%substring} syntax below deletes the longest match of $substring from back of $string.
+      run: |
+        poetry version ${CURRENT_VERSION%%rc*}
+        echo "software_version=$(poetry version | awk '{print $2}')" >> $GITHUB_ENV
+        echo "venue=ops" >> $GITHUB_ENV
+    
+    - name: Install ncompare
+      run: poetry install
+
+    - name: Lint
+      run: |
+        poetry run pylint ncompare
+        poetry run flake8 ncompare
+        
+    - name: Test with pytest
+      run: |
+        poetry run pytest
+        
+    - name: Commit Version Bump
+      # If building develop, a release branch, or main then we commit the version bump back to the repo
+      if: |
+        github.ref == 'refs/heads/develop' ||
+        github.ref == 'refs/heads/main'    ||
+        startsWith(github.ref, 'refs/heads/release')
+      run: |
+        git config --global user.name 'ncompare bot'
+        git config --global user.email 'ncompare@noreply.github.com'
+        git commit -am "/version ${{ env.software_version }}"
+        git push
+        
+    - name: Push Tag
+      if: |
+        github.ref == 'refs/heads/develop' ||
+        github.ref == 'refs/heads/main'    ||
+        startsWith(github.ref, 'refs/heads/release')
+      run: |
+        git config user.name "${GITHUB_ACTOR}"
+        git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
+        git tag -a "${{ env.software_version }}" -m "Version ${{ env.software_version }}"
+        git push origin "${{ env.software_version }}"
