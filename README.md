@@ -51,6 +51,13 @@ Example:
 - `-v` (`--comparison_var_name`) [VAR_NAME]: Compare specific values for this variable.
 - `-g` (`--comparison_var_group`) [VAR_GROUP]: Group that contains the `comparison_var_name`.
 
+## How to test ncompare locally
+
+If installed using a `poetry` environment, the tests can be run with:
+```
+poetry run pytest tests
+```
+
 ## Known limitations
 - This currently works with netCDF hierarchies containing no more than one level of groups.
 - This uses `xarray` to access the root-level dimensions.
