@@ -350,10 +350,7 @@ def _match_random_value(out: Outputter,
         False if the difference exceeds the given threshold
     """
     # Get a random indexer
-    rand_index = []
-    for dim_length in nc_var_a.shape:
-        rand_index.append(random.randint(0, dim_length - 1))
-    rand_index = tuple(rand_index)
+    rand_index = tuple(random.randint(0, dim_length - 1) for dim_length in nc_var_a.shape)
 
     # Get the values from each variable
     value_a = nc_var_a.values[rand_index]
@@ -364,10 +361,9 @@ def _match_random_value(out: Outputter,
         return None
 
     # Evaluate difference between values
-    diff = value_b - value_a
-    if abs(diff) > thresh:
+    if abs(value_b - value_a) > thresh:
         out.print()
-        out.print(Fore.RED + f"Difference exceeded threshold (diff == {diff}")
+        out.print(Fore.RED + f"Difference exceeded threshold (diff == {value_b - value_a}")
         out.print(f"var shape: {nc_var_a.shape}", colors=False)
         out.print(f"indices:   {rand_index}", colors=False)
         out.print(f"value a: {value_a}", colors=False)
