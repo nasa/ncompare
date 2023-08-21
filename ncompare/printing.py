@@ -1,4 +1,5 @@
 """Utility functions for printing to the console or a text file."""
+# pylint: disable=too-many-arguments
 import csv
 import re
 from collections.abc import Iterable
@@ -46,15 +47,15 @@ class Outputter:
         # Parse the print history option.
         self._keep_print_history = keep_print_history
         if self._keep_print_history:
-            self._line_history = list()
+            self._line_history = []
         else:
             self._line_history = None
 
         if no_color:
             # Replace colorized styles with blank strings.
-            for k, v in Fore.__dict__.items():
+            for k, _ in Fore.__dict__.items():
                 Fore.__dict__[k] = ""
-            for k, v in Style.__dict__.items():
+            for k, _ in Style.__dict__.items():
                 Style.__dict__[k] = ""
         else:
             colorama.init(autoreset=True)
@@ -65,7 +66,7 @@ class Outputter:
             if filepath.exists():
                 pass
             # This will overwrite any existing file at this path, if one exists.
-            self._text_file_obj = open(filepath, "w")
+            self._text_file_obj = open(filepath, "w", encoding="utf-8")  # pylint: disable=consider-using-with
         else:
             self._text_file_obj = None
 
@@ -114,7 +115,7 @@ class Outputter:
     def _add_to_history(self, *args):
         """Convert a list of items to a comma-separated string that is added to the csv history."""
 
-        def _parse_single_str(s):
+        def _parse_single_str(s):  # pylint: disable=invalid-name
             # Remove ANSI escape sequences before adding to parsed string list.
             result = ansi_escape.sub('', s)
             # Remove any leading or trailing newlines.
@@ -124,18 +125,19 @@ class Outputter:
             parsed_strings = [_parse_single_str(args)]
         elif isinstance(args, Iterable):
             parsed_strings = []
-            for x in args:
-                if not isinstance(x, str):
+            for item in args:
+                if not isinstance(item, str):
                     try:
-                        string = str(x)
+                        string = str(item)
                     except Exception as err:
-                        raise TypeError("Error <%s> with %s! Expected a string; got a <%s>.", err, str(x), type(x))
+                        raise TypeError(f"Error <{err}> with {str(item)}! Expected a string; got a <{type(item)}>.") \
+                            from err
                 else:
-                    string = x
+                    string = item
 
                 parsed_strings.append(_parse_single_str(string))
         else:
-            raise TypeError("Invalid type <%s>. Expected a `str` or `list`.", type(args))
+            raise TypeError(f"Invalid type <{type(args)}>. Expected a `str` or `list`.")
 
         if self._line_history is not None:
             self._line_history.append(parsed_strings)
@@ -184,56 +186,56 @@ class Outputter:
         list_b
         counter_prefix
         """
-        for i, a, b in common_elements(list_a, list_b):
-            self.side_by_side(f"{counter_prefix} #{i:02}", a.strip(), b.strip(),
+        for idx, item_a, item_b in common_elements(list_a, list_b):
+            self.side_by_side(f"{counter_prefix} #{idx:02}", item_a.strip(), item_b.strip(),
                               dash_line=True, highlight_diff=True)
 
     def lists_diff(self,
-                   a: list, b: list,
+                   list_a: list, list_b: list,
                    ignore_order: bool = True,
                    ) -> tuple[int, int, int]:
         """Compare two lists and state whether there are differences."""
-        sa = set(a)
-        sb = set(b)
-        s_union = sa.union(sb)
+        set_a, set_b = set(list_a), set(list_b)
+
+        s_union = set_a.union(set_b)
 
         # Are these list contents the same?
         if ignore_order:
-            contents_are_same = sa == sb
+            contents_are_same = set_a == set_b
         else:
-            contents_are_same = a == b
+            contents_are_same = list_a == list_b
 
         # Display the comparison result
         if contents_are_same:
             msg = "\t" + Fore.CYAN + f"Are all items the same? ---> {str(contents_are_same)}."
 
-            if len(sa) > 0:
+            if len(set_a) > 0:
                 self.print(msg, add_to_history=True)
-                self.print("\t" + Fore.CYAN + str(sa))
+                self.print("\t" + Fore.CYAN + str(set_a))
             else:
                 self.print(msg + "  (No items exist.)", add_to_history=True)
-            return 0, 0, len(a)
+            return 0, 0, len(list_a)
 
-        else:
-            left, right, both = count_diffs(a, b)
-            self.print("\t" + "Are all items the same? ---> " + Fore.RED + f"{str(contents_are_same)}."
-                       f"  ({_singular_or_plural(both)} shared, out of {len(s_union)} total.)", add_to_history=True)
+        # If contents are not the same, continue...
+        left, right, both = count_diffs(list_a, list_b)
+        self.print("\t" + "Are all items the same? ---> " + Fore.RED + f"{str(contents_are_same)}."
+                   f"  ({_item_is_or_are(both)} shared, out of {len(s_union)} total.)", add_to_history=True)
 
-            # Which variables are different?
-            self.print("\t" + Fore.RED + "Which items are different?")
-            # print(Fore.RED + "Which items are different? ---> %s." %
-            #       str(set(list_a).symmetric_difference(list_b)))
+        # Which variables are different?
+        self.print("\t" + Fore.RED + "Which items are different?")
+        # print(Fore.RED + "Which items are different? ---> %s." %
+        #       str(set(list_a).symmetric_difference(list_b)))
 
-            self.side_by_side(' ', 'File A', 'File B')
-            self.side_by_side_list_diff(a, b)
-            self.side_by_side('Number of non-shared items:', str(left), str(right))
+        self.side_by_side(' ', 'File A', 'File B')
+        self.side_by_side_list_diff(list_a, list_b)
+        self.side_by_side('Number of non-shared items:', str(left), str(right))
 
-            return left, right, both
+        return left, right, both
 
     def write_history_to_csv(self, filename: Union[str, Path] = "test.csv"):
         """Save the line history that's been stored to a CSV file."""
         headers = ['Info', 'File A', 'File B', 'Other marks']
-        with open(filename, 'w') as target:
+        with open(filename, 'w', encoding="utf-8") as target:
             writer = csv.writer(target)
             writer.writerow(headers)
             writer.writerows(self._line_history)
@@ -262,22 +264,22 @@ class Outputter:
         # Wrap up
         workbook.save(filename)
 
-def _singular_or_plural(x):
-    if x == 1:
-        return f"{x} item is"
-    else:
-        return f"{x} items are"
+def _item_is_or_are(count):
+    if count == 1:
+        return f"{count} item is"
 
-def _excel_red_cells(data, ws):
+    return f"{count} items are"
+
+def _excel_red_cells(data, sheet):
     """Stylize cells in Excel with a red font."""
-    for c in data:
-        c = Cell(ws, column="A", row=1, value=c)
-        c.font = Font(bold=True, color="FFFF0000")
-        yield c
+    for cell in data:
+        cell = Cell(sheet, column="A", row=1, value=cell)
+        cell.font = Font(bold=True, color="FFFF0000")
+        yield cell
 
-def _excel_bold_underline_cells(data, ws):
+def _excel_bold_underline_cells(data, sheet):
     """Stylize cells in Excel with a bold and underlined font."""
-    for c in data:
-        c = Cell(ws, column="A", row=1, value=c)
-        c.font = Font(bold=True, underline='single')
-        yield c
+    for cell in data:
+        cell = Cell(sheet, column="A", row=1, value=cell)
+        cell.font = Font(bold=True, underline='single')
+        yield cell
