@@ -36,13 +36,9 @@ def ensure_valid_path_with_suffix(should_be_path: Union[str, Path],
 
     return path_obj.with_suffix(suffix)
 
-def coerce_to_str(some_object: Union[str, int, tuple]):
+def coerce_to_str(some_object: Union[str, int, tuple]) -> str:
     """Ensure the type is a string."""
-    if isinstance(some_object, str):
-        return some_object
-    if isinstance(some_object, int):
-        return str(some_object)
-    if isinstance(some_object, tuple):
+    if isinstance(some_object, (str, int, tuple)):
         return str(some_object)
 
     raise TypeError(f"Unable to coerce value to str. Unexpected type <{type(some_object)}>.")
