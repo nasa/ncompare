@@ -33,7 +33,7 @@ def main():
 
     try:
         compare(**vars(args))
-    except Exception:
+    except Exception:  # pylint: disable=broad-exception-caught
         print(traceback.format_exc())
         sys.exit(1)
     sys.exit(0)  # a clean, no-issue, exit
