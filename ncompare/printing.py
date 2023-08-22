@@ -17,17 +17,8 @@ from ncompare.sequence_operations import common_elements, count_diffs
 
 # Set up regex remover of ANSI color escape sequences
 #   From <https://stackoverflow.com/a/14693789>
-ansi_escape = re.compile(r'''
-    \x1B  # ESC
-    (?:   # 7-bit C1 Fe (except CSI)
-        [@-Z\\-_]
-    |     # or [ for CSI, followed by a control sequence
-        \[
-        [0-?]*  # Parameter bytes
-        [ -/]*  # Intermediate bytes
-        [@-~]   # Final byte
-    )
-''', re.VERBOSE)
+ansi_escape = re.compile(r'\x1B[@-Z\\-_]|\x1B\[[0-?]*[ -/]*[@-~]', re.VERBOSE)
+
 
 class Outputter:
     """Handler for print statements and saving to text and/or csv files."""
