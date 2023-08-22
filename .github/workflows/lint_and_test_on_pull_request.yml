@@ -1,0 +1,33 @@
+name: Receive PR
+
+# read-only repo token
+# no access to secrets
+on:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-python@v4
+      with:
+        python-version: 3.9
+
+    - name: Install Poetry
+      uses: abatilo/actions-poetry@v2.3.0
+      with:
+        poetry-version: 1.3.2
+
+    - name: Install ncompare
+      run: poetry install
+
+    - name: Lint
+      run: |
+        poetry run pylint ncompare
+        poetry run flake8 ncompare
+
+    - name: Test with pytest
+      run: |
+        poetry run pytest
