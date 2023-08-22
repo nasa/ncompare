@@ -11,15 +11,12 @@ on:
 
 jobs:
   build-linux:
+    name: Lint and Test
     runs-on: ubuntu-latest
-    strategy:
-      max-parallel: 5
 
     steps:
     - uses: actions/checkout@v3
-    
-    - name: Set up Python
-      uses: actions/setup-python@v4
+    - uses: actions/setup-python@v4
       with:
         python-version: 3.9
         
@@ -38,6 +35,7 @@ jobs:
       # If triggered by push to a feature branch
       if: |
         ${{ startsWith(github.ref, 'refs/heads/issue') }}      ||
+        ${{ startsWith(github.ref, 'refs/heads/dependabot/') }} ||
         ${{ startsWith(github.ref, 'refs/heads/feature/') }}
       run: |
         new_ver="${{ steps.get-version.outputs.current_version }}+$(git rev-parse --short ${GITHUB_SHA})"
