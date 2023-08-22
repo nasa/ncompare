@@ -164,26 +164,26 @@ def compare_multiple_random_values(out: Outputter,
                                    groupname: str,
                                    num_comparisons: int = 100):
     """Iterate through N random samples, and evaluate whether the differences exceed a threshold."""
-    # Open a variable from each NetCDF
-    nc_var_a = xr.open_dataset(nc_a, backend_kwargs={"group": groupname}).varname
-    nc_var_b = xr.open_dataset(nc_b, backend_kwargs={"group": groupname}).varname
+    # Read both NetCDF variables at once for faster I/O
+    with xr.open_dataset(nc_a, backend_kwargs={"group": groupname}) as ds_a, \
+         xr.open_dataset(nc_b, backend_kwargs={"group": groupname}) as ds_b:
 
-    num_mismatches = 0
-    for _ in range(num_comparisons):
-        match_result = _match_random_value(out, nc_var_a, nc_var_b)
-        if match_result is True:
-            out.print(".", colors=False, end="")
-        elif match_result is None:
-            out.print("n", colors=False, end="")
-        else:
-            out.print("x", colors=False, end="")
-            num_mismatches += 1
+        nc_var_a = ds_a.varname
+        nc_var_b = ds_b.varname
 
-    if num_mismatches > 0:
-        out.print(Fore.RED + f" {num_mismatches} mismatches, out of {num_comparisons} samples.")
-    else:
-        out.print(Fore.CYAN + " No mismatches.")
-    out.print("Done.", colors=False)
+        num_mismatches = 0
+        for _ in range(num_comparisons):
+            match_result = _match_random_value(out, nc_var_a, nc_var_b)
+            # Using a dictionary to map match_result to corresponding characters
+            print_char = {True: ".", None: "n"}.get(match_result, "x")
+            out.print(print_char, colors=False, end="")
+            if print_char == "x":
+                num_mismatches += 1
+
+        message = Fore.CYAN + " No mismatches." if num_mismatches == 0 else Fore.RED + f" {num_mismatches} mismatches, out of {num_comparisons} samples."
+        out.print(message)
+        out.print("Done.", colors=False)
+
 
 def compare_two_nc_files(out: Outputter,
                          nc_one: Path,
