@@ -199,48 +199,47 @@ def compare_two_nc_files(out: Outputter,
 
         out.side_by_side('All Variables', ' ', ' ', dash_line=False)
         out.side_by_side('-', '-', '-', dash_line=True)
-        out.side_by_side('num variables in root group:', len(nc_a.variables), len(nc_b.variables))
+        # Count differences between the lists of variables in the root group.
+        # Utilizing set operations for efficiency
+        vars_a_set = set(nc_a.variables)
+        vars_b_set = set(nc_b.variables)
+        common_vars = vars_a_set & vars_b_set
+        num_var_diffs['both'] = len(common_vars)
+        num_var_diffs['left'] = len(vars_a_set - common_vars)
+        num_var_diffs['right'] = len(vars_b_set - common_vars)
+
+        out.side_by_side('num variables in root group:', len(vars_a_set), len(vars_b_set))
         out.side_by_side('-', '-', '-', dash_line=True)
 
-        # Count differences between the lists of variables in the root group.
-        num_var_diffs['left'], num_var_diffs['right'], num_var_diffs['both'] = \
-            count_diffs(nc_a.variables, nc_b.variables)
-
         # Go through root-level variables.
-        for variable_pair in common_elements(nc_a.variables, nc_b.variables):
+        for variable in common_vars:
             # Get and print the properties of each variable
-            _print_var_properties_side_by_side(out,
-                                               _var_properties(nc_a, variable_pair[1]),
-                                               _var_properties(nc_b, variable_pair[2]),
+            _print_var_properties_side_by_side(out, _var_properties(nc_a, variable),
+                                               _var_properties(nc_b, variable),
                                                show_chunks=show_chunks, show_attributes=show_attributes)
 
         # Go through each group.
-        for group_pair in common_elements(nc_a.groups, nc_b.groups):
+        for group_name in set(nc_a.groups) & set(nc_b.groups):
             out.side_by_side(" ", " ", " ", dash_line=False, highlight_diff=False)
-            out.side_by_side(f"GROUP #{group_pair[0]:02}", group_pair[1].strip(), group_pair[2].strip(),
-                             dash_line=True, highlight_diff=False)
-
             # Count the number of variables in this group as long as this group exists.
-            vars_a_sorted, vars_b_sorted = "", ""
-            if group_pair[1]:
-                vars_a_sorted = sorted(nc_a.groups[group_pair[1]].variables)
-            if group_pair[2]:
-                vars_b_sorted = sorted(nc_b.groups[group_pair[2]].variables)
-            out.side_by_side('num variables in group:', len(vars_a_sorted), len(vars_b_sorted), highlight_diff=True)
-            out.side_by_side('-', '-', '-', dash_line=True)
-
+            out.side_by_side(f"GROUP #{group_name:02}", group_name.strip(), group_name.strip(), dash_line=True, highlight_diff=False)
             # Count differences between the lists of variables in this group.
+            vars_a_sorted = sorted(nc_a.groups[group_name].variables)
+            vars_b_sorted = sorted(nc_b.groups[group_name].variables)
             left, right, both = count_diffs(vars_a_sorted, vars_b_sorted)
             num_var_diffs['left'] += left
             num_var_diffs['right'] += right
             num_var_diffs['both'] += both
 
+            out.side_by_side('num variables in group:', len(vars_a_sorted), len(vars_b_sorted), highlight_diff=True)
+            out.side_by_side('-', '-', '-', dash_line=True)
+
             # Go through each variable in the current group.
-            for variable_pair in common_elements(vars_a_sorted, vars_b_sorted):
+            for variable in set(vars_a_sorted) & set(vars_b_sorted):
                 # Get and print the properties of each variable
                 _print_var_properties_side_by_side(out,
-                                                   _var_properties(nc_a, variable_pair[1], group_pair[1]),
-                                                   _var_properties(nc_b, variable_pair[2], group_pair[2]),
+                                                   _var_properties(nc_a, variable, group_name),
+                                                   _var_properties(nc_b, variable, group_name),
                                                    show_chunks=show_chunks, show_attributes=show_attributes)
 
     out.side_by_side('-', '-', '-', dash_line=True)
