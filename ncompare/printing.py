@@ -36,7 +36,10 @@ class Outputter:
         keep_print_history
         """
         # Parse the print history option.
-        self._line_history = [] if keep_print_history else None
+        if keep_print_history:
+            self._line_history = []
+        else:
+            self._line_history = None
 
         if no_color:
             # Replace colorized styles with blank strings.
@@ -46,7 +49,9 @@ class Outputter:
             colorama.init(autoreset=True)
 
         # Open a file
+        # pylint: disable=consider-using-with
         self._text_file_obj = open(Path(text_file), "w", encoding="utf-8") if text_file else None
+        # pylint: enable=consider-using-with
 
     def __enter__(self):  # noqa: D105
         return self
