@@ -49,7 +49,6 @@ def common_elements(sequence_a: Iterable,
         index += 1
 
 
-
 def count_diffs(list_a: list[Union[str, int]],
                 list_b: list[Union[str, int]]
                 ) -> tuple[int, int, int]:
