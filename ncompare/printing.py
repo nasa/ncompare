@@ -17,17 +17,8 @@ from ncompare.sequence_operations import common_elements, count_diffs
 
 # Set up regex remover of ANSI color escape sequences
 #   From <https://stackoverflow.com/a/14693789>
-ansi_escape = re.compile(r'''
-    \x1B  # ESC
-    (?:   # 7-bit C1 Fe (except CSI)
-        [@-Z\\-_]
-    |     # or [ for CSI, followed by a control sequence
-        \[
-        [0-?]*  # Parameter bytes
-        [ -/]*  # Intermediate bytes
-        [@-~]   # Final byte
-    )
-''', re.VERBOSE)
+ansi_escape = re.compile(r'\x1B[@-Z\\-_]|\x1B\[[0-?]*[ -/]*[@-~]', re.VERBOSE)
+
 
 class Outputter:
     """Handler for print statements and saving to text and/or csv files."""
@@ -45,30 +36,22 @@ class Outputter:
         keep_print_history
         """
         # Parse the print history option.
-        self._keep_print_history = keep_print_history
-        if self._keep_print_history:
+        if keep_print_history:
             self._line_history = []
         else:
             self._line_history = None
 
         if no_color:
             # Replace colorized styles with blank strings.
-            for k, _ in Fore.__dict__.items():
-                Fore.__dict__[k] = ""
-            for k, _ in Style.__dict__.items():
-                Style.__dict__[k] = ""
+            Fore.__dict__.update((k, "") for k in Fore.__dict__)
+            Style.__dict__.update((k, "") for k in Style.__dict__)
         else:
             colorama.init(autoreset=True)
 
         # Open a file
-        if text_file:
-            filepath = Path(text_file)
-            if filepath.exists():
-                pass
-            # This will overwrite any existing file at this path, if one exists.
-            self._text_file_obj = open(filepath, "w", encoding="utf-8")  # pylint: disable=consider-using-with
-        else:
-            self._text_file_obj = None
+        # pylint: disable=consider-using-with
+        self._text_file_obj = open(Path(text_file), "w", encoding="utf-8") if text_file else None
+        # pylint: enable=consider-using-with
 
     def __enter__(self):  # noqa: D105
         return self

@@ -164,26 +164,59 @@ def compare_multiple_random_values(out: Outputter,
                                    groupname: str,
                                    num_comparisons: int = 100):
     """Iterate through N random samples, and evaluate whether the differences exceed a threshold."""
-    # Open a variable from each NetCDF
-    nc_var_a = xr.open_dataset(nc_a, backend_kwargs={"group": groupname}).varname
-    nc_var_b = xr.open_dataset(nc_b, backend_kwargs={"group": groupname}).varname
+    # Read both NetCDF variables at once for faster I/O
+    with xr.open_dataset(nc_a, backend_kwargs={"group": groupname}) as ds_a, \
+         xr.open_dataset(nc_b, backend_kwargs={"group": groupname}) as ds_b:
 
-    num_mismatches = 0
-    for _ in range(num_comparisons):
-        match_result = _match_random_value(out, nc_var_a, nc_var_b)
-        if match_result is True:
-            out.print(".", colors=False, end="")
-        elif match_result is None:
-            out.print("n", colors=False, end="")
-        else:
-            out.print("x", colors=False, end="")
-            num_mismatches += 1
+        nc_var_a = ds_a.varname
+        nc_var_b = ds_b.varname
 
-    if num_mismatches > 0:
-        out.print(Fore.RED + f" {num_mismatches} mismatches, out of {num_comparisons} samples.")
-    else:
-        out.print(Fore.CYAN + " No mismatches.")
-    out.print("Done.", colors=False)
+        num_mismatches = 0
+        for _ in range(num_comparisons):
+            match_result = _match_random_value(out, nc_var_a, nc_var_b)
+            # Using a dictionary to map match_result to corresponding characters
+            print_char = {True: ".", None: "n"}.get(match_result, "x")
+            out.print(print_char, colors=False, end="")
+            if print_char == "x":
+                num_mismatches += 1
+
+        message = (
+            Fore.CYAN + " No mismatches."
+            if num_mismatches == 0
+            else Fore.RED + f" {num_mismatches} mismatches, out of {num_comparisons} samples."
+        )
+
+        out.print(message)
+        out.print("Done.", colors=False)
+
+
+def _process_variables(
+    out: Outputter,
+    nc_a: netCDF4.Dataset,
+    nc_b: netCDF4.Dataset,
+    group_name: str,
+    num_var_diffs: dict,
+    show_chunks: bool,
+    show_attributes: bool,
+):
+    """Process the variables for the given group name and print their properties side by side."""
+    # Count differences between the lists of variables in this group.
+    vars_a_sorted = sorted(nc_a.groups[group_name].variables)
+    vars_b_sorted = sorted(nc_b.groups[group_name].variables)
+    left, right, both = count_diffs(vars_a_sorted, vars_b_sorted)
+    num_var_diffs['left'] += left
+    num_var_diffs['right'] += right
+    num_var_diffs['both'] += both
+    out.side_by_side('num variables in group:', len(vars_a_sorted), len(vars_b_sorted), highlight_diff=True)
+    out.side_by_side('-', '-', '-', dash_line=True)
+
+    # Go through each variable in the current group.
+    for variable in set(vars_a_sorted) & set(vars_b_sorted):
+        # Get and print the properties of each variable
+        _print_var_properties_side_by_side(out,
+                                           _var_properties(nc_a, variable, group_name),
+                                           _var_properties(nc_b, variable, group_name),
+                                           show_chunks=show_chunks, show_attributes=show_attributes)
 
 def compare_two_nc_files(out: Outputter,
                          nc_one: Path,
@@ -193,59 +226,48 @@ def compare_two_nc_files(out: Outputter,
                          ) -> tuple[int, int, int]:
     """Go through all groups and all variables, and show them side by side - whether they align and where they don't."""
     out.side_by_side(' ', 'File A', 'File B')
-
     num_var_diffs = {"left": 0, "right": 0, "both": 0}
-    with netCDF4.Dataset(nc_one) as nc_a, netCDF4.Dataset(nc_two) as nc_b:
 
+    with netCDF4.Dataset(nc_one) as nc_a, netCDF4.Dataset(nc_two) as nc_b:
         out.side_by_side('All Variables', ' ', ' ', dash_line=False)
         out.side_by_side('-', '-', '-', dash_line=True)
-        out.side_by_side('num variables in root group:', len(nc_a.variables), len(nc_b.variables))
+        # Count differences between the lists of variables in the root group.
+        # Utilizing set operations for efficiency
+        vars_a_set = set(nc_a.variables)
+        vars_b_set = set(nc_b.variables)
+        common_vars = vars_a_set & vars_b_set
+        num_var_diffs['both'] = len(common_vars)
+        num_var_diffs['left'] = len(vars_a_set - common_vars)
+        num_var_diffs['right'] = len(vars_b_set - common_vars)
+
+        out.side_by_side('num variables in root group:', len(vars_a_set), len(vars_b_set))
         out.side_by_side('-', '-', '-', dash_line=True)
 
-        # Count differences between the lists of variables in the root group.
-        num_var_diffs['left'], num_var_diffs['right'], num_var_diffs['both'] = \
-            count_diffs(nc_a.variables, nc_b.variables)
-
         # Go through root-level variables.
-        for variable_pair in common_elements(nc_a.variables, nc_b.variables):
+        for variable in common_vars:
             # Get and print the properties of each variable
-            _print_var_properties_side_by_side(out,
-                                               _var_properties(nc_a, variable_pair[1]),
-                                               _var_properties(nc_b, variable_pair[2]),
+            _print_var_properties_side_by_side(out, _var_properties(nc_a, variable),
+                                               _var_properties(nc_b, variable),
                                                show_chunks=show_chunks, show_attributes=show_attributes)
 
         # Go through each group.
-        for group_pair in common_elements(nc_a.groups, nc_b.groups):
+        for group_name in set(nc_a.groups) & set(nc_b.groups):
             out.side_by_side(" ", " ", " ", dash_line=False, highlight_diff=False)
-            out.side_by_side(f"GROUP #{group_pair[0]:02}", group_pair[1].strip(), group_pair[2].strip(),
-                             dash_line=True, highlight_diff=False)
-
             # Count the number of variables in this group as long as this group exists.
-            vars_a_sorted, vars_b_sorted = "", ""
-            if group_pair[1]:
-                vars_a_sorted = sorted(nc_a.groups[group_pair[1]].variables)
-            if group_pair[2]:
-                vars_b_sorted = sorted(nc_b.groups[group_pair[2]].variables)
-            out.side_by_side('num variables in group:', len(vars_a_sorted), len(vars_b_sorted), highlight_diff=True)
-            out.side_by_side('-', '-', '-', dash_line=True)
+            out.side_by_side(
+                f"GROUP #{group_name:02}",
+                group_name.strip(),
+                group_name.strip(),
+                dash_line=True,
+                highlight_diff=False,
+            )
 
-            # Count differences between the lists of variables in this group.
-            left, right, both = count_diffs(vars_a_sorted, vars_b_sorted)
-            num_var_diffs['left'] += left
-            num_var_diffs['right'] += right
-            num_var_diffs['both'] += both
+            _process_variables(out, nc_a, nc_b, group_name, num_var_diffs, show_chunks, show_attributes)
 
-            # Go through each variable in the current group.
-            for variable_pair in common_elements(vars_a_sorted, vars_b_sorted):
-                # Get and print the properties of each variable
-                _print_var_properties_side_by_side(out,
-                                                   _var_properties(nc_a, variable_pair[1], group_pair[1]),
-                                                   _var_properties(nc_b, variable_pair[2], group_pair[2]),
-                                                   show_chunks=show_chunks, show_attributes=show_attributes)
+        out.side_by_side('-', '-', '-', dash_line=True)
+        out.side_by_side('Total number of shared items:', str(num_var_diffs['both']), str(num_var_diffs['both']))
+        out.side_by_side('Total number of non-shared items:', str(num_var_diffs['left']), str(num_var_diffs['right']))
 
-    out.side_by_side('-', '-', '-', dash_line=True)
-    out.side_by_side('Total number of shared items:', str(num_var_diffs['both']), str(num_var_diffs['both']))
-    out.side_by_side('Total number of non-shared items:', str(num_var_diffs['left']), str(num_var_diffs['right']))
     return num_var_diffs['left'], num_var_diffs['right'], num_var_diffs['both']
 
 def _print_var_properties_side_by_side(out,
@@ -350,10 +372,7 @@ def _match_random_value(out: Outputter,
         False if the difference exceeds the given threshold
     """
     # Get a random indexer
-    rand_index = []
-    for dim_length in nc_var_a.shape:
-        rand_index.append(random.randint(0, dim_length - 1))
-    rand_index = tuple(rand_index)
+    rand_index = tuple(random.randint(0, dim_length - 1) for dim_length in nc_var_a.shape)
 
     # Get the values from each variable
     value_a = nc_var_a.values[rand_index]
@@ -364,10 +383,9 @@ def _match_random_value(out: Outputter,
         return None
 
     # Evaluate difference between values
-    diff = value_b - value_a
-    if abs(diff) > thresh:
+    if abs(value_b - value_a) > thresh:
         out.print()
-        out.print(Fore.RED + f"Difference exceeded threshold (diff == {diff}")
+        out.print(Fore.RED + f"Difference exceeded threshold (diff == {value_b - value_a}")
         out.print(f"var shape: {nc_var_a.shape}", colors=False)
         out.print(f"indices:   {rand_index}", colors=False)
         out.print(f"value a: {value_a}", colors=False)
@@ -382,15 +400,14 @@ def _print_sample_values(out: Outputter, nc_filepath, groupname: str, varname: s
 
 def _get_attribute_value_as_str(varprops: VarProperties,
                                 attribute_key: str) -> str:
-    if attribute_key and (attribute_key in varprops.attributes):
-        attr = varprops.attributes[attribute_key]
+    attr = varprops.attributes.get(attribute_key)
+    if attr is not None:
         if isinstance(attr, Iterable) and not isinstance(attr, (str, float)):
             # TODO: by truncating a list (or other iterable) here,
             #  we are preventing any subsequent difference checker from detecting
             #  differences past the 5th element in the iterable.
             #  So, we need to figure out a way to still check for other differences past the 5th element.
-            return "[" + ", ".join([str(x) for x in attr[:5]]) + ", ..." + "]"
-
+            return "[" + ", ".join(map(str, attr[:5])) + ", ...]"
         return str(attr)
 
     return ""
@@ -400,12 +417,11 @@ def _get_vars(nc_filepath: Path,
               ) -> list:
     try:
         grp = xr.open_dataset(nc_filepath, backend_kwargs={"group": groupname})
+        return sorted(grp.variables.keys())
     except OSError as err:
         print("\nError occurred when attempting to open group within <%s>.\n" % nc_filepath)
         raise err
-    grp_varlist = sorted(list(grp.variables.keys()))
 
-    return grp_varlist
 
 def _get_groups(nc_filepath: Path,
                 ) -> list:
@@ -427,5 +443,4 @@ def _get_dims(nc_filepath: Path,
             dims_list = __get_dim_list(decode_times=False)
         else:
             raise err from None  # "from None" prevents additional trace (see https://stackoverflow.com/a/18188660)
-
     return dims_list
