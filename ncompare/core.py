@@ -185,6 +185,29 @@ def compare_multiple_random_values(out: Outputter,
         out.print(Fore.CYAN + " No mismatches.")
     out.print("Done.", colors=False)
 
+def walk_common_groups_tree(top_a, top_b) -> tuple[str, netCDF4.Group, str, netCDF4.Group]:
+    """Yield names and groups from a netCDF4's group tree.
+
+    Paremeters
+    ----------
+    top_a : netCDF4.Dataset
+    top_b : netCDF4.Dataset
+
+    Yields
+    ------
+    group A name : str
+    group A object : netCDF4.Group
+    group B name : str
+    group B object : netCDF4.Group
+    """
+    yield (
+        (group_a_name, top_a[group_a_name], group_b_name, top_b[group_b_name])
+        for (_, group_a_name, group_b_name)
+        in common_elements(top_a.groups, top_b.groups)
+    )
+    for _, subgroup_a, subgroup_b in common_elements(top_a.groups, top_b.groups):
+        yield from walk_common_groups_tree(top_a[subgroup_a], top_b[subgroup_b])
+
 def compare_two_nc_files(out: Outputter,
                          nc_one: Path,
                          nc_two: Path,
@@ -214,34 +237,37 @@ def compare_two_nc_files(out: Outputter,
                                                _var_properties(nc_b, variable_pair[2]),
                                                show_chunks=show_chunks, show_attributes=show_attributes)
 
-        # Go through each group.
-        for group_pair in common_elements(nc_a.groups, nc_b.groups):
-            out.side_by_side(" ", " ", " ", dash_line=False, highlight_diff=False)
-            out.side_by_side(f"GROUP #{group_pair[0]:02}", group_pair[1].strip(), group_pair[2].strip(),
-                             dash_line=True, highlight_diff=False)
+        group_counter = 0
+        for group_pairs in walk_common_groups_tree(nc_a, nc_b):
+            for group_a_name, group_a, group_b_name, group_b in group_pairs:
 
-            # Count the number of variables in this group as long as this group exists.
-            vars_a_sorted, vars_b_sorted = "", ""
-            if group_pair[1]:
-                vars_a_sorted = sorted(nc_a.groups[group_pair[1]].variables)
-            if group_pair[2]:
-                vars_b_sorted = sorted(nc_b.groups[group_pair[2]].variables)
-            out.side_by_side('num variables in group:', len(vars_a_sorted), len(vars_b_sorted), highlight_diff=True)
-            out.side_by_side('-', '-', '-', dash_line=True)
+                out.side_by_side(" ", " ", " ", dash_line=False, highlight_diff=False)
+                out.side_by_side(f"GROUP #{group_counter:02}", group_a_name.strip(), group_b_name.strip(),
+                                 dash_line=True, highlight_diff=False)
+                group_counter += 1
 
-            # Count differences between the lists of variables in this group.
-            left, right, both = count_diffs(vars_a_sorted, vars_b_sorted)
-            num_var_diffs['left'] += left
-            num_var_diffs['right'] += right
-            num_var_diffs['both'] += both
+                # Count the number of variables in this group as long as this group exists.
+                vars_a_sorted, vars_b_sorted = "", ""
+                if group_a:
+                    vars_a_sorted = sorted(group_a.variables)
+                if group_b:
+                    vars_b_sorted = sorted(group_b.variables)
+                out.side_by_side('num variables in group:', len(vars_a_sorted), len(vars_b_sorted), highlight_diff=True)
+                out.side_by_side('-', '-', '-', dash_line=True)
 
-            # Go through each variable in the current group.
-            for variable_pair in common_elements(vars_a_sorted, vars_b_sorted):
-                # Get and print the properties of each variable
-                _print_var_properties_side_by_side(out,
-                                                   _var_properties(nc_a, variable_pair[1], group_pair[1]),
-                                                   _var_properties(nc_b, variable_pair[2], group_pair[2]),
-                                                   show_chunks=show_chunks, show_attributes=show_attributes)
+                # Count differences between the lists of variables in this group.
+                left, right, both = count_diffs(vars_a_sorted, vars_b_sorted)
+                num_var_diffs['left'] += left
+                num_var_diffs['right'] += right
+                num_var_diffs['both'] += both
+
+                # Go through each variable in the current group.
+                for variable_pair in common_elements(vars_a_sorted, vars_b_sorted):
+                    # Get and print the properties of each variable
+                    _print_var_properties_side_by_side(out,
+                                                       _var_properties(nc_a, variable_pair[1], group_a),
+                                                       _var_properties(nc_b, variable_pair[2], group_b),
+                                                       show_chunks=show_chunks, show_attributes=show_attributes)
 
     out.side_by_side('-', '-', '-', dash_line=True)
     out.side_by_side('Total number of shared items:', str(num_var_diffs['both']), str(num_var_diffs['both']))
@@ -294,14 +320,14 @@ def _print_var_properties_side_by_side(out,
 
 def _var_properties(dataset: netCDF4.Dataset,
                     varname: str,
-                    groupname: str = None) -> VarProperties:
+                    group: netCDF4.Group = None) -> VarProperties:
     """Get the properties of a variable.
 
     Parameters
     ----------
     dataset : `netCDF4.Dataset`
     varname : str
-    groupname : str, optional
+    group : group object, optional
         if None, the variable is retrieved from the 'root' group of the NetCDF
 
     Returns
@@ -317,8 +343,8 @@ def _var_properties(dataset: netCDF4.Dataset,
         any other attributes for this variable
     """
     if varname:
-        if groupname:
-            the_variable = dataset.groups[groupname].variables[varname]
+        if group:
+            the_variable = group.variables[varname]
         else:
             the_variable = dataset.variables[varname]
         v_dtype = str(the_variable.dtype)
