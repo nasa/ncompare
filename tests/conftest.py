@@ -7,6 +7,9 @@ from xarray import Dataset
 
 from . import data_for_tests_dir
 
+@pytest.fixture(scope="session")
+def temp_data_dir(tmpdir_factory) -> Path:
+    return Path(tmpdir_factory.mktemp('data'))
 
 @pytest.fixture()
 def ds_3dims_2vars_4coords() -> Path:
