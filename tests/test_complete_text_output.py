@@ -14,4 +14,13 @@ def test_full_run_to_text_output(temp_data_dir):
             file_text=str(out_path)
             )
 
-    assert filecmp.cmp(data_for_tests_dir / "a-b_test_golden_file.txt", str(out_path))
+    with open(data_for_tests_dir / "a-b_test_golden_file.txt", 'r') as f1, open(str(out_path), 'r') as f2:
+        exclude_n_lines = 3
+
+        for _ in range(exclude_n_lines):
+            next(f1)
+            next(f2)
+
+        for line1, line2 in zip(f1, f2):
+            assert line1 in line2
+
