@@ -211,7 +211,7 @@ class Outputter:
 
             if len(set_a) > 0:
                 self.print(msg, add_to_history=True)
-                self.print("\t" + Fore.CYAN + str(set_a))
+                self.print("\t" + Fore.CYAN + str(sorted(set_a)))
             else:
                 self.print(msg + "  (No items exist.)", add_to_history=True)
             return 0, 0, len(list_a)

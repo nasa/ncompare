@@ -7,9 +7,12 @@ from xarray import Dataset
 
 from . import data_for_tests_dir
 
+@pytest.fixture(scope="session")
+def temp_data_dir(tmpdir_factory) -> Path:
+    return Path(tmpdir_factory.mktemp('data'))
 
-@pytest.fixture()
-def ds_3dims_2vars_4coords() -> Path:
+@pytest.fixture(scope="session")
+def ds_3dims_2vars_4coords(temp_data_dir) -> Path:
     ds = Dataset(
         dict(
             z1=(["y", "x"], np.random.randn(2, 8)),
@@ -22,13 +25,13 @@ def ds_3dims_2vars_4coords() -> Path:
             y=range(2),
         ),
     )
-    filepath = data_for_tests_dir / "test_3dims_2vars_4coords.nc"
+    filepath = temp_data_dir / "test_3dims_2vars_4coords.nc"
     ds.to_netcdf(path=filepath)
 
     return filepath
 
-@pytest.fixture()
-def ds_4dims_3vars_5coords():
+@pytest.fixture(scope="session")
+def ds_4dims_3vars_5coords(temp_data_dir):
     ds = Dataset(
         dict(
             z1=(["y", "x"], np.random.randn(2, 8)),
@@ -43,14 +46,14 @@ def ds_4dims_3vars_5coords():
             z=range(9),
         ),
     )
-    filepath = data_for_tests_dir / "test_4dims_3vars_5coords.nc"
+    filepath = temp_data_dir / "test_4dims_3vars_5coords.nc"
     ds.to_netcdf(path=filepath)
 
     return filepath
 
-@pytest.fixture()
-def ds_3dims_3vars_4coords_1group():
-    filepath = data_for_tests_dir / "test_3dims_3vars_4coords_1group.nc"
+@pytest.fixture(scope="session")
+def ds_3dims_3vars_4coords_1group(temp_data_dir):
+    filepath = temp_data_dir / "test_3dims_3vars_4coords_1group.nc"
 
     f = nC.Dataset(filename=filepath, mode="w")
     grp1 = f.createGroup('Group1')
