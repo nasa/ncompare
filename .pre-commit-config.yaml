@@ -7,6 +7,7 @@ repos:
     hooks:
       - id: pyupgrade
         args: [ "--py39-plus" ]
+
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.4.0
     hooks:
@@ -19,6 +20,22 @@ repos:
       - id: debug-statements
       - id: pretty-format-json
         args: ['--autofix', '--no-ensure-ascii', '--no-sort-keys']
+
+  - repo: https://github.com/pylint-dev/pylint
+    rev: v3.0.0a7
+    hooks:
+      - id: pylint
+        name: pylint
+        entry: pylint
+        language: system
+        types: [ python ]
+        args:
+          [
+            "-rn", # Only display messages
+            "-sn", # Don't display the score
+            "--rcfile=.pylintrc", # Link to your config file
+          ]
+
   - repo: https://github.com/pycqa/flake8
     rev: 6.0.0
     hooks:
@@ -29,11 +46,13 @@ repos:
           - "--docstring-convention=numpy"
           - "--max-line-length=120"
           - "--ignore=E302"
+
   - repo: https://github.com/PyCQA/isort
     rev: 5.12.0
     hooks:
       - id: isort
         args: [ '--settings-file=pyproject.toml', "--add_imports='from __future__ import annotations'" ]
+
   - repo: https://github.com/kynan/nbstripout
     rev: 0.6.0
     hooks:
