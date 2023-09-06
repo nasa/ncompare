@@ -185,6 +185,51 @@ def compare_multiple_random_values(out: Outputter,
         out.print(Fore.CYAN + " No mismatches.")
     out.print("Done.", colors=False)
 
+def walk_common_groups_tree(top_a_name: str,
+                            top_a: Union[netCDF4.Dataset, netCDF4.Group],
+                            top_b_name: str,
+                            top_b: Union[netCDF4.Dataset, netCDF4.Group]
+                            ) -> tuple[str, netCDF4.Group, str, netCDF4.Group]:
+    """Yield names and groups from a netCDF4's group tree.
+
+    Parameters
+    ----------
+    top_a_name : str
+    top_a : netCDF4.Dataset or netCDF4.Group
+    top_b_name : str
+    top_b : netCDF4.Dataset or netCDF4.Group
+
+    Yields
+    ------
+    group A name : str
+    group A object : netCDF4.Group
+    group B name : str
+    group B object : netCDF4.Group
+    """
+    yield (
+        (top_a_name + "/" + group_a_name if group_a_name else "",
+         top_a[group_a_name] if (group_a_name and (group_a_name in top_a.groups)) else None,
+         top_b_name + "/" + group_b_name if group_b_name else "",
+         top_b[group_b_name] if (group_b_name and (group_b_name in top_b.groups)) else None,
+         )
+        for (_, group_a_name, group_b_name)
+        in common_elements(
+            top_a.groups if top_a is not None else "",
+            top_b.groups if top_b is not None else ""
+        )
+    )
+
+    for _, subgroup_a_name, subgroup_b_name in common_elements(
+            top_a.groups if top_a is not None else "",
+            top_b.groups if top_a is not None else ""
+    ):
+        yield from walk_common_groups_tree(
+            top_a_name + "/" + subgroup_a_name if subgroup_a_name else "",
+            top_a[subgroup_a_name] if (subgroup_a_name and (subgroup_a_name in top_a.groups)) else None,
+            top_a_name + "/" + subgroup_b_name if subgroup_b_name else "",
+            top_b[subgroup_b_name] if (subgroup_b_name and (subgroup_b_name in top_b.groups)) else None
+        )
+
 def compare_two_nc_files(out: Outputter,
                          nc_one: Path,
                          nc_two: Path,
@@ -199,54 +244,61 @@ def compare_two_nc_files(out: Outputter,
 
         out.side_by_side('All Variables', ' ', ' ', dash_line=False)
         out.side_by_side('-', '-', '-', dash_line=True)
-        out.side_by_side('num variables in root group:', len(nc_a.variables), len(nc_b.variables))
-        out.side_by_side('-', '-', '-', dash_line=True)
 
-        # Count differences between the lists of variables in the root group.
-        num_var_diffs['left'], num_var_diffs['right'], num_var_diffs['both'] = \
-            count_diffs(nc_a.variables, nc_b.variables)
+        group_counter = 0
+        _print_group_details_side_by_side(out, nc_a, "/", nc_b, "/", group_counter, num_var_diffs, show_attributes,
+                                          show_chunks)
+        group_counter += 1
 
-        # Go through root-level variables.
-        for variable_pair in common_elements(nc_a.variables, nc_b.variables):
-            # Get and print the properties of each variable
-            _print_var_properties_side_by_side(out,
-                                               _var_properties(nc_a, variable_pair[1]),
-                                               _var_properties(nc_b, variable_pair[2]),
-                                               show_chunks=show_chunks, show_attributes=show_attributes)
+        for group_pairs in walk_common_groups_tree("", nc_a, "", nc_b):
+            for group_a_name, group_a, group_b_name, group_b in group_pairs:
 
-        # Go through each group.
-        for group_pair in common_elements(nc_a.groups, nc_b.groups):
-            out.side_by_side(" ", " ", " ", dash_line=False, highlight_diff=False)
-            out.side_by_side(f"GROUP #{group_pair[0]:02}", group_pair[1].strip(), group_pair[2].strip(),
-                             dash_line=True, highlight_diff=False)
-
-            # Count the number of variables in this group as long as this group exists.
-            vars_a_sorted, vars_b_sorted = "", ""
-            if group_pair[1]:
-                vars_a_sorted = sorted(nc_a.groups[group_pair[1]].variables)
-            if group_pair[2]:
-                vars_b_sorted = sorted(nc_b.groups[group_pair[2]].variables)
-            out.side_by_side('num variables in group:', len(vars_a_sorted), len(vars_b_sorted), highlight_diff=True)
-            out.side_by_side('-', '-', '-', dash_line=True)
-
-            # Count differences between the lists of variables in this group.
-            left, right, both = count_diffs(vars_a_sorted, vars_b_sorted)
-            num_var_diffs['left'] += left
-            num_var_diffs['right'] += right
-            num_var_diffs['both'] += both
-
-            # Go through each variable in the current group.
-            for variable_pair in common_elements(vars_a_sorted, vars_b_sorted):
-                # Get and print the properties of each variable
-                _print_var_properties_side_by_side(out,
-                                                   _var_properties(nc_a, variable_pair[1], group_pair[1]),
-                                                   _var_properties(nc_b, variable_pair[2], group_pair[2]),
-                                                   show_chunks=show_chunks, show_attributes=show_attributes)
+                _print_group_details_side_by_side(out, group_a, group_a_name, group_b, group_b_name, group_counter,
+                                                  num_var_diffs, show_attributes, show_chunks)
+                group_counter += 1
 
     out.side_by_side('-', '-', '-', dash_line=True)
     out.side_by_side('Total number of shared items:', str(num_var_diffs['both']), str(num_var_diffs['both']))
     out.side_by_side('Total number of non-shared items:', str(num_var_diffs['left']), str(num_var_diffs['right']))
     return num_var_diffs['left'], num_var_diffs['right'], num_var_diffs['both']
+
+
+def _print_group_details_side_by_side(out,
+                                      group_a: Union[netCDF4.Dataset, netCDF4.Group],
+                                      group_a_name: str,
+                                      group_b: Union[netCDF4.Dataset, netCDF4.Group],
+                                      group_b_name: str,
+                                      group_counter: int,
+                                      num_var_diffs: dict,
+                                      show_attributes: bool,
+                                      show_chunks: bool) -> None:
+    out.side_by_side(" ", " ", " ", dash_line=False, highlight_diff=False)
+    out.side_by_side(f"GROUP #{group_counter:02}", group_a_name.strip(), group_b_name.strip(),
+                     dash_line=True, highlight_diff=False)
+
+    # Count the number of variables in this group as long as this group exists.
+    vars_a_sorted, vars_b_sorted = "", ""
+    if group_a:
+        vars_a_sorted = sorted(group_a.variables)
+    if group_b:
+        vars_b_sorted = sorted(group_b.variables)
+    out.side_by_side('num variables in group:', len(vars_a_sorted), len(vars_b_sorted), highlight_diff=True)
+    out.side_by_side('-', '-', '-', dash_line=True)
+
+    # Count differences between the lists of variables in this group.
+    left, right, both = count_diffs(vars_a_sorted, vars_b_sorted)
+    num_var_diffs['left'] += left
+    num_var_diffs['right'] += right
+    num_var_diffs['both'] += both
+
+    # Go through each variable in the current group.
+    for variable_pair in common_elements(vars_a_sorted, vars_b_sorted):
+        # Get and print the properties of each variable
+        _print_var_properties_side_by_side(out,
+                                           _var_properties(group_a, variable_pair[1]),
+                                           _var_properties(group_b, variable_pair[2]),
+                                           show_chunks=show_chunks, show_attributes=show_attributes)
+
 
 def _print_var_properties_side_by_side(out,
                                        v_a: VarProperties,
@@ -292,17 +344,14 @@ def _print_var_properties_side_by_side(out,
     if (sf_a != " ") or (sf_b != " "):
         out.side_by_side("sf:", str(sf_a), str(sf_b), highlight_diff=True)
 
-def _var_properties(dataset: netCDF4.Dataset,
-                    varname: str,
-                    groupname: str = None) -> VarProperties:
+def _var_properties(group: Union[netCDF4.Dataset, netCDF4.Group],
+                    varname: str) -> VarProperties:
     """Get the properties of a variable.
 
     Parameters
     ----------
-    dataset : `netCDF4.Dataset`
+    group : `netCDF4.Dataset` or netCDF4.Group object
     varname : str
-    groupname : str, optional
-        if None, the variable is retrieved from the 'root' group of the NetCDF
 
     Returns
     -------
@@ -317,10 +366,7 @@ def _var_properties(dataset: netCDF4.Dataset,
         any other attributes for this variable
     """
     if varname:
-        if groupname:
-            the_variable = dataset.groups[groupname].variables[varname]
-        else:
-            the_variable = dataset.variables[varname]
+        the_variable = group.variables[varname]
         v_dtype = str(the_variable.dtype)
         v_shape = str(the_variable.shape).strip()
         v_chunking = str(the_variable.chunking()).strip()
