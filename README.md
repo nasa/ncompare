@@ -1,5 +1,8 @@
 # ncompare
 _____
+[![Available on pypi](https://img.shields.io/pypi/v/ncompare.svg)](https://pypi.org/project/ncompare/)
+[![Checked with mypy](http://www.mypy-lang.org/static/mypy_badge.svg)](http://mypy-lang.org/)
+
 Compare the structure of two NetCDF files at the command line.
 `ncompare` generates a view of the matching and non-matching groups and variables between two NetCDF datasets.
 
