@@ -4,6 +4,7 @@ version = "1.0.1a4"
 description = "Compare the structure of two NetCDF files at the command line"
 authors = ["Daniel Kaufman <daniel.kaufman@nasa.gov>"]
 readme = "README.md"
+license = "license/LAR-20274-1_ncompare  NetCDF structural comparison tool_NOSA 1.3.pdf"
 classifiers = [
     "Topic :: Software Development :: Libraries :: Python Modules"
 ]
