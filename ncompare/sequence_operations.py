@@ -1,11 +1,13 @@
 """Helper functions for operating on iterables, such as lists or sets."""
-from collections.abc import Iterable
+from collections.abc import Generator, Iterable
 from typing import Union
 
 from ncompare.utils import coerce_to_str
 
 
-def common_elements(sequence_a: Iterable, sequence_b: Iterable) -> tuple[int, str, str]:
+def common_elements(
+    sequence_a: Iterable, sequence_b: Iterable
+) -> Generator[tuple[int, str, str], None, None]:
     """Loop over combined items of two iterables, and yield aligned item pairs.
 
     Note
@@ -43,7 +45,7 @@ def common_elements(sequence_a: Iterable, sequence_b: Iterable) -> tuple[int, st
 
 
 def count_diffs(
-    list_a: list[Union[str, int]], list_b: list[Union[str, int]]
+    list_a: Union[list[str], list[int]], list_b: Union[list[str], list[int]]
 ) -> tuple[int, int, int]:
     """Count how many elements are either uniquely in one list or the other, or in both.
 
