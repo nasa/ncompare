@@ -3,7 +3,7 @@ default_language_version:
 
 repos:
   - repo: https://github.com/asottile/pyupgrade
-    rev: v3.7.0
+    rev: v3.11.0
     hooks:
       - id: pyupgrade
         args: [ "--py39-plus" ]
@@ -36,25 +36,26 @@ repos:
             "--rcfile=.pylintrc", # Link to your config file
           ]
 
-  - repo: https://github.com/pycqa/flake8
-    rev: 6.0.0
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    # Ruff version.
+    rev: 'v0.0.290'
     hooks:
-      - id: flake8
-        exclude: pyproject.toml, .git, __pycache__, old, build, dist
-        additional_dependencies: [ 'flake8-docstrings' ]
-        args:
-          - "--docstring-convention=numpy"
-          - "--max-line-length=120"
-          - "--ignore=E302"
+      - id: ruff
+        args: [ "--fix" ]
 
-  - repo: https://github.com/PyCQA/isort
-    rev: 5.12.0
+  # https://github.com/python/black#version-control-integration
+  - repo: https://github.com/psf/black
+    rev: 23.9.1
     hooks:
-      - id: isort
-        args: [ '--settings-file=pyproject.toml', "--add_imports='from __future__ import annotations'" ]
+      - id: black-jupyter
+
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.5.1
+    hooks:
+      - id: mypy
 
   - repo: https://github.com/kynan/nbstripout
-    rev: 0.6.0
+    rev: 0.6.1
     hooks:
       - id: nbstripout
         files: ".ipynb"
