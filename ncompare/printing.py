@@ -4,7 +4,7 @@ import csv
 import re
 from collections.abc import Iterable
 from pathlib import Path
-from typing import Union
+from typing import Optional, TextIO, Union
 
 import colorama
 import openpyxl
@@ -41,7 +41,7 @@ class Outputter:
         self,
         keep_print_history: bool = False,
         no_color: bool = False,
-        text_file: Union[str, Path] = None,
+        text_file: Optional[Union[str, Path]] = None,
     ):
         """Set up the handling of printing and saving destinations.
 
@@ -51,10 +51,7 @@ class Outputter:
         """
         # Parse the print history option.
         self._keep_print_history = keep_print_history
-        if self._keep_print_history:
-            self._line_history = []
-        else:
-            self._line_history = None
+        self._line_history: list[list[str]] = []
 
         if no_color:
             # Replace colorized styles with blank strings.
@@ -71,7 +68,7 @@ class Outputter:
             if filepath.exists():
                 pass
             # This will overwrite any existing file at this path, if one exists.
-            self._text_file_obj = open(
+            self._text_file_obj: Optional[TextIO] = open(
                 filepath, "w", encoding="utf-8"
             )  # pylint: disable=consider-using-with
         else:
@@ -145,7 +142,7 @@ class Outputter:
         else:
             raise TypeError(f"Invalid type <{type(args)}>. Expected a `str` or `list`.")
 
-        if self._line_history is not None:
+        if self._keep_print_history:
             self._line_history.append(parsed_strings)
 
     @staticmethod

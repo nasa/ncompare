@@ -8,7 +8,7 @@ import traceback
 from collections import namedtuple
 from collections.abc import Iterable
 from pathlib import Path
-from typing import Union
+from typing import Optional, Union
 
 import netCDF4
 import numpy as np
@@ -25,14 +25,14 @@ VarProperties = namedtuple("VarProperties", "varname, variable, dtype, shape, ch
 def compare(
     nc_a: Union[str, Path],
     nc_b: Union[str, Path],
-    comparison_var_group: str = None,
-    comparison_var_name: str = None,
+    comparison_var_group: Optional[str] = None,
+    comparison_var_name: Optional[str] = None,
     no_color: bool = False,
     show_chunks: bool = False,
     show_attributes: bool = False,
-    file_text: str = None,
-    file_csv: str = None,
-    file_xlsx: str = None,
+    file_text: Union[str, Path] = "",
+    file_csv: Union[str, Path] = "",
+    file_xlsx: Union[str, Path] = "",
 ) -> None:
     """Compare the variables contained within two different NetCDF datasets.
 
@@ -103,8 +103,8 @@ def run_through_comparisons(
     out: Outputter,
     nc_a: Union[str, Path],
     nc_b: Union[str, Path],
-    comparison_var_group: str,
-    comparison_var_name: str,
+    comparison_var_group: Optional[str],
+    comparison_var_name: Optional[str],
     show_chunks: bool,
     show_attributes: bool,
 ) -> None:
@@ -164,8 +164,9 @@ def run_through_comparisons(
                 out.print(
                     Style.BRIGHT
                     + Fore.RED
-                    + "\nError when comparing values for variable <%s> in group <%s>."
-                    % (comparison_var_name, comparison_var_group)
+                    + "\nError when comparing values for variable <{}> in group <{}>.".format(
+                        comparison_var_name, comparison_var_group
+                    )
                 )
                 out.print(traceback.format_exc())
                 out.print("\n")
@@ -181,7 +182,11 @@ def run_through_comparisons(
 
 
 def compare_multiple_random_values(
-    out: Outputter, nc_a: Path, nc_b: Path, groupname: str, num_comparisons: int = 100
+    out: Outputter,
+    nc_a: Union[str, Path],
+    nc_b: Union[str, Path],
+    groupname: str,
+    num_comparisons: int = 100,
 ):
     """Iterate through N random samples, and evaluate whether the differences exceed a threshold."""
     # Open a variable from each NetCDF
@@ -206,7 +211,7 @@ def compare_multiple_random_values(
     out.print("Done.", colors=False)
 
 
-def walk_common_groups_tree(
+def walk_common_groups_tree(  # type:ignore[misc]
     top_a_name: str,
     top_a: Union[netCDF4.Dataset, netCDF4.Group],
     top_b_name: str,
@@ -257,8 +262,8 @@ def walk_common_groups_tree(
 
 def compare_two_nc_files(
     out: Outputter,
-    nc_one: Path,
-    nc_two: Path,
+    nc_one: Union[str, Path],
+    nc_two: Union[str, Path],
     show_chunks: bool = False,
     show_attributes: bool = False,
 ) -> tuple[int, int, int]:
@@ -322,7 +327,7 @@ def _print_group_details_side_by_side(
     )
 
     # Count the number of variables in this group as long as this group exists.
-    vars_a_sorted, vars_b_sorted = "", ""
+    vars_a_sorted, vars_b_sorted = [""], [""]
     if group_a:
         vars_a_sorted = sorted(group_a.variables)
     if group_b:
@@ -453,11 +458,11 @@ def _match_random_value(
     rand_index = []
     for dim_length in nc_var_a.shape:
         rand_index.append(random.randint(0, dim_length - 1))
-    rand_index = tuple(rand_index)
+    rand_index_tuple = tuple(rand_index)
 
     # Get the values from each variable
-    value_a = nc_var_a.values[rand_index]
-    value_b = nc_var_b.values[rand_index]
+    value_a = nc_var_a.values[rand_index_tuple]
+    value_b = nc_var_b.values[rand_index_tuple]
 
     # Check whether null
     if np.isnan(value_a) or np.isnan(value_b):
@@ -469,7 +474,7 @@ def _match_random_value(
         out.print()
         out.print(Fore.RED + f"Difference exceeded threshold (diff == {diff}")
         out.print(f"var shape: {nc_var_a.shape}", colors=False)
-        out.print(f"indices:   {rand_index}", colors=False)
+        out.print(f"indices:   {rand_index_tuple}", colors=False)
         out.print(f"value a: {value_a}", colors=False)
         out.print(f"value b: {value_b}", colors=False, end="\n\n")
         return False
@@ -479,7 +484,7 @@ def _match_random_value(
 
 def _print_sample_values(out: Outputter, nc_filepath, groupname: str, varname: str) -> None:
     comparison_variable = xr.open_dataset(nc_filepath, backend_kwargs={"group": groupname})[varname]
-    out.print(comparison_variable.values[0, :], colors=False)
+    out.print(str(comparison_variable.values[0, :]), colors=False)
 
 
 def _get_attribute_value_as_str(varprops: VarProperties, attribute_key: str) -> str:
@@ -490,31 +495,31 @@ def _get_attribute_value_as_str(varprops: VarProperties, attribute_key: str) -> 
             #  we are preventing any subsequent difference checker from detecting
             #  differences past the 5th element in the iterable.
             #  So, we need to figure out a way to still check for other differences past the 5th element.
-            return "[" + ", ".join([str(x) for x in attr[:5]]) + ", ..." + "]"
+            return "[" + ", ".join([str(x) for x in attr[:5]]) + ", ..." + "]"  # type:ignore[index]
 
         return str(attr)
 
     return ""
 
 
-def _get_vars(nc_filepath: Path, groupname: str) -> list:
+def _get_vars(nc_filepath: Union[str, Path], groupname: str) -> list:
     try:
         grp = xr.open_dataset(nc_filepath, backend_kwargs={"group": groupname})
     except OSError as err:
         print("\nError occurred when attempting to open group within <%s>.\n" % nc_filepath)
         raise err
-    grp_varlist = sorted(list(grp.variables.keys()))
+    grp_varlist = sorted(list(grp.variables.keys()))  # type:ignore[type-var]
 
     return grp_varlist
 
 
-def _get_groups(nc_filepath: Path) -> list:
+def _get_groups(nc_filepath: Union[str, Path]) -> list:
     with netCDF4.Dataset(nc_filepath) as dataset:
         groups_list = list(dataset.groups.keys())
     return groups_list
 
 
-def _get_dims(nc_filepath: Path) -> list:
+def _get_dims(nc_filepath: Union[str, Path]) -> list:
     def __get_dim_list(decode_times=True):
         with xr.open_dataset(nc_filepath, decode_times=decode_times) as dataset:
             return list(dataset.dims.items())
