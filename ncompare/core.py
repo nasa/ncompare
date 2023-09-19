@@ -327,7 +327,8 @@ def _print_group_details_side_by_side(
     )
 
     # Count the number of variables in this group as long as this group exists.
-    vars_a_sorted, vars_b_sorted = [""], [""]
+    vars_a_sorted: Union[list, str] = ""
+    vars_b_sorted: Union[list, str] = ""
     if group_a:
         vars_a_sorted = sorted(group_a.variables)
     if group_b:
