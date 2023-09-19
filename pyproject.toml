@@ -22,9 +22,10 @@ colorama = "^0.4.5"
 openpyxl = "^3.0.10"
 
 [tool.poetry.group.dev.dependencies]
-flake8 = "^6.1.0"
-pylint = "^2.17.5"
 pytest = "^7.4.0"
+ruff = "^0.0.290"
+black = "^23.9.1"
+mypy = "^1.5.1"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
@@ -38,3 +39,32 @@ include_trailing_comma = "true"
 default_section = "THIRDPARTY"
 lines_after_imports = 2
 combine_as_imports = "true"
+
+[tool.black]
+line-length = 100
+skip-string-normalization = true
+
+
+[tool.ruff]
+builtins = ["ellipsis"]
+exclude = [
+  ".eggs",
+  "doc",
+  "_typed_ops.pyi",
+]
+target-version = "py39"
+# E402: module level import not at top of file
+# E501: line too long - let black worry about that
+# E731: do not assign a lambda expression, use a def
+ignore = [
+  "E402",
+  "E501",
+  "E731",
+]
+select = [
+  "F", # Pyflakes
+  "E", # Pycodestyle
+  "W",
+  "I", # isort
+  "UP", # Pyupgrade
+]
