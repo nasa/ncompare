@@ -14,10 +14,10 @@ from openpyxl.styles import Font
 
 from ncompare.sequence_operations import common_elements, count_diffs
 
-
 # Set up regex remover of ANSI color escape sequences
 #   From <https://stackoverflow.com/a/14693789>
-ansi_escape = re.compile(r'''
+ansi_escape = re.compile(
+    r'''
     \x1B  # ESC
     (?:   # 7-bit C1 Fe (except CSI)
         [@-Z\\-_]
@@ -27,17 +27,22 @@ ansi_escape = re.compile(r'''
         [ -/]*  # Intermediate bytes
         [@-~]   # Final byte
     )
-''', re.VERBOSE)
+''',
+    re.VERBOSE,
+)
+
 
 class Outputter:
     """Handler for print statements and saving to text and/or csv files."""
 
     _difference_marker = "***"
 
-    def __init__(self,
-                 keep_print_history: bool = False,
-                 no_color: bool = False,
-                 text_file: Union[str, Path] = None):
+    def __init__(
+        self,
+        keep_print_history: bool = False,
+        no_color: bool = False,
+        text_file: Union[str, Path] = None,
+    ):
         """Set up the handling of printing and saving destinations.
 
         Parameters
@@ -66,7 +71,9 @@ class Outputter:
             if filepath.exists():
                 pass
             # This will overwrite any existing file at this path, if one exists.
-            self._text_file_obj = open(filepath, "w", encoding="utf-8")  # pylint: disable=consider-using-with
+            self._text_file_obj = open(
+                filepath, "w", encoding="utf-8"
+            )  # pylint: disable=consider-using-with
         else:
             self._text_file_obj = None
 
@@ -77,11 +84,9 @@ class Outputter:
         if self._text_file_obj:
             self._text_file_obj.close()
 
-    def print(self,
-              string: str = "",
-              colors: bool = False,
-              add_to_history: bool = False,
-              **print_args) -> None:
+    def print(
+        self, string: str = "", colors: bool = False, add_to_history: bool = False, **print_args
+    ) -> None:
         """Print text using custom options.
 
         Parameters
@@ -130,8 +135,9 @@ class Outputter:
                     try:
                         string = str(item)
                     except Exception as err:
-                        raise TypeError(f"Error <{err}> with {str(item)}! Expected a string; got a <{type(item)}>.") \
-                            from err
+                        raise TypeError(
+                            f"Error <{err}> with {str(item)}! Expected a string; got a <{type(item)}>."
+                        ) from err
                 else:
                     string = item
 
@@ -147,8 +153,7 @@ class Outputter:
         """Return text with normal color and style."""
         return Fore.WHITE + Style.RESET_ALL + str(string)
 
-    def side_by_side(self, str_a, str_b, str_c,
-                     dash_line=False, highlight_diff=False) -> None:
+    def side_by_side(self, str_a, str_b, str_c, dash_line=False, highlight_diff=False) -> None:
         """Print three strings on one line, with customized formatting and an optional marker in the fourth column.
 
         Parameters
@@ -187,13 +192,20 @@ class Outputter:
         counter_prefix
         """
         for idx, item_a, item_b in common_elements(list_a, list_b):
-            self.side_by_side(f"{counter_prefix} #{idx:02}", item_a.strip(), item_b.strip(),
-                              dash_line=True, highlight_diff=True)
+            self.side_by_side(
+                f"{counter_prefix} #{idx:02}",
+                item_a.strip(),
+                item_b.strip(),
+                dash_line=True,
+                highlight_diff=True,
+            )
 
-    def lists_diff(self,
-                   list_a: list, list_b: list,
-                   ignore_order: bool = True,
-                   ) -> tuple[int, int, int]:
+    def lists_diff(
+        self,
+        list_a: list,
+        list_b: list,
+        ignore_order: bool = True,
+    ) -> tuple[int, int, int]:
         """Compare two lists and state whether there are differences."""
         set_a, set_b = set(list_a), set(list_b)
 
@@ -218,8 +230,11 @@ class Outputter:
 
         # If contents are not the same, continue...
         left, right, both = count_diffs(list_a, list_b)
-        self.print("\t" + "Are all items the same? ---> " + Fore.RED + f"{str(contents_are_same)}."
-                   f"  ({_item_is_or_are(both)} shared, out of {len(s_union)} total.)", add_to_history=True)
+        self.print(
+            "\t" + "Are all items the same? ---> " + Fore.RED + f"{str(contents_are_same)}."
+            f"  ({_item_is_or_are(both)} shared, out of {len(s_union)} total.)",
+            add_to_history=True,
+        )
 
         # Which variables are different?
         self.print("\t" + Fore.RED + "Which items are different?")
@@ -264,11 +279,13 @@ class Outputter:
         # Wrap up
         workbook.save(filename)
 
+
 def _item_is_or_are(count):
     if count == 1:
         return f"{count} item is"
 
     return f"{count} items are"
+
 
 def _excel_red_cells(data, sheet):
     """Stylize cells in Excel with a red font."""
@@ -276,6 +293,7 @@ def _excel_red_cells(data, sheet):
         cell = Cell(sheet, column="A", row=1, value=cell)
         cell.font = Font(bold=True, color="FFFF0000")
         yield cell
+
 
 def _excel_bold_underline_cells(data, sheet):
     """Stylize cells in Excel with a bold and underlined font."""
