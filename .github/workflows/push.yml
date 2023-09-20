@@ -110,3 +110,31 @@ jobs:
         git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
         git tag -a "${{ env.software_version }}" -m "Version ${{ env.software_version }}"
         git push origin "${{ env.software_version }}"
+
+    - name: Build Python Artifact
+      run: |
+        poetry build
+
+    - uses: actions/upload-artifact@v2
+      with:
+        name: python-artifact
+        path: dist/*
+
+    - name: Publish to test.pypi.org
+      id: pypi-test-publish
+      if: |
+        github.ref == 'refs/heads/develop' ||
+        startsWith(github.ref, 'refs/heads/release')
+      env:
+        POETRY_PYPI_TOKEN_TESTPYPI: ${{secrets.POETRY_PYPI_TOKEN_TESTPYPI}}
+      run: |
+        poetry config repositories.testpypi https://test.pypi.org/legacy/
+        poetry publish -r testpypi
+
+    - name: Publish to pypi.org
+      if: ${{ github.ref == 'refs/heads/main' }}
+      id: pypi-publish
+      env:
+        POETRY_PYPI_TOKEN_PYPI: ${{secrets.POETRY_PYPI_TOKEN_PYPI}}
+      run: |
+        poetry publish
