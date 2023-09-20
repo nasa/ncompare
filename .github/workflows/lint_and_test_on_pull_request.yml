@@ -30,8 +30,7 @@ jobs:
 
     - name: Lint
       run: |
-        poetry run pylint ncompare
-        poetry run flake8 ncompare
+        poetry run ruff ncompare
 
     - name: Test with pytest
       run: |
