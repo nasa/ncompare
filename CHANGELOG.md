@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Added
 ### Changed
+- [issue/23](https://github.com/nasa/ncompare/issues/23): Use ruff and black for linting and formatting
 ### Deprecated 
 ### Removed
 ### Fixed
