@@ -6,6 +6,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
+### Changed
+### Deprecated 
+### Removed
+### Fixed
+### Security
+
+## [1.0.2]
+### Added
 - [issue/19](https://github.com/nasa/ncompare/issues/19): Add automated publishing (via poetry) to TestPyPI and PyPI in Actions workflow
 ### Changed
 - [issue/23](https://github.com/nasa/ncompare/issues/23): Use ruff and black for linting and formatting

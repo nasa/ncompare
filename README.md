@@ -76,9 +76,10 @@ Moreover, `nco` operators' `ncdiff` function computes value differences, but
 --- as far as the developers of this tool are aware ---
 `nco` does not have a simple function to show structural differences between NetCDF4 datasets.
  Note that `h5diff`, provided in the HDF5 software, can also be used to find differences. 
-In comparison to `h5diff`, `ncompare` is written in Python, and `ncompare` provides aligned and 
-colorized differences for quicker assessments and generates reports directly formatted for other applications. However, note that
-`h5diff` provides comparison of some hidden hdf5 properties, such as _Netcdf4Dimid or _Netcdf4Coordinates, 
+In comparison to `h5diff`, `ncompare` is written and runnable in Python; `ncompare` provides _aligned_ and 
+_colorized_ difference report for quicker assessments of groups, variable names, types, shapes, and attributes; 
+and can generate report files formatted for other applications. However, note that
+`h5diff` provides comparison of some otherwise "hidden" hdf5 properties, such as _Netcdf4Dimid or _Netcdf4Coordinates, 
 which are not currently assessed by `ncompare`.   
 
 ## Known limitations
