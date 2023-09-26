@@ -12,7 +12,7 @@ _____
 ### Using pip
 
 Install the latest version of the package from PyPI using pip:
-```
+```shell
 pip install ncompare
 ```
 
@@ -20,7 +20,7 @@ pip install ncompare
 
 For local development, one can clone the repository and then use poetry or pip from the local directory:
 
-```
+```shell
 git clone https://github.com/nasa/ncompare.git
 ```
 
@@ -35,18 +35,21 @@ ii) Run ```pip install .``` from the repository directory.
 
 ## Usage
 _____
-Otherwise:
-```
+
+```shell
 ncompare <netcdf file #1> <netcdf file #2>
 ```
 
-#### If installed using a `poetry` environment:
-```
-poetry run ncompare <netcdf file #1> <netcdf file #2>
+For example:
+
+```shell
+ncompare S001G01.nc S001G01_SUBSET.nc -g product -v ozone_profile --report subset_comparison.txt
 ```
 
-Example:
-`ncompare S001G01.nc S001G01_SUBSET.nc -g product -v ozone_profile --report subset_comparison.txt`
+###### Or, If installed using a `poetry` environment:
+```shell
+poetry run ncompare <netcdf file #1> <netcdf file #2>
+```
 
 
 
