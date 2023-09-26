@@ -1,6 +1,7 @@
 # ncompare
 _____
 [![Available on pypi](https://img.shields.io/pypi/v/ncompare.svg)](https://pypi.org/project/ncompare/)
+[![Formatted with black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/python/black)
 [![Checked with mypy](http://www.mypy-lang.org/static/mypy_badge.svg)](http://mypy-lang.org/)
 
 Compare the structure of two NetCDF files at the command line.
@@ -12,7 +13,7 @@ _____
 ### Using pip
 
 Install the latest version of the package from PyPI using pip:
-```
+```shell
 pip install ncompare
 ```
 
@@ -20,7 +21,7 @@ pip install ncompare
 
 For local development, one can clone the repository and then use poetry or pip from the local directory:
 
-```
+```shell
 git clone https://github.com/nasa/ncompare.git
 ```
 
@@ -35,18 +36,21 @@ ii) Run ```pip install .``` from the repository directory.
 
 ## Usage
 _____
-Otherwise:
-```
+
+```shell
 ncompare <netcdf file #1> <netcdf file #2>
 ```
 
-#### If installed using a `poetry` environment:
-```
-poetry run ncompare <netcdf file #1> <netcdf file #2>
+For example:
+
+```shell
+ncompare S001G01.nc S001G01_SUBSET.nc -g product -v ozone_profile --report subset_comparison.txt
 ```
 
-Example:
-`ncompare S001G01.nc S001G01_SUBSET.nc -g product -v ozone_profile --report subset_comparison.txt`
+###### Or, If installed using a `poetry` environment:
+```shell
+poetry run ncompare <netcdf file #1> <netcdf file #2>
+```
 
 
 
@@ -84,10 +88,10 @@ which are not currently assessed by `ncompare`.
 
 ## Known limitations
 _____
-- This uses `xarray` to access the root-level dimensions.
+- `ncompare` uses `xarray` to access the root-level dimensions.
 In some cases, `xarray` will miss dimensions whose names do not also exist as variable names in the dataset
   (also known as non-coordinate dimensions).
-- Underlying hdf5 properties, such as _Netcdf4Dimid or _Netcdf4Coordinates, are not currently assesssed by `ncompare`.
+- Some underlying HDF5 properties, such as _Netcdf4Dimid or _Netcdf4Coordinates, are not currently assesssed by `ncompare`.
 
 # Notices:
 _____
