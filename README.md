@@ -87,10 +87,10 @@ which are not currently assessed by `ncompare`.
 
 ## Known limitations
 _____
-- This uses `xarray` to access the root-level dimensions.
+- `ncompare` uses `xarray` to access the root-level dimensions.
 In some cases, `xarray` will miss dimensions whose names do not also exist as variable names in the dataset
   (also known as non-coordinate dimensions).
-- Underlying hdf5 properties, such as _Netcdf4Dimid or _Netcdf4Coordinates, are not currently assesssed by `ncompare`.
+- Some underlying HDF5 properties, such as _Netcdf4Dimid or _Netcdf4Coordinates, are not currently assesssed by `ncompare`.
 
 # Notices:
 _____
