@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "ncompare"
-version = "1.0.2"
+version = "1.1.0rc4"
 description = "Compare the structure of two NetCDF files at the command line"
 authors = ["Daniel Kaufman <daniel.kaufman@nasa.gov>"]
 readme = "README.md"
@@ -14,16 +14,16 @@ classifiers = [
 ncompare = "ncompare.console:main"
 
 [tool.poetry.dependencies]
-python = "^3.9"
-numpy = "^1.23.2"
-netCDF4 = "^1.6.0"
-xarray = "^2022.6.0"
-colorama = "^0.4.5"
-openpyxl = "^3.0.10"
+python = ">=3.9,<3.13"
+numpy = "^1.26.0"
+netCDF4 = "^1.6.4"
+xarray = "^2023.9.0"
+colorama = "^0.4.6"
+openpyxl = "^3.1.2"
 
 [tool.poetry.group.dev.dependencies]
-pytest = "^7.4.0"
-ruff = "^0.0.290"
+pytest = "^7.4.2"
+ruff = "^0.0.291"
 black = "^23.9.1"
 mypy = "^1.5.1"
 
