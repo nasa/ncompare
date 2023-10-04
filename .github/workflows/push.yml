@@ -70,10 +70,22 @@ jobs:
       if: ${{ startsWith(github.ref, 'refs/heads/main') }}
       env:
         CURRENT_VERSION: ${{ steps.get-version.outputs.current_version }}
+        # True if the version already has a 'rc' pre-release identifier
+        BUMP_RC: ${{ contains(steps.get-version.outputs.current_version, 'rc') }}
+        # True if the version already has a 'alpha' pre-release identifier
+        BUMP_A: ${{ contains(steps.get-version.outputs.current_version, 'a') }}
+        # True if the version already has a 'beta' pre-release identifier
+        BUMP_B: ${{ contains(steps.get-version.outputs.current_version, 'b') }}
       # Remove rc* from end of version string
       # The ${string%%substring} syntax below deletes the longest match of $substring from back of $string.
       run: |
-        poetry version ${CURRENT_VERSION%%rc*}
+        if [ "$BUMP_RC" = true ]; then
+          poetry version ${CURRENT_VERSION%%rc*}
+        elif [ "$BUMP_B" = true ]; then
+          poetry version ${CURRENT_VERSION%%b*}
+        elif [ "$BUMP_A" = true ]; then
+          poetry version ${CURRENT_VERSION%%a*}
+        fi
         echo "software_version=$(poetry version | awk '{print $2}')" >> $GITHUB_ENV
         echo "venue=ops" >> $GITHUB_ENV
     
