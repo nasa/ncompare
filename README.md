@@ -58,7 +58,7 @@ poetry run ncompare <netcdf file #1> <netcdf file #2>
 ### Options
 
 - `--file-text` [FILE_PATH]: Text file to write output to.
-- `--file-csv` [FILE_PATH]: Comma separated values (CSV) file to write output to.
+- `--file-csv` [FILE_PATH]: Comma-separated values (CSV) file to write output to.
 - `--file-xlsx` [FILE_PATH]: Excel file to write output to.
 - `--no-color` : Turn off all colorized output.
 - `--show-attributes` : Include variable attributes in the table that compares variables.
