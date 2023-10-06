@@ -51,7 +51,8 @@ def count_diffs(
 
     Note
     ----
-    Duplicates are ignored, i.e. any elements present more than once in a list are treated as if they only occur once.
+    Duplicates are ignored, i.e., any elements present more than once in a list are treated
+    as if they only occur once.
 
     Returns
     -------
@@ -66,7 +67,7 @@ def count_diffs(
     set_a = set(map(coerce_to_str, list_a))
     set_b = set(map(coerce_to_str, list_b))
 
-    # The number of differences are computed.
+    # The number of differences is computed.
     left = len(set_a - set_b)
     right = len(set_b - set_a)
     both = len(set_a.intersection(set_b))
