@@ -42,7 +42,7 @@ def _cli() -> argparse.Namespace:
 
 
 def main():
-    """Run from command line."""
+    """Run from the command line."""
     args = _cli()
 
     try:

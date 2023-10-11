@@ -1,0 +1,12 @@
+name: Receive PR
+
+# read-only repo token
+# no access to secrets
+on:
+  pull_request:
+    # Sequence of patterns matched against refs/heads
+    branches: [ feature/**, issue/**, issues/** ]
+
+jobs:
+  build_and_test:
+    uses: ./.github/workflows/reusable_run_tests.yml
