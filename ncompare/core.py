@@ -55,7 +55,7 @@ def compare(
     file_text : str
         filepath destination to save captured text output as a TXT file.
     file_csv : str
-        filepath destination to save comparison output as comma separated values (CSV).
+        filepath destination to save comparison output as comma-separated values (CSV).
     file_xlsx : str
         filepath destination to save comparison output as an Excel workbook.
 
@@ -377,7 +377,7 @@ def _print_var_properties_side_by_side(
         out.side_by_side("chunksize:", v_a.chunking, v_b.chunking, highlight_diff=True)
     # Attributes
     if show_attributes:
-        # Get name of attributes if they exist
+        # Get the name of attributes if they exist
         attrs_a_names = []
         if v_a.attributes:
             attrs_a_names = v_a.attributes.keys()
