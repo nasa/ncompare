@@ -67,7 +67,7 @@ class Outputter:
             filepath = Path(text_file)
             if filepath.exists():
                 pass
-            # This will overwrite any existing file at this path, if one exists.
+            # This will overwrite any existing file at this path if one exists.
             self._text_file_obj: Optional[TextIO] = open(
                 filepath, "w", encoding="utf-8"
             )  # pylint: disable=consider-using-with
@@ -118,7 +118,7 @@ class Outputter:
         """Convert a list of items to a comma-separated string that is added to the csv history."""
 
         def _parse_single_str(s):  # pylint: disable=invalid-name
-            # Remove ANSI escape sequences before adding to parsed string list.
+            # Remove ANSI escape sequences before adding to a parsed string list.
             result = ansi_escape.sub('', s)
             # Remove any leading or trailing newlines.
             return result.strip("\n")
