@@ -1,0 +1,65 @@
+# This workflow will install Python dependencies, run tests,
+#   and report test results and code coverage as artifacts. It will
+#   be called by the workflow that runs tests against new PRs and as
+#   a first step in the workflow that publishes new Docker images.
+
+name: A reusable workflow to build and run the unit test suite
+
+on:
+  workflow_call:
+  workflow_dispatch:
+
+jobs:
+  build_and_test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Set up Poetry
+        uses: abatilo/actions-poetry@v2.3.0
+        with:
+          poetry-version: 1.3.2
+
+      - name: Install ncompare
+        run: poetry install
+
+      - name: Lint
+        run: |
+          poetry run ruff ncompare
+
+      - name: Run tests with coverage
+        run: |
+          poetry run coverage run -m pytest >& test_results.txt
+
+      - name: Generate coverage report
+        if: ${{ always() }}
+        run: |
+          poetry run coverage report -m >& coverage_report.txt
+          poetry run coverage html --dir htmlcov
+
+      - name: Archive test results
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: test result
+          path: test_results.txt
+
+      - name: Archive code coverage report (plain text)
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: code coverage report (plain text)
+          path: coverage_report.txt
+
+      - name: Archive code coverage report (HTML)
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: code coverage report (HTML)
+          path: htmlcov/*
