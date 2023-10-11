@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - [pull-request/44](https://github.com/nasa/ncompare/pull/44): Added issue templates and markdown guides for CONTRIBUTING and the CODE_OF_CONDUCT
 ### Changed
+- [pull-request/47](https://github.com/nasa/ncompare/pull/47): Added coverage and move test running to separate workflow yml
 ### Deprecated
 ### Removed
 ### Fixed
