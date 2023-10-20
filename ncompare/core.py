@@ -193,8 +193,8 @@ def compare_multiple_random_values(
 ):
     """Iterate through N random samples, and evaluate whether the differences exceed a threshold."""
     # Open a variable from each NetCDF
-    nc_var_a = xr.open_dataset(nc_a, backend_kwargs={"group": groupname})[varname]
-    nc_var_b = xr.open_dataset(nc_b, backend_kwargs={"group": groupname})[varname]
+    nc_var_a = xr.open_dataset(nc_a, backend_kwargs={"group": groupname}).variables[varname]
+    nc_var_b = xr.open_dataset(nc_b, backend_kwargs={"group": groupname}).variables[varname]
 
     num_mismatches = 0
     for _ in range(num_comparisons):
@@ -448,7 +448,7 @@ def _var_properties(group: Union[netCDF4.Dataset, netCDF4.Group], varname: str) 
 
 
 def _match_random_value(
-    out: Outputter, nc_var_a: xr.DataArray, nc_var_b: xr.DataArray, thresh: float = 1e-6
+    out: Outputter, nc_var_a: xr.Variable, nc_var_b: xr.Variable, thresh: float = 1e-6
 ) -> Union[bool, None]:
     """Check whether a randomly selected data point matches between two variables.
 

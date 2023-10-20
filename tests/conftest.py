@@ -6,6 +6,11 @@ import pytest
 from xarray import Dataset
 
 from . import data_for_tests_dir
+from ncompare.printing import Outputter
+
+@pytest.fixture(scope="session")
+def outputter_obj():
+    return Outputter()
 
 @pytest.fixture(scope="session")
 def temp_data_dir(tmpdir_factory) -> Path:
@@ -14,11 +19,12 @@ def temp_data_dir(tmpdir_factory) -> Path:
 @pytest.fixture(scope="session")
 def ds_3dims_2vars_4coords(temp_data_dir) -> Path:
     ds = Dataset(
-        dict(
+        data_vars=dict(
+            # "normal" (Gaussian) distribution of mean 0 and variance 1
             z1=(["y", "x"], np.random.randn(2, 8)),
             z2=(["time", "y"], np.random.randn(10, 2)),
         ),
-        dict(
+        coords=dict(
             x=("x", np.linspace(0, 1.0, 8)),
             time=("time", np.linspace(0, 1.0, 10)),
             c=("y", ["a", "b"]),
@@ -33,12 +39,13 @@ def ds_3dims_2vars_4coords(temp_data_dir) -> Path:
 @pytest.fixture(scope="session")
 def ds_4dims_3vars_5coords(temp_data_dir):
     ds = Dataset(
-        dict(
-            z1=(["y", "x"], np.random.randn(2, 8)),
+        data_vars=dict(
+            # "normal" (Gaussian) distribution of mean 10 and standard deviation 2.5
+            z1=(["y", "x"], 10 + 2.5 * np.random.randn(2, 8)),
             z2=(["time", "y"], np.random.randn(10, 2)),
             z3=(["y", "z"], np.random.randn(2, 9)),
         ),
-        dict(
+        coords=dict(
             x=("x", np.linspace(0, 1.0, 8)),
             time=("time", np.linspace(0, 1.0, 10)),
             c=("y", ["a", "b"]),
