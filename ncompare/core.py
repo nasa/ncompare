@@ -127,7 +127,7 @@ def run_through_comparisons(
     _, _, _ = out.lists_diff(list_a, list_b)
 
     # Show the groups in each NetCDF file and evaluate differences.
-    out.print(Fore.LIGHTBLUE_EX + "\nGroups:", add_to_history=True)
+    out.print(Fore.LIGHTBLUE_EX + "\nRoot-level Groups:", add_to_history=True)
     list_a = _get_groups(nc_a)
     list_b = _get_groups(nc_b)
     _, _, _ = out.lists_diff(list_a, list_b)
