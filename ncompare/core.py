@@ -203,6 +203,7 @@ def compare_multiple_random_values(
             out.print(".", colors=False, end="")
         elif match_result is None:
             out.print("n", colors=False, end="")
+            num_mismatches += 1
         else:
             out.print("x", colors=False, end="")
             num_mismatches += 1
@@ -454,7 +455,7 @@ def _match_random_value(
     Returns
     -------
     None or bool
-        None if data point is null for either variable
+        None if data point is null for one and only one of the variables
         True if values match
         False if the difference exceeds the given threshold
     """
@@ -469,7 +470,9 @@ def _match_random_value(
     value_b = nc_var_b.values[rand_index_tuple]
 
     # Check whether null
-    if np.isnan(value_a) or np.isnan(value_b):
+    if np.isnan(value_a) and np.isnan(value_b):
+        return True
+    elif np.isnan(value_a) or np.isnan(value_b):
         return None
 
     # Evaluate difference between values
