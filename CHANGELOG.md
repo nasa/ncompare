@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Deprecated
 ### Removed
 ### Fixed
+- [pull-request/55](https://github.com/nasa/ncompare/pull/55): Fix variable value matching
 ### Security
 
 ## [1.2.0]
