@@ -603,13 +603,13 @@ files = [
 
 [[package]]
 name = "xarray"
-version = "2023.9.0"
+version = "2023.10.0"
 description = "N-D labeled arrays and datasets in Python"
 optional = false
 python-versions = ">=3.9"
 files = [
-    {file = "xarray-2023.9.0-py3-none-any.whl", hash = "sha256:3fc4a558bd70968040a4e1cefc6ddb3f9a7a86ef6a48e67857156ffe655d3a66"},
-    {file = "xarray-2023.9.0.tar.gz", hash = "sha256:271955c05dc626dad37791a7807d920aaf9c64cac71d03b45ec7e402cc646603"},
+    {file = "xarray-2023.10.0-py3-none-any.whl", hash = "sha256:cae883c10913a081c58f38d0dc39e92cc87e0fbb43e869331c60fd0430e97fb4"},
+    {file = "xarray-2023.10.0.tar.gz", hash = "sha256:69ac225b073610672e2d9e77fe18709e3b0ac0220fc8154abef87e02d97c03cf"},
 ]
 
 [package.dependencies]
