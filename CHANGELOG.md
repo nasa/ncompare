@@ -6,6 +6,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
+### Changed
+### Deprecated
+### Removed
+### Fixed
+### Security
+
+## [1.4.0]
+### Added
 - [pull-request/59](https://github.com/nasa/ncompare/pull/59): Add the ability to modify the width of each column in the comparison table.
 ### Changed
 ### Deprecated
