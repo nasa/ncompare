@@ -81,7 +81,6 @@ def compare(
                    column_widths=column_widths) as out:
         out.print(f"File A: {nc_a}")
         out.print(f"File B: {nc_b}")
-        out.side_by_side(' ', str(nc_a), str(nc_b))
 
         # Start the comparison process.
         run_through_comparisons(
@@ -162,9 +161,9 @@ def run_through_comparisons(
                     + "\nChecking multiple random values within specified variable <%s>:"
                     % comparison_var_name
                 )
-                compare_multiple_random_values(out, nc_a, nc_b,
-                                               groupname=comparison_var_group,
-                                               varname=comparison_var_name)
+                compare_multiple_random_values(
+                    out, nc_a, nc_b, groupname=comparison_var_group, varname=comparison_var_name
+                )
 
             except KeyError:
                 out.print(
