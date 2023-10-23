@@ -12,14 +12,18 @@ on:
 jobs:
   build_and_test:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [ '3.9', '3.10', '3.11' ]
 
+    name: Python ${{ matrix.python-version }} tests
     steps:
       - uses: actions/checkout@v4
 
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.9'
+          python-version: ${{ matrix.python-version }}
 
       - name: Set up Poetry
         uses: abatilo/actions-poetry@v2.3.0
