@@ -12,6 +12,7 @@ repos:
     rev: v4.4.0
     hooks:
       - id: trailing-whitespace
+        exclude: ".txt"
       - id: end-of-file-fixer
         exclude: ".ipynb"
       - id: check-json
