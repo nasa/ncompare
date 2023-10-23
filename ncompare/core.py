@@ -33,7 +33,7 @@ def compare(
     file_text: Union[str, Path] = "",
     file_csv: Union[str, Path] = "",
     file_xlsx: Union[str, Path] = "",
-    column_widths: Optional[tuple[int | str, int | str, int | str]] = None,
+    column_widths: Optional[tuple[Union[int, str], Union[int, str], Union[int, str]]] = None,
 ) -> None:
     """Compare the variables contained within two different NetCDF datasets.
 
@@ -77,8 +77,9 @@ def compare(
         file_xlsx = ensure_valid_path_with_suffix(file_xlsx, ".xlsx")
 
     # The Outputter object is initialized to handle stdout and optional writing to a text file.
-    with Outputter(keep_print_history=True, no_color=no_color, text_file=file_text,
-                   column_widths=column_widths) as out:
+    with Outputter(
+        keep_print_history=True, no_color=no_color, text_file=file_text, column_widths=column_widths
+    ) as out:
         out.print(f"File A: {nc_a}")
         out.print(f"File B: {nc_b}")
 
