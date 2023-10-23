@@ -43,7 +43,7 @@ class Outputter:
         keep_print_history: bool = False,
         no_color: bool = False,
         text_file: Optional[Union[str, Path]] = None,
-        column_widths: Optional[tuple[int | str, int | str, int | str]] = None,
+        column_widths: Optional[tuple[Union[int, str], Union[int, str], Union[int, str]]] = None,
     ):
         """Set up the handling of printing and saving destinations.
 
