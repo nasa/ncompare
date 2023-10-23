@@ -1,12 +1,11 @@
 File A: ncompare/tests/data/test_a.nc
 File B: ncompare/tests/data/test_b.nc
-                                   ncompare/tests/data/test_a.nc ncompare/tests/data/test_b.nc
 
 Root-level Dimensions:
 	Are all items the same? ---> True.
 	[('conditions', 2), ('time', 5)]
 
-Groups:
+Root-level Groups:
 	Are all items the same? ---> True.
 	['Data', 'Position', 'Statistics']
 
