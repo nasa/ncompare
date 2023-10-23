@@ -43,7 +43,7 @@ class Outputter:
         keep_print_history: bool = False,
         no_color: bool = False,
         text_file: Optional[Union[str, Path]] = None,
-        column_widths: Optional[tuple[int | str, int | str, int | str]] = None
+        column_widths: Optional[tuple[int | str, int | str, int | str]] = None,
     ):
         """Set up the handling of printing and saving destinations.
 
@@ -68,8 +68,10 @@ class Outputter:
                 elif isinstance(width, int) and width > 0:
                     new_widths[idx] = width
                 else:
-                    warnings.warn("Column-width input was not a positive integer. Reverting to default.")
-            self._column_widths = new_widths
+                    warnings.warn(
+                        "Column-width input was not a positive integer. Reverting to default."
+                    )
+            self._column_widths = tuple(new_widths)
         else:
             self._column_widths = tuple(default_widths)
 
@@ -193,15 +195,21 @@ class Outputter:
             str_marker = ""
 
         if dash_line:
-            self.print(f" {extra_style_space}"
-                       f"{str_a:>{self._column_widths[0]}} "
-                       f"{str_b:->{self._column_widths[1]}} "
-                       f"{str_c:->{self._column_widths[2]}}", colors=colors)
+            self.print(
+                f" {extra_style_space}"
+                f"{str_a:>{self._column_widths[0]}} "
+                f"{str_b:->{self._column_widths[1]}} "
+                f"{str_c:->{self._column_widths[2]}}",
+                colors=colors,
+            )
         else:
-            self.print(f" {extra_style_space}"
-                       f"{str_a:>{self._column_widths[0]}} "
-                       f"{str_b:>{self._column_widths[1]}} "
-                       f"{str_c:>{self._column_widths[2]}}", colors=colors)
+            self.print(
+                f" {extra_style_space}"
+                f"{str_a:>{self._column_widths[0]}} "
+                f"{str_b:>{self._column_widths[1]}} "
+                f"{str_c:>{self._column_widths[2]}}",
+                colors=colors,
+            )
 
         self._add_to_history(str_a, str_b, str_c, str_marker)
 
