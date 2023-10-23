@@ -39,13 +39,7 @@ jobs:
 
       - name: Run tests with coverage
         run: |
-          poetry run coverage run -m pytest >& test_results.txt
-
-      - name: Generate coverage report
-        if: ${{ always() }}
-        run: |
-          poetry run coverage report -m >& coverage_report.txt
-          poetry run coverage html --dir htmlcov
+          poetry run pytest --cov=ncompare --cov-report=xml:build/reports/coverage.xml --cov-report=html:build/reports/coverage.html tests/ >& test_results.txt
 
       - name: Archive test results
         if: ${{ always() }}
@@ -54,16 +48,16 @@ jobs:
           name: test result
           path: test_results.txt
 
-      - name: Archive code coverage report (plain text)
+      - name: Archive code coverage report (xml)
         if: ${{ always() }}
         uses: actions/upload-artifact@v3
         with:
-          name: code coverage report (plain text)
-          path: coverage_report.txt
+          name: code coverage report (xml)
+          path: build/reports/coverage.xml
 
       - name: Archive code coverage report (HTML)
         if: ${{ always() }}
         uses: actions/upload-artifact@v3
         with:
           name: code coverage report (HTML)
-          path: htmlcov/*
+          path: build/reports/coverage.html
