@@ -38,6 +38,14 @@ def _cli() -> argparse.Namespace:
         help="Include chunk sizes in the table that compares variables",
     )
 
+    parser.add_argument(
+        "--column-widths",
+        nargs=3,
+        default=None,
+        type=int,
+        help="Width, in number of characters, of the three columns in the comparison report",
+    )
+
     return parser.parse_args()
 
 
