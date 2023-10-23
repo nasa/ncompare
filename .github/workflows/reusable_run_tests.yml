@@ -39,14 +39,7 @@ jobs:
 
       - name: Run tests with coverage
         run: |
-          poetry run pytest --cov=ncompare --cov-report=xml:build/reports/coverage.xml --cov-report=html:build/reports/coverage.html tests/ >& test_results.txt
-
-      - name: Archive test results
-        if: ${{ always() }}
-        uses: actions/upload-artifact@v3
-        with:
-          name: test result
-          path: test_results.txt
+          poetry run pytest --cov=ncompare --cov-report=xml:build/reports/coverage.xml --cov-report=html:build/reports/coverage.html tests/
 
       - name: Archive code coverage report (xml)
         if: ${{ always() }}
