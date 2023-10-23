@@ -21,21 +21,6 @@ repos:
       - id: pretty-format-json
         args: ['--autofix', '--no-ensure-ascii', '--no-sort-keys']
 
-  - repo: https://github.com/pylint-dev/pylint
-    rev: v3.0.0a7
-    hooks:
-      - id: pylint
-        name: pylint
-        entry: pylint
-        language: system
-        types: [ python ]
-        args:
-          [
-            "-rn", # Only display messages
-            "-sn", # Don't display the score
-            "--rcfile=.pylintrc", # Link to your config file
-          ]
-
   - repo: https://github.com/astral-sh/ruff-pre-commit
     # Ruff version.
     rev: 'v0.0.291'
