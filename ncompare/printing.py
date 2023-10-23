@@ -2,6 +2,7 @@
 # pylint: disable=too-many-arguments
 import csv
 import re
+import warnings
 from collections.abc import Iterable
 from pathlib import Path
 from typing import Optional, TextIO, Union
@@ -42,6 +43,7 @@ class Outputter:
         keep_print_history: bool = False,
         no_color: bool = False,
         text_file: Optional[Union[str, Path]] = None,
+        column_widths: Optional[tuple[Union[int, str], Union[int, str], Union[int, str]]] = None,
     ):
         """Set up the handling of printing and saving destinations.
 
@@ -52,6 +54,26 @@ class Outputter:
         # Parse the print history option.
         self._keep_print_history = keep_print_history
         self._line_history: list[list[str]] = []
+
+        # Assign column widths according to input, if
+        default_widths = [33, 48, 48]
+        if column_widths is not None:
+            assert len(column_widths) == 3
+
+            new_widths = default_widths
+            for idx, width in enumerate(column_widths):
+                if isinstance(width, str) and width.isdigit() and (int(width) > 0):
+                    # note: isdigit() ensures integer
+                    new_widths[idx] = int(width)
+                elif isinstance(width, int) and width > 0:
+                    new_widths[idx] = width
+                else:
+                    warnings.warn(
+                        "Column-width input was not a positive integer. Reverting to default."
+                    )
+            self._column_widths = tuple(new_widths)
+        else:
+            self._column_widths = tuple(default_widths)
 
         if no_color:
             # Replace colorized styles with blank strings.
@@ -173,9 +195,21 @@ class Outputter:
             str_marker = ""
 
         if dash_line:
-            self.print(f" {extra_style_space}{str_a:>33} {str_b:->48} {str_c:->48}", colors=colors)
+            self.print(
+                f" {extra_style_space}"
+                f"{str_a:>{self._column_widths[0]}} "
+                f"{str_b:->{self._column_widths[1]}} "
+                f"{str_c:->{self._column_widths[2]}}",
+                colors=colors,
+            )
         else:
-            self.print(f" {extra_style_space}{str_a:>33} {str_b:>48} {str_c:>48}", colors=colors)
+            self.print(
+                f" {extra_style_space}"
+                f"{str_a:>{self._column_widths[0]}} "
+                f"{str_b:>{self._column_widths[1]}} "
+                f"{str_c:>{self._column_widths[2]}}",
+                colors=colors,
+            )
 
         self._add_to_history(str_a, str_b, str_c, str_marker)
 

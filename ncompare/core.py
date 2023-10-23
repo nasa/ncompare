@@ -33,6 +33,7 @@ def compare(
     file_text: Union[str, Path] = "",
     file_csv: Union[str, Path] = "",
     file_xlsx: Union[str, Path] = "",
+    column_widths: Optional[tuple[Union[int, str], Union[int, str], Union[int, str]]] = None,
 ) -> None:
     """Compare the variables contained within two different NetCDF datasets.
 
@@ -58,6 +59,8 @@ def compare(
         filepath destination to save comparison output as comma-separated values (CSV).
     file_xlsx : str
         filepath destination to save comparison output as an Excel workbook.
+    column_widths : tuple[int | str, int | str, int | str], optional
+        the width in number of characters for each column of the comparison table.
 
     Returns
     -------
@@ -74,10 +77,11 @@ def compare(
         file_xlsx = ensure_valid_path_with_suffix(file_xlsx, ".xlsx")
 
     # The Outputter object is initialized to handle stdout and optional writing to a text file.
-    with Outputter(keep_print_history=True, no_color=no_color, text_file=file_text) as out:
+    with Outputter(
+        keep_print_history=True, no_color=no_color, text_file=file_text, column_widths=column_widths
+    ) as out:
         out.print(f"File A: {nc_a}")
         out.print(f"File B: {nc_b}")
-        out.side_by_side(' ', str(nc_a), str(nc_b))
 
         # Start the comparison process.
         run_through_comparisons(
@@ -158,9 +162,9 @@ def run_through_comparisons(
                     + "\nChecking multiple random values within specified variable <%s>:"
                     % comparison_var_name
                 )
-                compare_multiple_random_values(out, nc_a, nc_b,
-                                               groupname=comparison_var_group,
-                                               varname=comparison_var_name)
+                compare_multiple_random_values(
+                    out, nc_a, nc_b, groupname=comparison_var_group, varname=comparison_var_name
+                )
 
             except KeyError:
                 out.print(

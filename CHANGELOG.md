@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.0]
+### Added
+- [pull-request/59](https://github.com/nasa/ncompare/pull/59): Add the ability to modify the width of each column in the comparison table.
+### Changed
+### Deprecated
+### Removed
+### Fixed
+- [pull-request/60](https://github.com/nasa/ncompare/pull/60): Removes an extra line of printed filepaths.
+### Security
+
 ## [1.3.0]
 ### Added
 ### Changed
@@ -38,7 +48,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [issue/19](https://github.com/nasa/ncompare/issues/19): Add automated publishing (via poetry) to TestPyPI and PyPI in Actions workflow
 ### Changed
 - [issue/23](https://github.com/nasa/ncompare/issues/23): Use ruff and black for linting and formatting
-### Deprecated 
+### Deprecated
 ### Removed
 ### Fixed
 ### Security
@@ -48,7 +58,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - [issue/12](https://github.com/nasa/ncompare/issues/12): Improve test suite
 - [issue/13](https://github.com/nasa/ncompare/issues/13): Enable `ncompare` to work with greater group depths
-### Deprecated 
+### Deprecated
 ### Removed
 ### Fixed
 - [issue/5](https://github.com/nasa/ncompare/issues/5): Fix author attribute for poetry
