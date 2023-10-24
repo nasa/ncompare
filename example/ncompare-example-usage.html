@@ -1,0 +1,2016 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.450">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Atmospheric Science Data Center">
+
+<title>Brief demonstration of ncompare: to compare the structure, groups, variables, and attributes of two netCDF files</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="ncompare-example-usage_files/libs/clipboard/clipboard.min.js"></script>
+<script src="ncompare-example-usage_files/libs/quarto-html/quarto.js"></script>
+<script src="ncompare-example-usage_files/libs/quarto-html/popper.min.js"></script>
+<script src="ncompare-example-usage_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="ncompare-example-usage_files/libs/quarto-html/anchor.min.js"></script>
+<link href="ncompare-example-usage_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="ncompare-example-usage_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="ncompare-example-usage_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="ncompare-example-usage_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="ncompare-example-usage_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body>
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+
+  <ul>
+  <li><a href="#ncompares-command-line-arguments-provided-by-the---help-description" id="toc-ncompares-command-line-arguments-provided-by-the---help-description" class="nav-link active" data-scroll-target="#ncompares-command-line-arguments-provided-by-the---help-description"><span class="header-section-number">1</span> <code>ncompare</code>’s command line arguments, provided by the <code>--help</code> description</a></li>
+  <li><a href="#example-1-two-netcdf-files-with-the-same-groups-variables-and-attributes" id="toc-example-1-two-netcdf-files-with-the-same-groups-variables-and-attributes" class="nav-link" data-scroll-target="#example-1-two-netcdf-files-with-the-same-groups-variables-and-attributes"><span class="header-section-number">2</span> ## Example 1: Two netCDF files with the same groups, variables, and attributes</a></li>
+  <li><a href="#example-2-two-netcdf-files-with-different-groups-variables-and-attributes" id="toc-example-2-two-netcdf-files-with-different-groups-variables-and-attributes" class="nav-link" data-scroll-target="#example-2-two-netcdf-files-with-different-groups-variables-and-attributes"><span class="header-section-number">3</span> ## Example 2: Two netCDF files with different groups, variables, and attributes</a></li>
+  </ul>
+<div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="../ncompare-example-usage.pdf"><i class="bi bi-file-pdf"></i>PDF</a></li></ul></div></nav>
+</div>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Brief demonstration of <code>ncompare</code>: to compare the structure, groups, variables, and attributes of two netCDF files</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Atmospheric Science Data Center </p>
+          </div>
+  </div>
+
+
+
+  </div>
+
+
+</header>
+
+<p>Installation instructions for <code>ncompare</code> can be found in either of these locations:</p>
+<ul>
+<li><a href="https://github.com/nasa/ncompare">GitHub repository</a></li>
+<li><a href="https://pypi.org/project/ncompare/">Pip entry</a></li>
+</ul>
+<section id="ncompares-command-line-arguments-provided-by-the---help-description" class="level2" data-number="1">
+<h2 data-number="1" class="anchored" data-anchor-id="ncompares-command-line-arguments-provided-by-the---help-description"><span class="header-section-number">1</span> <code>ncompare</code>’s command line arguments, provided by the <code>--help</code> description</h2>
+<p><strong><em>✍️ Syntax Note:</em></strong> Commands preceeded by an exclamation point “!” (which is needed to <a href="https://stackoverflow.com/a/48529220">run shell commands in a Jupyter notebook</a>) can be run from a terminal.<br>
+In a shell/terminal, the exclamation point should not be used.</p>
+<div class="cell" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="op">!</span> ncompare <span class="op">--</span><span class="bu">help</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>usage: ncompare [-h] [-v COMPARISON_VAR_NAME] [-g COMPARISON_VAR_GROUP]
+                [--file-text FILE_TEXT] [--file-csv FILE_CSV]
+                [--file-xlsx FILE_XLSX] [--no-color] [--show-attributes]
+                [--show-chunks]
+                [--column-widths COLUMN_WIDTHS COLUMN_WIDTHS COLUMN_WIDTHS]
+                nc_a nc_b
+
+Compare the variables contained within two different NetCDF datasets
+
+positional arguments:
+  nc_a                  First NetCDF file
+  nc_b                  First NetCDF file
+
+options:
+  -h, --help            show this help message and exit
+  -v COMPARISON_VAR_NAME, --comparison_var_name COMPARISON_VAR_NAME
+                        Comparison variable name
+  -g COMPARISON_VAR_GROUP, --comparison_var_group COMPARISON_VAR_GROUP
+                        Comparison variable group
+  --file-text FILE_TEXT
+                        A text file to which the output will be written.
+  --file-csv FILE_CSV   A csv (comma separated values) file to which the
+                        output will be written.
+  --file-xlsx FILE_XLSX
+                        An Excel file to which the output will be written.
+  --no-color            Turn off all colorized output
+  --show-attributes     Include variable attributes in comparison
+  --show-chunks         Include chunk sizes in the table that compares
+                        variables
+  --column-widths COLUMN_WIDTHS COLUMN_WIDTHS COLUMN_WIDTHS
+                        Width, in number of characters, of the three columns
+                        in the comparison report</code></pre>
+</div>
+</div>
+</section>
+<section id="example-1-two-netcdf-files-with-the-same-groups-variables-and-attributes" class="level2" data-number="2">
+<h2 data-number="2" class="anchored" data-anchor-id="example-1-two-netcdf-files-with-the-same-groups-variables-and-attributes"><span class="header-section-number">2</span> ## Example 1: Two netCDF files with the same groups, variables, and attributes</h2>
+<p>The two files are first defined. The example here uses two files from NASA’s Measurements Of Pollution In The Troposphere (MOPITT) instrument, and they can be downloaded from these URLs: - https://l5ftl01.larc.nasa.gov/ops/misrl2l3/MOPITT/MOP03JM.008/2022.05.01/MOP03JM-202205-L3V95.6.3.he5 - https://l5ftl01.larc.nasa.gov:22000/misrl2l3/MOPITT/MOP03JM.009/2022.05.01/MOP03JM-202205-L3V95.9.3.he5</p>
+<div class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>filepath_1 <span class="op">=</span> <span class="st">"notebook_example_data/MOP03JM-202205-L3V95.6.3.he5"</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>filepath_2 <span class="op">=</span> <span class="st">"notebook_example_data/MOP03JM-202205-L3V95.9.3.he5"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Next, we pass the two filepaths to <code>ncompare</code>, and any differences would be printed in red. In this case, there are no differences; therefore, all of the variables are printed in black.</p>
+<p><strong><em>✍️ Syntax Note:</em></strong> the curly brackets, “{” and “}”, that follow are simply a way to <a href="https://stackoverflow.com/a/35497161">substitute python variables into a shell command</a>. In a shell/terminal, one can just write out the full arguments, separated by spaces. For example, the following command would be run at the terminal as <code>ncompare notebook_example_data/MOP03JM-202205-L3V95.6.3.he5 notebook_example_data/MOP03JM-202205-L3V95.9.3.he5</code></p>
+<p><strong><em>✍️ <code>ncompare</code> Options Note:</em></strong> the <code>--column-widths 28 34 34</code> arguments are optional, and they are being used here to shrink the columns width-wise from their defaults to a size that fits better in the GitHub notebook renderer.</p>
+<div class="cell" data-jupyter="{&quot;outputs_hidden&quot;:true}" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="op">!</span> ncompare <span class="op">--</span>column<span class="op">-</span>widths <span class="dv">28</span> <span class="dv">34</span> <span class="dv">34</span> {filepath_1} {filepath_2}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>File A: notebook_example_data/MOP03JM-202205-L3V95.6.3.he5
+File B: notebook_example_data/MOP03JM-202205-L3V95.9.3.he5
+
+Root-level Dimensions:
+    Are all items the same? ---&gt; True.  (No items exist.)
+
+Root-level Groups:
+    Are all items the same? ---&gt; True.
+    ['HDFEOS', 'HDFEOS INFORMATION']
+
+No variable group selected for comparison. Skipping..
+
+All variables:
+                                                          File A                             File B
+                All Variables
+                            - ---------------------------------- ----------------------------------
+
+                    GROUP #00 ---------------------------------/ ---------------------------------/
+      num variables in group:                                  0                                  0
+                            - ---------------------------------- ----------------------------------
+
+                    GROUP #01 ---------------------------/HDFEOS ---------------------------/HDFEOS
+      num variables in group:                                  0                                  0
+                            - ---------------------------------- ----------------------------------
+
+                    GROUP #02 ---------------/HDFEOS INFORMATION ---------------/HDFEOS INFORMATION
+      num variables in group:                                  2                                  2
+                            - ---------------------------------- ----------------------------------
+          -----VARIABLE-----:                   StructMetadata.0                   StructMetadata.0
+                       dtype:                      &lt;class 'str'&gt;                      &lt;class 'str'&gt;
+                       shape:                                 ()                                 ()
+          -----VARIABLE-----:                     coremetadata.0                     coremetadata.0
+                       dtype:                      &lt;class 'str'&gt;                      &lt;class 'str'&gt;
+                       shape:                               (1,)                               (1,)
+
+                    GROUP #03 ----------------/HDFEOS/ADDITIONAL ----------------/HDFEOS/ADDITIONAL
+      num variables in group:                                  0                                  0
+                            - ---------------------------------- ----------------------------------
+
+                    GROUP #04 ---------------------/HDFEOS/GRIDS ---------------------/HDFEOS/GRIDS
+      num variables in group:                                  0                                  0
+                            - ---------------------------------- ----------------------------------
+
+                    GROUP #05 /HDFEOS/ADDITIONAL/FILE_ATTRIBUTES /HDFEOS/ADDITIONAL/FILE_ATTRIBUTES
+      num variables in group:                                  0                                  0
+                            - ---------------------------------- ----------------------------------
+
+                    GROUP #06 ---------------/HDFEOS/GRIDS/MOP03 ---------------/HDFEOS/GRIDS/MOP03
+      num variables in group:                                  6                                  6
+                            - ---------------------------------- ----------------------------------
+          -----VARIABLE-----:                               NTWO                               NTWO
+                       dtype:                              int32                              int32
+                       shape:                               (2,)                               (2,)
+          -----VARIABLE-----:                                Prs                                Prs
+                       dtype:                            float32                            float32
+                       shape:                               (9,)                               (9,)
+          -----VARIABLE-----:                               Prs1                               Prs1
+                       dtype:                            float32                            float32
+                       shape:                              (10,)                              (10,)
+          -----VARIABLE-----:                               Prs2                               Prs2
+                       dtype:                            float32                            float32
+                       shape:                              (10,)                              (10,)
+          -----VARIABLE-----:                               XDim                               XDim
+                       dtype:                            float64                            float64
+                       shape:                             (360,)                             (360,)
+          -----VARIABLE-----:                               YDim                               YDim
+                       dtype:                            float64                            float64
+                       shape:                             (180,)                             (180,)
+
+                    GROUP #07 ---/HDFEOS/GRIDS/MOP03/Data Fields ---/HDFEOS/GRIDS/MOP03/Data Fields
+      num variables in group:                                 80                                 80
+                            - ---------------------------------- ----------------------------------
+          -----VARIABLE-----:     APrioriCOMixingRatioProfileDay     APrioriCOMixingRatioProfileDay
+                       dtype:                            float32                            float32
+                       shape:                      (360, 180, 9)                      (360, 180, 9)
+          -----VARIABLE-----:   APrioriCOMixingRatioProfileNight   APrioriCOMixingRatioProfileNight
+                       dtype:                            float32                            float32
+                       shape:                      (360, 180, 9)                      (360, 180, 9)
+          -----VARIABLE-----:     APrioriCOSurfaceMixingRatioDay     APrioriCOSurfaceMixingRatioDay
+                       dtype:                            float32                            float32
+                       shape:                         (360, 180)                         (360, 180)
+          -----VARIABLE-----:   APrioriCOSurfaceMixingRatioNight   APrioriCOSurfaceMixingRatioNight
+                       dtype:                            float32                            float32
+                       shape:                         (360, 180)                         (360, 180)
+          -----VARIABLE-----:            APrioriCOTotalColumnDay            APrioriCOTotalColumnDay
+                       dtype:                            float32                            float32
+                       shape:                         (360, 180)                         (360, 180)
+          -----VARIABLE-----:          APrioriCOTotalColumnNight          APrioriCOTotalColumnNight
+                       dtype:                            float32                            float32
+                       shape:                         (360, 180)                         (360, 180)
+          -----VARIABLE-----:        APrioriSurfaceEmissivityDay        APrioriSurfaceEmissivityDay
+                       dtype:                            float32                            float32
+                       shape:                         (360, 180)                         (360, 180)
+          -----VARIABLE-----:      APrioriSurfaceEmissivityNight      APrioriSurfaceEmissivityNight
+                       dtype:                            float32                            float32
+                       shape:                         (360, 180)                         (360, 180)
+          -----VARIABLE-----:       APrioriSurfaceTemperatureDay       APrioriSurfaceTemperatureDay
+                       dtype:                            float32                            float32
+                       shape:                         (360, 180)                         (360, 180)
+          -----VARIABLE-----:     APrioriSurfaceTemperatureNight     APrioriSurfaceTemperatureNight
+                       dtype:                            float32                            float32
+                       shape:                         (360, 180)                         (360, 180)
+          -----VARIABLE-----:                     DEMAltitudeDay                     DEMAltitudeDay
+                       dtype:                            float32                            float32
+                       shape:                         (360, 180)                         (360, 180)
+          -----VARIABLE-----:                   DEMAltitudeNight                   DEMAltitudeNight
+                       dtype:                            float32                            float32
+                       shape:                         (360, 180)                         (360, 180)
+          -----VARIABLE-----:          DEMAltitudeVariabilityDay          DEMAltitudeVariabilityDay
+                       dtype:                            float32                            float32
+                       shape:                         (360, 180)                         (360, 180)
+          -----VARIABLE-----:        DEMAltitudeVariabilityNight        DEMAltitudeVariabilityNight
+                       dtype:                            float32                            float32
+                       shape:                         (360, 180)                         (360, 180)
+          -----VARIABLE-----:       DegreesofFreedomforSignalDay       DegreesofFreedomforSignalDay
+                       dtype:                            float32                            float32
+                       shape:                         (360, 180)                         (360, 180)
+          -----VARIABLE-----:     DegreesofFreedomforSignalNight     DegreesofFreedomforSignalNight
+                       dtype:                            float32                            float32
+                       shape:                         (360, 180)                         (360, 180)
+          -----VARIABLE-----:                    DryAirColumnDay                    DryAirColumnDay
+                       dtype:                            float32                            float32
+                       shape:                         (360, 180)                         (360, 180)
+          -----VARIABLE-----:                  DryAirColumnNight                  DryAirColumnNight
+                       dtype:                            float32                            float32
+                       shape:                         (360, 180)                         (360, 180)
+          -----VARIABLE-----:                           Latitude                           Latitude
+                       dtype:                            float32                            float32
+                       shape:                             (180,)                             (180,)
+          -----VARIABLE-----:                          Longitude                          Longitude
+                       dtype:                            float32                            float32
+                       shape:                             (360,)                             (360,)
+          -----VARIABLE-----: MeasurementErrorCovarianceMatrixDay MeasurementErrorCovarianceMatrixDay
+                       dtype:                            float32                            float32
+                       shape:                 (360, 180, 10, 10)                 (360, 180, 10, 10)
+          -----VARIABLE-----: MeasurementErrorCovarianceMatrixNight MeasurementErrorCovarianceMatrixNight
+                       dtype:                            float32                            float32
+                       shape:                 (360, 180, 10, 10)                 (360, 180, 10, 10)
+          -----VARIABLE-----:                  NumberofPixelsDay                  NumberofPixelsDay
+                       dtype:                              int32                              int32
+                       shape:                         (360, 180)                         (360, 180)
+          -----VARIABLE-----:                NumberofPixelsNight                NumberofPixelsNight
+                       dtype:                              int32                              int32
+                       shape:                         (360, 180)                         (360, 180)
+          -----VARIABLE-----:                           Pressure                           Pressure
+                       dtype:                            float32                            float32
+                       shape:                               (9,)                               (9,)
+          -----VARIABLE-----:                          Pressure2                          Pressure2
+                       dtype:                            float32                            float32
+                       shape:                              (10,)                              (10,)
+          -----VARIABLE-----:  RetrievalAveragingKernelMatrixDay  RetrievalAveragingKernelMatrixDay
+                       dtype:                            float32                            float32
+                       shape:                 (360, 180, 10, 10)                 (360, 180, 10, 10)
+          -----VARIABLE-----: RetrievalAveragingKernelMatrixNight RetrievalAveragingKernelMatrixNight
+                       dtype:                            float32                            float32
+                       shape:                 (360, 180, 10, 10)                 (360, 180, 10, 10)
+          -----VARIABLE-----:  RetrievalErrorCovarianceMatrixDay  RetrievalErrorCovarianceMatrixDay
+                       dtype:                            float32                            float32
+                       shape:                 (360, 180, 10, 10)                 (360, 180, 10, 10)
+          -----VARIABLE-----: RetrievalErrorCovarianceMatrixNight RetrievalErrorCovarianceMatrixNight
+                       dtype:                            float32                            float32
+                       shape:                 (360, 180, 10, 10)                 (360, 180, 10, 10)
+          -----VARIABLE-----:   RetrievedCOMixingRatioProfileDay   RetrievedCOMixingRatioProfileDay
+                       dtype:                            float32                            float32
+                       shape:                      (360, 180, 9)                      (360, 180, 9)
+          -----VARIABLE-----: RetrievedCOMixingRatioProfileMeanUncertaintyDay RetrievedCOMixingRatioProfileMeanUncertaintyDay
+                       dtype:                            float32                            float32
+                       shape:                      (360, 180, 9)                      (360, 180, 9)
+          -----VARIABLE-----: RetrievedCOMixingRatioProfileMeanUncertaintyNig RetrievedCOMixingRatioProfileMeanUncertaintyNig
+                       dtype:                            float32                            float32
+                       shape:                      (360, 180, 9)                      (360, 180, 9)
+          -----VARIABLE-----: RetrievedCOMixingRatioProfileNight RetrievedCOMixingRatioProfileNight
+                       dtype:                            float32                            float32
+                       shape:                      (360, 180, 9)                      (360, 180, 9)
+          -----VARIABLE-----: RetrievedCOMixingRatioProfileVariabilityDay RetrievedCOMixingRatioProfileVariabilityDay
+                       dtype:                            float32                            float32
+                       shape:                      (360, 180, 9)                      (360, 180, 9)
+          -----VARIABLE-----: RetrievedCOMixingRatioProfileVariabilityNight RetrievedCOMixingRatioProfileVariabilityNight
+                       dtype:                            float32                            float32
+                       shape:                      (360, 180, 9)                      (360, 180, 9)
+          -----VARIABLE-----:   RetrievedCOSurfaceMixingRatioDay   RetrievedCOSurfaceMixingRatioDay
+                       dtype:                            float32                            float32
+                       shape:                         (360, 180)                         (360, 180)
+          -----VARIABLE-----: RetrievedCOSurfaceMixingRatioMeanUncertaintyDay RetrievedCOSurfaceMixingRatioMeanUncertaintyDay
+                       dtype:                            float32                            float32
+                       shape:                         (360, 180)                         (360, 180)
+          -----VARIABLE-----: RetrievedCOSurfaceMixingRatioMeanUncertaintyNig RetrievedCOSurfaceMixingRatioMeanUncertaintyNig
+                       dtype:                            float32                            float32
+                       shape:                         (360, 180)                         (360, 180)
+          -----VARIABLE-----: RetrievedCOSurfaceMixingRatioNight RetrievedCOSurfaceMixingRatioNight
+                       dtype:                            float32                            float32
+                       shape:                         (360, 180)                         (360, 180)
+          -----VARIABLE-----: RetrievedCOSurfaceMixingRatioVariabilityDay RetrievedCOSurfaceMixingRatioVariabilityDay
+                       dtype:                            float32                            float32
+                       shape:                         (360, 180)                         (360, 180)
+          -----VARIABLE-----: RetrievedCOSurfaceMixingRatioVariabilityNight RetrievedCOSurfaceMixingRatioVariabilityNight
+                       dtype:                            float32                            float32
+                       shape:                         (360, 180)                         (360, 180)
+          -----VARIABLE-----:          RetrievedCOTotalColumnDay          RetrievedCOTotalColumnDay
+                       dtype:                            float32                            float32
+                       shape:                         (360, 180)                         (360, 180)
+          -----VARIABLE-----: RetrievedCOTotalColumnDiagnosticsDay RetrievedCOTotalColumnDiagnosticsDay
+                       dtype:                            float32                            float32
+                       shape:                      (360, 180, 2)                      (360, 180, 2)
+          -----VARIABLE-----: RetrievedCOTotalColumnDiagnosticsNight RetrievedCOTotalColumnDiagnosticsNight
+                       dtype:                            float32                            float32
+                       shape:                      (360, 180, 2)                      (360, 180, 2)
+          -----VARIABLE-----: RetrievedCOTotalColumnMeanUncertaintyDay RetrievedCOTotalColumnMeanUncertaintyDay
+                       dtype:                            float32                            float32
+                       shape:                         (360, 180)                         (360, 180)
+          -----VARIABLE-----: RetrievedCOTotalColumnMeanUncertaintyNight RetrievedCOTotalColumnMeanUncertaintyNight
+                       dtype:                            float32                            float32
+                       shape:                         (360, 180)                         (360, 180)
+          -----VARIABLE-----:        RetrievedCOTotalColumnNight        RetrievedCOTotalColumnNight
+                       dtype:                            float32                            float32
+                       shape:                         (360, 180)                         (360, 180)
+          -----VARIABLE-----: RetrievedCOTotalColumnVariabilityDay RetrievedCOTotalColumnVariabilityDay
+                       dtype:                            float32                            float32
+                       shape:                         (360, 180)                         (360, 180)
+          -----VARIABLE-----: RetrievedCOTotalColumnVariabilityNight RetrievedCOTotalColumnVariabilityNight
+                       dtype:                            float32                            float32
+                       shape:                         (360, 180)                         (360, 180)
+          -----VARIABLE-----:      RetrievedSurfaceEmissivityDay      RetrievedSurfaceEmissivityDay
+                       dtype:                            float32                            float32
+                       shape:                         (360, 180)                         (360, 180)
+          -----VARIABLE-----: RetrievedSurfaceEmissivityMeanUncertaintyDay RetrievedSurfaceEmissivityMeanUncertaintyDay
+                       dtype:                            float32                            float32
+                       shape:                         (360, 180)                         (360, 180)
+          -----VARIABLE-----: RetrievedSurfaceEmissivityMeanUncertaintyNight RetrievedSurfaceEmissivityMeanUncertaintyNight
+                       dtype:                            float32                            float32
+                       shape:                         (360, 180)                         (360, 180)
+          -----VARIABLE-----:    RetrievedSurfaceEmissivityNight    RetrievedSurfaceEmissivityNight
+                       dtype:                            float32                            float32
+                       shape:                         (360, 180)                         (360, 180)
+          -----VARIABLE-----: RetrievedSurfaceEmissivityVariabilityDay RetrievedSurfaceEmissivityVariabilityDay
+                       dtype:                            float32                            float32
+                       shape:                         (360, 180)                         (360, 180)
+          -----VARIABLE-----: RetrievedSurfaceEmissivityVariabilityNight RetrievedSurfaceEmissivityVariabilityNight
+                       dtype:                            float32                            float32
+                       shape:                         (360, 180)                         (360, 180)
+          -----VARIABLE-----:     RetrievedSurfaceTemperatureDay     RetrievedSurfaceTemperatureDay
+                       dtype:                            float32                            float32
+                       shape:                         (360, 180)                         (360, 180)
+          -----VARIABLE-----: RetrievedSurfaceTemperatureMeanUncertaintyDay RetrievedSurfaceTemperatureMeanUncertaintyDay
+                       dtype:                            float32                            float32
+                       shape:                         (360, 180)                         (360, 180)
+          -----VARIABLE-----: RetrievedSurfaceTemperatureMeanUncertaintyNight RetrievedSurfaceTemperatureMeanUncertaintyNight
+                       dtype:                            float32                            float32
+                       shape:                         (360, 180)                         (360, 180)
+          -----VARIABLE-----:   RetrievedSurfaceTemperatureNight   RetrievedSurfaceTemperatureNight
+                       dtype:                            float32                            float32
+                       shape:                         (360, 180)                         (360, 180)
+          -----VARIABLE-----: RetrievedSurfaceTemperatureVariabilityDay RetrievedSurfaceTemperatureVariabilityDay
+                       dtype:                            float32                            float32
+                       shape:                         (360, 180)                         (360, 180)
+          -----VARIABLE-----: RetrievedSurfaceTemperatureVariabilityNight RetrievedSurfaceTemperatureVariabilityNight
+                       dtype:                            float32                            float32
+                       shape:                         (360, 180)                         (360, 180)
+          -----VARIABLE-----:            SatelliteZenithAngleDay            SatelliteZenithAngleDay
+                       dtype:                            float32                            float32
+                       shape:                         (360, 180)                         (360, 180)
+          -----VARIABLE-----:          SatelliteZenithAngleNight          SatelliteZenithAngleNight
+                       dtype:                            float32                            float32
+                       shape:                         (360, 180)                         (360, 180)
+          -----VARIABLE-----:                      SignalChi2Day                      SignalChi2Day
+                       dtype:                            float32                            float32
+                       shape:                         (360, 180)                         (360, 180)
+          -----VARIABLE-----:                    SignalChi2Night                    SignalChi2Night
+                       dtype:                            float32                            float32
+                       shape:                         (360, 180)                         (360, 180)
+          -----VARIABLE-----:           SignalChi2VariabilityDay           SignalChi2VariabilityDay
+                       dtype:                            float32                            float32
+                       shape:                         (360, 180)                         (360, 180)
+          -----VARIABLE-----:         SignalChi2VariabilityNight         SignalChi2VariabilityNight
+                       dtype:                            float32                            float32
+                       shape:                         (360, 180)                         (360, 180)
+          -----VARIABLE-----:  SmoothingErrorCovarianceMatrixDay  SmoothingErrorCovarianceMatrixDay
+                       dtype:                            float32                            float32
+                       shape:                 (360, 180, 10, 10)                 (360, 180, 10, 10)
+          -----VARIABLE-----: SmoothingErrorCovarianceMatrixNight SmoothingErrorCovarianceMatrixNight
+                       dtype:                            float32                            float32
+                       shape:                 (360, 180, 10, 10)                 (360, 180, 10, 10)
+          -----VARIABLE-----:                SolarZenithAngleDay                SolarZenithAngleDay
+                       dtype:                            float32                            float32
+                       shape:                         (360, 180)                         (360, 180)
+          -----VARIABLE-----:              SolarZenithAngleNight              SolarZenithAngleNight
+                       dtype:                            float32                            float32
+                       shape:                         (360, 180)                         (360, 180)
+          -----VARIABLE-----:                    SurfaceIndexDay                    SurfaceIndexDay
+                       dtype:                              int32                              int32
+                       shape:                         (360, 180)                         (360, 180)
+          -----VARIABLE-----:                  SurfaceIndexNight                  SurfaceIndexNight
+                       dtype:                              int32                              int32
+                       shape:                         (360, 180)                         (360, 180)
+          -----VARIABLE-----:                 SurfacePressureDay                 SurfacePressureDay
+                       dtype:                            float32                            float32
+                       shape:                         (360, 180)                         (360, 180)
+          -----VARIABLE-----:               SurfacePressureNight               SurfacePressureNight
+                       dtype:                            float32                            float32
+                       shape:                         (360, 180)                         (360, 180)
+          -----VARIABLE-----:      TotalColumnAveragingKernelDay      TotalColumnAveragingKernelDay
+                       dtype:                            float32                            float32
+                       shape:                     (360, 180, 10)                     (360, 180, 10)
+          -----VARIABLE-----:    TotalColumnAveragingKernelNight    TotalColumnAveragingKernelNight
+                       dtype:                            float32                            float32
+                       shape:                     (360, 180, 10)                     (360, 180, 10)
+          -----VARIABLE-----:                WaterVaporColumnDay                WaterVaporColumnDay
+                       dtype:                            float32                            float32
+                       shape:                         (360, 180)                         (360, 180)
+          -----VARIABLE-----:              WaterVaporColumnNight              WaterVaporColumnNight
+                       dtype:                            float32                            float32
+                       shape:                         (360, 180)                         (360, 180)
+                            - ---------------------------------- ----------------------------------
+ Total number of shared items:                                 88                                 88
+ Total number of non-shared items:                                  0                                  0
+
+Done.</code></pre>
+</div>
+</div>
+<section id="more-file-details-can-be-examined-by-using-the---show-attributes-and---show-chunks-options" class="level4" data-number="2.0.1">
+<h4 data-number="2.0.1" class="anchored" data-anchor-id="more-file-details-can-be-examined-by-using-the---show-attributes-and---show-chunks-options"><span class="header-section-number">2.0.1</span> More file details can be examined by using the <code>--show-attributes</code> and <code>--show-chunks</code> options</h4>
+<div class="cell" data-jupyter="{&quot;outputs_hidden&quot;:true}" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="op">!</span> ncompare <span class="op">--</span>show<span class="op">-</span>attributes <span class="op">--</span>show<span class="op">-</span>chunks <span class="op">--</span>column<span class="op">-</span>widths <span class="dv">28</span> <span class="dv">34</span> <span class="dv">34</span> {filepath_1} {filepath_2}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>File A: notebook_example_data/MOP03JM-202205-L3V95.6.3.he5
+File B: notebook_example_data/MOP03JM-202205-L3V95.9.3.he5
+
+Root-level Dimensions:
+    Are all items the same? ---&gt; True.  (No items exist.)
+
+Root-level Groups:
+    Are all items the same? ---&gt; True.
+    ['HDFEOS', 'HDFEOS INFORMATION']
+
+No variable group selected for comparison. Skipping..
+
+All variables:
+                                                          File A                             File B
+                All Variables
+                            - ---------------------------------- ----------------------------------
+
+                    GROUP #00 ---------------------------------/ ---------------------------------/
+      num variables in group:                                  0                                  0
+                            - ---------------------------------- ----------------------------------
+
+                    GROUP #01 ---------------------------/HDFEOS ---------------------------/HDFEOS
+      num variables in group:                                  0                                  0
+                            - ---------------------------------- ----------------------------------
+
+                    GROUP #02 ---------------/HDFEOS INFORMATION ---------------/HDFEOS INFORMATION
+      num variables in group:                                  2                                  2
+                            - ---------------------------------- ----------------------------------
+          -----VARIABLE-----:                   StructMetadata.0                   StructMetadata.0
+                       dtype:                      &lt;class 'str'&gt;                      &lt;class 'str'&gt;
+                       shape:                                 ()                                 ()
+                   chunksize:                         contiguous                         contiguous
+          -----VARIABLE-----:                     coremetadata.0                     coremetadata.0
+                       dtype:                      &lt;class 'str'&gt;                      &lt;class 'str'&gt;
+                       shape:                               (1,)                               (1,)
+                   chunksize:                         contiguous                         contiguous
+
+                    GROUP #03 ----------------/HDFEOS/ADDITIONAL ----------------/HDFEOS/ADDITIONAL
+      num variables in group:                                  0                                  0
+                            - ---------------------------------- ----------------------------------
+
+                    GROUP #04 ---------------------/HDFEOS/GRIDS ---------------------/HDFEOS/GRIDS
+      num variables in group:                                  0                                  0
+                            - ---------------------------------- ----------------------------------
+
+                    GROUP #05 /HDFEOS/ADDITIONAL/FILE_ATTRIBUTES /HDFEOS/ADDITIONAL/FILE_ATTRIBUTES
+      num variables in group:                                  0                                  0
+                            - ---------------------------------- ----------------------------------
+
+                    GROUP #06 ---------------/HDFEOS/GRIDS/MOP03 ---------------/HDFEOS/GRIDS/MOP03
+      num variables in group:                                  6                                  6
+                            - ---------------------------------- ----------------------------------
+          -----VARIABLE-----:                               NTWO                               NTWO
+                       dtype:                              int32                              int32
+                       shape:                               (2,)                               (2,)
+                   chunksize:                         contiguous                         contiguous
+          -----VARIABLE-----:                                Prs                                Prs
+                       dtype:                            float32                            float32
+                       shape:                               (9,)                               (9,)
+                   chunksize:                         contiguous                         contiguous
+                       units:                                hPa                                hPa
+          -----VARIABLE-----:                               Prs1                               Prs1
+                       dtype:                            float32                            float32
+                       shape:                              (10,)                              (10,)
+                   chunksize:                         contiguous                         contiguous
+                       units:                                hPa                                hPa
+          -----VARIABLE-----:                               Prs2                               Prs2
+                       dtype:                            float32                            float32
+                       shape:                              (10,)                              (10,)
+                   chunksize:                         contiguous                         contiguous
+                       units:                                hPa                                hPa
+          -----VARIABLE-----:                               XDim                               XDim
+                       dtype:                            float64                            float64
+                       shape:                             (360,)                             (360,)
+                   chunksize:                         contiguous                         contiguous
+                       units:                       degrees_east                       degrees_east
+          -----VARIABLE-----:                               YDim                               YDim
+                       dtype:                            float64                            float64
+                       shape:                             (180,)                             (180,)
+                   chunksize:                         contiguous                         contiguous
+                       units:                      degrees_north                      degrees_north
+
+                    GROUP #07 ---/HDFEOS/GRIDS/MOP03/Data Fields ---/HDFEOS/GRIDS/MOP03/Data Fields
+      num variables in group:                                 80                                 80
+                            - ---------------------------------- ----------------------------------
+          -----VARIABLE-----:     APrioriCOMixingRatioProfileDay     APrioriCOMixingRatioProfileDay
+                       dtype:                            float32                            float32
+                       shape:                      (360, 180, 9)                      (360, 180, 9)
+                   chunksize:                        [60, 30, 9]                        [60, 30, 9]
+                  _FillValue:                            -9999.0                            -9999.0
+                   long_name: A Priori CO Mixing Ratio Profile Day A Priori CO Mixing Ratio Profile Day
+                       units:                               ppbv                               ppbv
+          -----VARIABLE-----:   APrioriCOMixingRatioProfileNight   APrioriCOMixingRatioProfileNight
+                       dtype:                            float32                            float32
+                       shape:                      (360, 180, 9)                      (360, 180, 9)
+                   chunksize:                        [60, 30, 9]                        [60, 30, 9]
+                  _FillValue:                            -9999.0                            -9999.0
+                   long_name: A Priori CO Mixing Ratio Profile Night A Priori CO Mixing Ratio Profile Night
+                       units:                               ppbv                               ppbv
+          -----VARIABLE-----:     APrioriCOSurfaceMixingRatioDay     APrioriCOSurfaceMixingRatioDay
+                       dtype:                            float32                            float32
+                       shape:                         (360, 180)                         (360, 180)
+                   chunksize:                           [60, 30]                           [60, 30]
+                  _FillValue:                            -9999.0                            -9999.0
+                   long_name: A Priori CO Surface Mixing Ratio Day A Priori CO Surface Mixing Ratio Day
+                       units:                               ppbv                               ppbv
+          -----VARIABLE-----:   APrioriCOSurfaceMixingRatioNight   APrioriCOSurfaceMixingRatioNight
+                       dtype:                            float32                            float32
+                       shape:                         (360, 180)                         (360, 180)
+                   chunksize:                           [60, 30]                           [60, 30]
+                  _FillValue:                            -9999.0                            -9999.0
+                   long_name: A Priori CO Surface Mixing Ratio Night A Priori CO Surface Mixing Ratio Night
+                       units:                               ppbv                               ppbv
+          -----VARIABLE-----:            APrioriCOTotalColumnDay            APrioriCOTotalColumnDay
+                       dtype:                            float32                            float32
+                       shape:                         (360, 180)                         (360, 180)
+                   chunksize:                           [60, 30]                           [60, 30]
+                  _FillValue:                            -9999.0                            -9999.0
+                   long_name:       A Priori CO Total Column Day       A Priori CO Total Column Day
+                       units:                           mol/cm^2                           mol/cm^2
+          -----VARIABLE-----:          APrioriCOTotalColumnNight          APrioriCOTotalColumnNight
+                       dtype:                            float32                            float32
+                       shape:                         (360, 180)                         (360, 180)
+                   chunksize:                           [60, 30]                           [60, 30]
+                  _FillValue:                            -9999.0                            -9999.0
+                   long_name:     A Priori CO Total Column Night     A Priori CO Total Column Night
+                       units:                           mol/cm^2                           mol/cm^2
+          -----VARIABLE-----:        APrioriSurfaceEmissivityDay        APrioriSurfaceEmissivityDay
+                       dtype:                            float32                            float32
+                       shape:                         (360, 180)                         (360, 180)
+                   chunksize:                           [60, 30]                           [60, 30]
+                  _FillValue:                            -9999.0                            -9999.0
+                   long_name:    A Priori Surface Emissivity Day    A Priori Surface Emissivity Day
+                       units:                                 NA                                 NA
+          -----VARIABLE-----:      APrioriSurfaceEmissivityNight      APrioriSurfaceEmissivityNight
+                       dtype:                            float32                            float32
+                       shape:                         (360, 180)                         (360, 180)
+                   chunksize:                           [60, 30]                           [60, 30]
+                  _FillValue:                            -9999.0                            -9999.0
+                   long_name:  A Priori Surface Emissivity Night  A Priori Surface Emissivity Night
+                       units:                                 NA                                 NA
+          -----VARIABLE-----:       APrioriSurfaceTemperatureDay       APrioriSurfaceTemperatureDay
+                       dtype:                            float32                            float32
+                       shape:                         (360, 180)                         (360, 180)
+                   chunksize:                           [60, 30]                           [60, 30]
+                  _FillValue:                            -9999.0                            -9999.0
+                   long_name:   A Priori Surface Temperature Day   A Priori Surface Temperature Day
+                       units:                                  K                                  K
+          -----VARIABLE-----:     APrioriSurfaceTemperatureNight     APrioriSurfaceTemperatureNight
+                       dtype:                            float32                            float32
+                       shape:                         (360, 180)                         (360, 180)
+                   chunksize:                           [60, 30]                           [60, 30]
+                  _FillValue:                            -9999.0                            -9999.0
+                   long_name: A Priori Surface Temperature Night A Priori Surface Temperature Night
+                       units:                                  K                                  K
+          -----VARIABLE-----:                     DEMAltitudeDay                     DEMAltitudeDay
+                       dtype:                            float32                            float32
+                       shape:                         (360, 180)                         (360, 180)
+                   chunksize:                           [60, 30]                           [60, 30]
+                  _FillValue:                            -9999.0                            -9999.0
+                   long_name:                   DEM Altitude Day                   DEM Altitude Day
+                       units:                                  m                                  m
+          -----VARIABLE-----:                   DEMAltitudeNight                   DEMAltitudeNight
+                       dtype:                            float32                            float32
+                       shape:                         (360, 180)                         (360, 180)
+                   chunksize:                           [60, 30]                           [60, 30]
+                  _FillValue:                            -9999.0                            -9999.0
+                   long_name:                 DEM Altitude Night                 DEM Altitude Night
+                       units:                                  m                                  m
+          -----VARIABLE-----:          DEMAltitudeVariabilityDay          DEMAltitudeVariabilityDay
+                       dtype:                            float32                            float32
+                       shape:                         (360, 180)                         (360, 180)
+                   chunksize:                           [60, 30]                           [60, 30]
+                  _FillValue:                            -9999.0                            -9999.0
+                   long_name:       DEM Altitude Variability Day       DEM Altitude Variability Day
+                       units:                                  m                                  m
+          -----VARIABLE-----:        DEMAltitudeVariabilityNight        DEMAltitudeVariabilityNight
+                       dtype:                            float32                            float32
+                       shape:                         (360, 180)                         (360, 180)
+                   chunksize:                           [60, 30]                           [60, 30]
+                  _FillValue:                            -9999.0                            -9999.0
+                   long_name:     DEM Altitude Variability Night     DEM Altitude Variability Night
+                       units:                                  m                                  m
+          -----VARIABLE-----:       DegreesofFreedomforSignalDay       DegreesofFreedomforSignalDay
+                       dtype:                            float32                            float32
+                       shape:                         (360, 180)                         (360, 180)
+                   chunksize:                           [60, 30]                           [60, 30]
+                  _FillValue:                            -9999.0                            -9999.0
+                   long_name:  Degrees of Freedom for Signal Day  Degrees of Freedom for Signal Day
+                       units:                                 NA                                 NA
+          -----VARIABLE-----:     DegreesofFreedomforSignalNight     DegreesofFreedomforSignalNight
+                       dtype:                            float32                            float32
+                       shape:                         (360, 180)                         (360, 180)
+                   chunksize:                           [60, 30]                           [60, 30]
+                  _FillValue:                            -9999.0                            -9999.0
+                   long_name: Degrees of Freedom for Signal Night Degrees of Freedom for Signal Night
+                       units:                                 NA                                 NA
+          -----VARIABLE-----:                    DryAirColumnDay                    DryAirColumnDay
+                       dtype:                            float32                            float32
+                       shape:                         (360, 180)                         (360, 180)
+                   chunksize:                           [60, 30]                           [60, 30]
+                  _FillValue:                            -9999.0                            -9999.0
+                   long_name:                 Dry Air Column Day                 Dry Air Column Day
+                       units:                           mol/cm^2                           mol/cm^2
+          -----VARIABLE-----:                  DryAirColumnNight                  DryAirColumnNight
+                       dtype:                            float32                            float32
+                       shape:                         (360, 180)                         (360, 180)
+                   chunksize:                           [60, 30]                           [60, 30]
+                  _FillValue:                            -9999.0                            -9999.0
+                   long_name:               Dry Air Column Night               Dry Air Column Night
+                       units:                           mol/cm^2                           mol/cm^2
+          -----VARIABLE-----:                           Latitude                           Latitude
+                       dtype:                            float32                            float32
+                       shape:                             (180,)                             (180,)
+                   chunksize:                         contiguous                         contiguous
+                       units:                      degrees_north                      degrees_north
+          -----VARIABLE-----:                          Longitude                          Longitude
+                       dtype:                            float32                            float32
+                       shape:                             (360,)                             (360,)
+                   chunksize:                         contiguous                         contiguous
+                       units:                       degrees_east                       degrees_east
+          -----VARIABLE-----: MeasurementErrorCovarianceMatrixDay MeasurementErrorCovarianceMatrixDay
+                       dtype:                            float32                            float32
+                       shape:                 (360, 180, 10, 10)                 (360, 180, 10, 10)
+                   chunksize:                   [60, 30, 10, 10]                   [60, 30, 10, 10]
+                  _FillValue:                            -9999.0                            -9999.0
+                   long_name: Measurement Error Covariance Matrix Day Measurement Error Covariance Matrix Day
+                       units:                                 NA                                 NA
+          -----VARIABLE-----: MeasurementErrorCovarianceMatrixNight MeasurementErrorCovarianceMatrixNight
+                       dtype:                            float32                            float32
+                       shape:                 (360, 180, 10, 10)                 (360, 180, 10, 10)
+                   chunksize:                   [60, 30, 10, 10]                   [60, 30, 10, 10]
+                  _FillValue:                            -9999.0                            -9999.0
+                   long_name: Measurement Error Covariance Matrix Night Measurement Error Covariance Matrix Night
+                       units:                                 NA                                 NA
+          -----VARIABLE-----:                  NumberofPixelsDay                  NumberofPixelsDay
+                       dtype:                              int32                              int32
+                       shape:                         (360, 180)                         (360, 180)
+                   chunksize:                           [60, 30]                           [60, 30]
+                  _FillValue:                              -9999                              -9999
+                   long_name:                Number of Pixel Day                Number of Pixel Day
+                       units:                                 NA                                 NA
+          -----VARIABLE-----:                NumberofPixelsNight                NumberofPixelsNight
+                       dtype:                              int32                              int32
+                       shape:                         (360, 180)                         (360, 180)
+                   chunksize:                           [60, 30]                           [60, 30]
+                  _FillValue:                              -9999                              -9999
+                   long_name:              Number of Pixel Night              Number of Pixel Night
+                       units:                                 NA                                 NA
+          -----VARIABLE-----:                           Pressure                           Pressure
+                       dtype:                            float32                            float32
+                       shape:                               (9,)                               (9,)
+                   chunksize:                         contiguous                         contiguous
+                       units:                                hPa                                hPa
+          -----VARIABLE-----:                          Pressure2                          Pressure2
+                       dtype:                            float32                            float32
+                       shape:                              (10,)                              (10,)
+                   chunksize:                         contiguous                         contiguous
+                       units:                                hPa                                hPa
+          -----VARIABLE-----:  RetrievalAveragingKernelMatrixDay  RetrievalAveragingKernelMatrixDay
+                       dtype:                            float32                            float32
+                       shape:                 (360, 180, 10, 10)                 (360, 180, 10, 10)
+                   chunksize:                   [60, 30, 10, 10]                   [60, 30, 10, 10]
+                  _FillValue:                            -9999.0                            -9999.0
+                   long_name: Retrieval Averaging Kernel Matrix Day Retrieval Averaging Kernel Matrix Day
+                       units:                                 NA                                 NA
+          -----VARIABLE-----: RetrievalAveragingKernelMatrixNight RetrievalAveragingKernelMatrixNight
+                       dtype:                            float32                            float32
+                       shape:                 (360, 180, 10, 10)                 (360, 180, 10, 10)
+                   chunksize:                   [60, 30, 10, 10]                   [60, 30, 10, 10]
+                  _FillValue:                            -9999.0                            -9999.0
+                   long_name: Retrieval Averaging Kernel Matrix Night Retrieval Averaging Kernel Matrix Night
+                       units:                                 NA                                 NA
+          -----VARIABLE-----:  RetrievalErrorCovarianceMatrixDay  RetrievalErrorCovarianceMatrixDay
+                       dtype:                            float32                            float32
+                       shape:                 (360, 180, 10, 10)                 (360, 180, 10, 10)
+                   chunksize:                   [60, 30, 10, 10]                   [60, 30, 10, 10]
+                  _FillValue:                            -9999.0                            -9999.0
+                   long_name: Retrieval Error Covariance Matrix Day Retrieval Error Covariance Matrix Day
+                       units:                                 NA                                 NA
+          -----VARIABLE-----: RetrievalErrorCovarianceMatrixNight RetrievalErrorCovarianceMatrixNight
+                       dtype:                            float32                            float32
+                       shape:                 (360, 180, 10, 10)                 (360, 180, 10, 10)
+                   chunksize:                   [60, 30, 10, 10]                   [60, 30, 10, 10]
+                  _FillValue:                            -9999.0                            -9999.0
+                   long_name: Retrieval Error Covariance Matrix Night Retrieval Error Covariance Matrix Night
+                       units:                                 NA                                 NA
+          -----VARIABLE-----:   RetrievedCOMixingRatioProfileDay   RetrievedCOMixingRatioProfileDay
+                       dtype:                            float32                            float32
+                       shape:                      (360, 180, 9)                      (360, 180, 9)
+                   chunksize:                        [60, 30, 9]                        [60, 30, 9]
+                  _FillValue:                            -9999.0                            -9999.0
+                   long_name: Retrieved CO Mixing Ratio Profile Day Retrieved CO Mixing Ratio Profile Day
+                       units:                               ppbv                               ppbv
+          -----VARIABLE-----: RetrievedCOMixingRatioProfileMeanUncertaintyDay RetrievedCOMixingRatioProfileMeanUncertaintyDay
+                       dtype:                            float32                            float32
+                       shape:                      (360, 180, 9)                      (360, 180, 9)
+                   chunksize:                        [60, 30, 9]                        [60, 30, 9]
+                  _FillValue:                            -9999.0                            -9999.0
+                   long_name: Retrieved CO Mixing Ratio Profile Mean Uncertainty Day Retrieved CO Mixing Ratio Profile Mean Uncertainty Day
+                       units:                               ppbv                               ppbv
+          -----VARIABLE-----: RetrievedCOMixingRatioProfileMeanUncertaintyNig RetrievedCOMixingRatioProfileMeanUncertaintyNig
+                       dtype:                            float32                            float32
+                       shape:                      (360, 180, 9)                      (360, 180, 9)
+                   chunksize:                        [60, 30, 9]                        [60, 30, 9]
+                  _FillValue:                            -9999.0                            -9999.0
+                   long_name: Retrieved CO Mixing Ratio Profile Mean Uncertainty Night Retrieved CO Mixing Ratio Profile Mean Uncertainty Night
+                       units:                               ppbv                               ppbv
+          -----VARIABLE-----: RetrievedCOMixingRatioProfileNight RetrievedCOMixingRatioProfileNight
+                       dtype:                            float32                            float32
+                       shape:                      (360, 180, 9)                      (360, 180, 9)
+                   chunksize:                        [60, 30, 9]                        [60, 30, 9]
+                  _FillValue:                            -9999.0                            -9999.0
+                   long_name: Retrieved CO Mixing Ratio Profile Night Retrieved CO Mixing Ratio Profile Night
+                       units:                               ppbv                               ppbv
+          -----VARIABLE-----: RetrievedCOMixingRatioProfileVariabilityDay RetrievedCOMixingRatioProfileVariabilityDay
+                       dtype:                            float32                            float32
+                       shape:                      (360, 180, 9)                      (360, 180, 9)
+                   chunksize:                        [60, 30, 9]                        [60, 30, 9]
+                  _FillValue:                            -9999.0                            -9999.0
+                   long_name: Retrieved CO Mixing Ratio Profile Variability Day Retrieved CO Mixing Ratio Profile Variability Day
+                       units:                               ppbv                               ppbv
+          -----VARIABLE-----: RetrievedCOMixingRatioProfileVariabilityNight RetrievedCOMixingRatioProfileVariabilityNight
+                       dtype:                            float32                            float32
+                       shape:                      (360, 180, 9)                      (360, 180, 9)
+                   chunksize:                        [60, 30, 9]                        [60, 30, 9]
+                  _FillValue:                            -9999.0                            -9999.0
+                   long_name: Retrieved CO Mixing Ratio Profile Variability Night Retrieved CO Mixing Ratio Profile Variability Night
+                       units:                               ppbv                               ppbv
+          -----VARIABLE-----:   RetrievedCOSurfaceMixingRatioDay   RetrievedCOSurfaceMixingRatioDay
+                       dtype:                            float32                            float32
+                       shape:                         (360, 180)                         (360, 180)
+                   chunksize:                           [60, 30]                           [60, 30]
+                  _FillValue:                            -9999.0                            -9999.0
+                   long_name: Retrieved CO Surface Mixing Ratio Day Retrieved CO Surface Mixing Ratio Day
+                       units:                               ppbv                               ppbv
+          -----VARIABLE-----: RetrievedCOSurfaceMixingRatioMeanUncertaintyDay RetrievedCOSurfaceMixingRatioMeanUncertaintyDay
+                       dtype:                            float32                            float32
+                       shape:                         (360, 180)                         (360, 180)
+                   chunksize:                           [60, 30]                           [60, 30]
+                  _FillValue:                            -9999.0                            -9999.0
+                   long_name: Retrieved CO Surface Mixing Ratio Mean Uncertainty Day Retrieved CO Surface Mixing Ratio Mean Uncertainty Day
+                       units:                               ppbv                               ppbv
+          -----VARIABLE-----: RetrievedCOSurfaceMixingRatioMeanUncertaintyNig RetrievedCOSurfaceMixingRatioMeanUncertaintyNig
+                       dtype:                            float32                            float32
+                       shape:                         (360, 180)                         (360, 180)
+                   chunksize:                           [60, 30]                           [60, 30]
+                  _FillValue:                            -9999.0                            -9999.0
+                   long_name: Retrieved CO Surface Mixing Ratio Mean Uncertainty Night Retrieved CO Surface Mixing Ratio Mean Uncertainty Night
+                       units:                               ppbv                               ppbv
+          -----VARIABLE-----: RetrievedCOSurfaceMixingRatioNight RetrievedCOSurfaceMixingRatioNight
+                       dtype:                            float32                            float32
+                       shape:                         (360, 180)                         (360, 180)
+                   chunksize:                           [60, 30]                           [60, 30]
+                  _FillValue:                            -9999.0                            -9999.0
+                   long_name: Retrieved CO Surface Mixing Ratio Night Retrieved CO Surface Mixing Ratio Night
+                       units:                               ppbv                               ppbv
+          -----VARIABLE-----: RetrievedCOSurfaceMixingRatioVariabilityDay RetrievedCOSurfaceMixingRatioVariabilityDay
+                       dtype:                            float32                            float32
+                       shape:                         (360, 180)                         (360, 180)
+                   chunksize:                           [60, 30]                           [60, 30]
+                  _FillValue:                            -9999.0                            -9999.0
+                   long_name: Retrieved CO Surface Mixing Ratio Variability Day Retrieved CO Surface Mixing Ratio Variability Day
+                       units:                               ppbv                               ppbv
+          -----VARIABLE-----: RetrievedCOSurfaceMixingRatioVariabilityNight RetrievedCOSurfaceMixingRatioVariabilityNight
+                       dtype:                            float32                            float32
+                       shape:                         (360, 180)                         (360, 180)
+                   chunksize:                           [60, 30]                           [60, 30]
+                  _FillValue:                            -9999.0                            -9999.0
+                   long_name: Retrieved CO Surface Mixing Ratio Variability Night Retrieved CO Surface Mixing Ratio Variability Night
+                       units:                               ppbv                               ppbv
+          -----VARIABLE-----:          RetrievedCOTotalColumnDay          RetrievedCOTotalColumnDay
+                       dtype:                            float32                            float32
+                       shape:                         (360, 180)                         (360, 180)
+                   chunksize:                           [60, 30]                           [60, 30]
+                  _FillValue:                            -9999.0                            -9999.0
+                   long_name:      Retrieved CO Total Column Day      Retrieved CO Total Column Day
+                       units:                           mol/cm^2                           mol/cm^2
+          -----VARIABLE-----: RetrievedCOTotalColumnDiagnosticsDay RetrievedCOTotalColumnDiagnosticsDay
+                       dtype:                            float32                            float32
+                       shape:                      (360, 180, 2)                      (360, 180, 2)
+                   chunksize:                        [60, 30, 2]                        [60, 30, 2]
+                  _FillValue:                            -9999.0                            -9999.0
+                   long_name: Retrieved CO Total Column Diagnostics Day Retrieved CO Total Column Diagnostics Day
+                       units:                           mol/cm^2                           mol/cm^2
+          -----VARIABLE-----: RetrievedCOTotalColumnDiagnosticsNight RetrievedCOTotalColumnDiagnosticsNight
+                       dtype:                            float32                            float32
+                       shape:                      (360, 180, 2)                      (360, 180, 2)
+                   chunksize:                        [60, 30, 2]                        [60, 30, 2]
+                  _FillValue:                            -9999.0                            -9999.0
+                   long_name: Retrieved CO Total Column Diagnostics Night Retrieved CO Total Column Diagnostics Night
+                       units:                           mol/cm^2                           mol/cm^2
+          -----VARIABLE-----: RetrievedCOTotalColumnMeanUncertaintyDay RetrievedCOTotalColumnMeanUncertaintyDay
+                       dtype:                            float32                            float32
+                       shape:                         (360, 180)                         (360, 180)
+                   chunksize:                           [60, 30]                           [60, 30]
+                  _FillValue:                            -9999.0                            -9999.0
+                   long_name: Retrieved CO Total Column Mean Uncertainty Day Retrieved CO Total Column Mean Uncertainty Day
+                       units:                           mol/cm^2                           mol/cm^2
+          -----VARIABLE-----: RetrievedCOTotalColumnMeanUncertaintyNight RetrievedCOTotalColumnMeanUncertaintyNight
+                       dtype:                            float32                            float32
+                       shape:                         (360, 180)                         (360, 180)
+                   chunksize:                           [60, 30]                           [60, 30]
+                  _FillValue:                            -9999.0                            -9999.0
+                   long_name: Retrieved CO Total Column Mean Uncertainty Night Retrieved CO Total Column Mean Uncertainty Night
+                       units:                           mol/cm^2                           mol/cm^2
+          -----VARIABLE-----:        RetrievedCOTotalColumnNight        RetrievedCOTotalColumnNight
+                       dtype:                            float32                            float32
+                       shape:                         (360, 180)                         (360, 180)
+                   chunksize:                           [60, 30]                           [60, 30]
+                  _FillValue:                            -9999.0                            -9999.0
+                   long_name:    Retrieved CO Total Column Night    Retrieved CO Total Column Night
+                       units:                           mol/cm^2                           mol/cm^2
+          -----VARIABLE-----: RetrievedCOTotalColumnVariabilityDay RetrievedCOTotalColumnVariabilityDay
+                       dtype:                            float32                            float32
+                       shape:                         (360, 180)                         (360, 180)
+                   chunksize:                           [60, 30]                           [60, 30]
+                  _FillValue:                            -9999.0                            -9999.0
+                   long_name: Retrieved CO Total Column Variability Day Retrieved CO Total Column Variability Day
+                       units:                           mol/cm^2                           mol/cm^2
+          -----VARIABLE-----: RetrievedCOTotalColumnVariabilityNight RetrievedCOTotalColumnVariabilityNight
+                       dtype:                            float32                            float32
+                       shape:                         (360, 180)                         (360, 180)
+                   chunksize:                           [60, 30]                           [60, 30]
+                  _FillValue:                            -9999.0                            -9999.0
+                   long_name: Retrieved CO Total Column Variability Night Retrieved CO Total Column Variability Night
+                       units:                           mol/cm^2                           mol/cm^2
+          -----VARIABLE-----:      RetrievedSurfaceEmissivityDay      RetrievedSurfaceEmissivityDay
+                       dtype:                            float32                            float32
+                       shape:                         (360, 180)                         (360, 180)
+                   chunksize:                           [60, 30]                           [60, 30]
+                  _FillValue:                            -9999.0                            -9999.0
+                   long_name:   Retrieved Surface Emissivity Day   Retrieved Surface Emissivity Day
+                       units:                                 NA                                 NA
+          -----VARIABLE-----: RetrievedSurfaceEmissivityMeanUncertaintyDay RetrievedSurfaceEmissivityMeanUncertaintyDay
+                       dtype:                            float32                            float32
+                       shape:                         (360, 180)                         (360, 180)
+                   chunksize:                           [60, 30]                           [60, 30]
+                  _FillValue:                            -9999.0                            -9999.0
+                   long_name: Retrieved Surface Emissivity Mean Uncertainty Day Retrieved Surface Emissivity Mean Uncertainty Day
+                       units:                                 NA                                 NA
+          -----VARIABLE-----: RetrievedSurfaceEmissivityMeanUncertaintyNight RetrievedSurfaceEmissivityMeanUncertaintyNight
+                       dtype:                            float32                            float32
+                       shape:                         (360, 180)                         (360, 180)
+                   chunksize:                           [60, 30]                           [60, 30]
+                  _FillValue:                            -9999.0                            -9999.0
+                   long_name: Retrieved Surface Emissivity Mean Uncertainty Night Retrieved Surface Emissivity Mean Uncertainty Night
+                       units:                                 NA                                 NA
+          -----VARIABLE-----:    RetrievedSurfaceEmissivityNight    RetrievedSurfaceEmissivityNight
+                       dtype:                            float32                            float32
+                       shape:                         (360, 180)                         (360, 180)
+                   chunksize:                           [60, 30]                           [60, 30]
+                  _FillValue:                            -9999.0                            -9999.0
+                   long_name: Retrieved Surface Emissivity Night Retrieved Surface Emissivity Night
+                       units:                                 NA                                 NA
+          -----VARIABLE-----: RetrievedSurfaceEmissivityVariabilityDay RetrievedSurfaceEmissivityVariabilityDay
+                       dtype:                            float32                            float32
+                       shape:                         (360, 180)                         (360, 180)
+                   chunksize:                           [60, 30]                           [60, 30]
+                  _FillValue:                            -9999.0                            -9999.0
+                   long_name: Retrieved Surface Emissivity Variability Day Retrieved Surface Emissivity Variability Day
+                       units:                                 NA                                 NA
+          -----VARIABLE-----: RetrievedSurfaceEmissivityVariabilityNight RetrievedSurfaceEmissivityVariabilityNight
+                       dtype:                            float32                            float32
+                       shape:                         (360, 180)                         (360, 180)
+                   chunksize:                           [60, 30]                           [60, 30]
+                  _FillValue:                            -9999.0                            -9999.0
+                   long_name: Retrieved Surface Emissivity Variability Night Retrieved Surface Emissivity Variability Night
+                       units:                                 NA                                 NA
+          -----VARIABLE-----:     RetrievedSurfaceTemperatureDay     RetrievedSurfaceTemperatureDay
+                       dtype:                            float32                            float32
+                       shape:                         (360, 180)                         (360, 180)
+                   chunksize:                           [60, 30]                           [60, 30]
+                  _FillValue:                            -9999.0                            -9999.0
+                   long_name:  Retrieved Surface Temperature Day  Retrieved Surface Temperature Day
+                       units:                                  K                                  K
+          -----VARIABLE-----: RetrievedSurfaceTemperatureMeanUncertaintyDay RetrievedSurfaceTemperatureMeanUncertaintyDay
+                       dtype:                            float32                            float32
+                       shape:                         (360, 180)                         (360, 180)
+                   chunksize:                           [60, 30]                           [60, 30]
+                  _FillValue:                            -9999.0                            -9999.0
+                   long_name: Retrieved Surface Temperature Mean Uncertainty Day Retrieved Surface Temperature Mean Uncertainty Day
+                       units:                                  K                                  K
+          -----VARIABLE-----: RetrievedSurfaceTemperatureMeanUncertaintyNight RetrievedSurfaceTemperatureMeanUncertaintyNight
+                       dtype:                            float32                            float32
+                       shape:                         (360, 180)                         (360, 180)
+                   chunksize:                           [60, 30]                           [60, 30]
+                  _FillValue:                            -9999.0                            -9999.0
+                   long_name: Retrieved Surface Temperature Mean Uncertainty Night Retrieved Surface Temperature Mean Uncertainty Night
+                       units:                                  K                                  K
+          -----VARIABLE-----:   RetrievedSurfaceTemperatureNight   RetrievedSurfaceTemperatureNight
+                       dtype:                            float32                            float32
+                       shape:                         (360, 180)                         (360, 180)
+                   chunksize:                           [60, 30]                           [60, 30]
+                  _FillValue:                            -9999.0                            -9999.0
+                   long_name: Retrieved Surface Temperature Night Retrieved Surface Temperature Night
+                       units:                                  K                                  K
+          -----VARIABLE-----: RetrievedSurfaceTemperatureVariabilityDay RetrievedSurfaceTemperatureVariabilityDay
+                       dtype:                            float32                            float32
+                       shape:                         (360, 180)                         (360, 180)
+                   chunksize:                           [60, 30]                           [60, 30]
+                  _FillValue:                            -9999.0                            -9999.0
+                   long_name: Retrieved Surface Temperature Variability Day Retrieved Surface Temperature Variability Day
+                       units:                                  K                                  K
+          -----VARIABLE-----: RetrievedSurfaceTemperatureVariabilityNight RetrievedSurfaceTemperatureVariabilityNight
+                       dtype:                            float32                            float32
+                       shape:                         (360, 180)                         (360, 180)
+                   chunksize:                           [60, 30]                           [60, 30]
+                  _FillValue:                            -9999.0                            -9999.0
+                   long_name: Retrieved Surface Temperature Variability Night Retrieved Surface Temperature Variability Night
+                       units:                                  K                                  K
+          -----VARIABLE-----:            SatelliteZenithAngleDay            SatelliteZenithAngleDay
+                       dtype:                            float32                            float32
+                       shape:                         (360, 180)                         (360, 180)
+                   chunksize:                           [60, 30]                           [60, 30]
+                  _FillValue:                            -9999.0                            -9999.0
+                   long_name:         Satellite Zenith Angle Day         Satellite Zenith Angle Day
+                       units:                                deg                                deg
+          -----VARIABLE-----:          SatelliteZenithAngleNight          SatelliteZenithAngleNight
+                       dtype:                            float32                            float32
+                       shape:                         (360, 180)                         (360, 180)
+                   chunksize:                           [60, 30]                           [60, 30]
+                  _FillValue:                            -9999.0                            -9999.0
+                   long_name:       Satellite Zenith Angle Night       Satellite Zenith Angle Night
+                       units:                                deg                                deg
+          -----VARIABLE-----:                      SignalChi2Day                      SignalChi2Day
+                       dtype:                            float32                            float32
+                       shape:                         (360, 180)                         (360, 180)
+                   chunksize:                           [60, 30]                           [60, 30]
+                  _FillValue:                            -9999.0                            -9999.0
+                   long_name:                    Signal Chi2 Day                    Signal Chi2 Day
+                       units:                                 NA                                 NA
+          -----VARIABLE-----:                    SignalChi2Night                    SignalChi2Night
+                       dtype:                            float32                            float32
+                       shape:                         (360, 180)                         (360, 180)
+                   chunksize:                           [60, 30]                           [60, 30]
+                  _FillValue:                            -9999.0                            -9999.0
+                   long_name:                  Signal Chi2 Night                  Signal Chi2 Night
+                       units:                                 NA                                 NA
+          -----VARIABLE-----:           SignalChi2VariabilityDay           SignalChi2VariabilityDay
+                       dtype:                            float32                            float32
+                       shape:                         (360, 180)                         (360, 180)
+                   chunksize:                           [60, 30]                           [60, 30]
+                  _FillValue:                            -9999.0                            -9999.0
+                   long_name:        Signal Chi2 Variability Day        Signal Chi2 Variability Day
+                       units:                                 NA                                 NA
+          -----VARIABLE-----:         SignalChi2VariabilityNight         SignalChi2VariabilityNight
+                       dtype:                            float32                            float32
+                       shape:                         (360, 180)                         (360, 180)
+                   chunksize:                           [60, 30]                           [60, 30]
+                  _FillValue:                            -9999.0                            -9999.0
+                   long_name:      Signal Chi2 Variability Night      Signal Chi2 Variability Night
+                       units:                                 NA                                 NA
+          -----VARIABLE-----:  SmoothingErrorCovarianceMatrixDay  SmoothingErrorCovarianceMatrixDay
+                       dtype:                            float32                            float32
+                       shape:                 (360, 180, 10, 10)                 (360, 180, 10, 10)
+                   chunksize:                   [60, 30, 10, 10]                   [60, 30, 10, 10]
+                  _FillValue:                            -9999.0                            -9999.0
+                   long_name: Smoothing Error Covariance Matrix Day Smoothing Error Covariance Matrix Day
+                       units:                                 NA                                 NA
+          -----VARIABLE-----: SmoothingErrorCovarianceMatrixNight SmoothingErrorCovarianceMatrixNight
+                       dtype:                            float32                            float32
+                       shape:                 (360, 180, 10, 10)                 (360, 180, 10, 10)
+                   chunksize:                   [60, 30, 10, 10]                   [60, 30, 10, 10]
+                  _FillValue:                            -9999.0                            -9999.0
+                   long_name: Smoothing Error Covariance Matrix Night Smoothing Error Covariance Matrix Night
+                       units:                                 NA                                 NA
+          -----VARIABLE-----:                SolarZenithAngleDay                SolarZenithAngleDay
+                       dtype:                            float32                            float32
+                       shape:                         (360, 180)                         (360, 180)
+                   chunksize:                           [60, 30]                           [60, 30]
+                  _FillValue:                            -9999.0                            -9999.0
+                   long_name:             Solar Zenith Angle Day             Solar Zenith Angle Day
+                       units:                                deg                                deg
+          -----VARIABLE-----:              SolarZenithAngleNight              SolarZenithAngleNight
+                       dtype:                            float32                            float32
+                       shape:                         (360, 180)                         (360, 180)
+                   chunksize:                           [60, 30]                           [60, 30]
+                  _FillValue:                            -9999.0                            -9999.0
+                   long_name:           Solar Zenith Angle Night           Solar Zenith Angle Night
+                       units:                                deg                                deg
+          -----VARIABLE-----:                    SurfaceIndexDay                    SurfaceIndexDay
+                       dtype:                              int32                              int32
+                       shape:                         (360, 180)                         (360, 180)
+                   chunksize:                           [60, 30]                           [60, 30]
+                  _FillValue:                              -9999                              -9999
+                   long_name:                  Surface Index Day                  Surface Index Day
+                       units:                                 NA                                 NA
+          -----VARIABLE-----:                  SurfaceIndexNight                  SurfaceIndexNight
+                       dtype:                              int32                              int32
+                       shape:                         (360, 180)                         (360, 180)
+                   chunksize:                           [60, 30]                           [60, 30]
+                  _FillValue:                              -9999                              -9999
+                   long_name:                Surface Index Night                Surface Index Night
+                       units:                                 NA                                 NA
+          -----VARIABLE-----:                 SurfacePressureDay                 SurfacePressureDay
+                       dtype:                            float32                            float32
+                       shape:                         (360, 180)                         (360, 180)
+                   chunksize:                           [60, 30]                           [60, 30]
+                  _FillValue:                            -9999.0                            -9999.0
+                   long_name:               Surface Pressure Day               Surface Pressure Day
+                       units:                                hPa                                hPa
+          -----VARIABLE-----:               SurfacePressureNight               SurfacePressureNight
+                       dtype:                            float32                            float32
+                       shape:                         (360, 180)                         (360, 180)
+                   chunksize:                           [60, 30]                           [60, 30]
+                  _FillValue:                            -9999.0                            -9999.0
+                   long_name:             Surface Pressure Night             Surface Pressure Night
+                       units:                                hPa                                hPa
+          -----VARIABLE-----:      TotalColumnAveragingKernelDay      TotalColumnAveragingKernelDay
+                       dtype:                            float32                            float32
+                       shape:                     (360, 180, 10)                     (360, 180, 10)
+                   chunksize:                       [60, 30, 10]                       [60, 30, 10]
+                  _FillValue:                            -9999.0                            -9999.0
+                   long_name:  Total Column Averaging Kernel Day  Total Column Averaging Kernel Day
+                       units:                mol/(cm^2 log(VMR))                mol/(cm^2 log(VMR))
+          -----VARIABLE-----:    TotalColumnAveragingKernelNight    TotalColumnAveragingKernelNight
+                       dtype:                            float32                            float32
+                       shape:                     (360, 180, 10)                     (360, 180, 10)
+                   chunksize:                       [60, 30, 10]                       [60, 30, 10]
+                  _FillValue:                            -9999.0                            -9999.0
+                   long_name: Total Column Averaging Kernel Night Total Column Averaging Kernel Night
+                       units:                mol/(cm^2 log(VMR))                mol/(cm^2 log(VMR))
+          -----VARIABLE-----:                WaterVaporColumnDay                WaterVaporColumnDay
+                       dtype:                            float32                            float32
+                       shape:                         (360, 180)                         (360, 180)
+                   chunksize:                           [60, 30]                           [60, 30]
+                  _FillValue:                            -9999.0                            -9999.0
+                   long_name:             Water Vapor Column Day             Water Vapor Column Day
+                       units:                           mol/cm^2                           mol/cm^2
+          -----VARIABLE-----:              WaterVaporColumnNight              WaterVaporColumnNight
+                       dtype:                            float32                            float32
+                       shape:                         (360, 180)                         (360, 180)
+                   chunksize:                           [60, 30]                           [60, 30]
+                  _FillValue:                            -9999.0                            -9999.0
+                   long_name:           Water Vapor Column Night           Water Vapor Column Night
+                       units:                           mol/cm^2                           mol/cm^2
+                            - ---------------------------------- ----------------------------------
+ Total number of shared items:                                 88                                 88
+ Total number of non-shared items:                                  0                                  0
+
+Done.</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="example-2-two-netcdf-files-with-different-groups-variables-and-attributes" class="level2" data-number="3">
+<h2 data-number="3" class="anchored" data-anchor-id="example-2-two-netcdf-files-with-different-groups-variables-and-attributes"><span class="header-section-number">3</span> ## Example 2: Two netCDF files with different groups, variables, and attributes</h2>
+<p>The two files are first defined. The example here uses two <strong>preliminary</strong>, draft files that were produced as part of preparations for the Tropospheric Emissions: Monitoring of POllution (TEMPO) instrument that will provide air quality measurements over North America. In essense, this example mimics a comparison of real to simulated data.</p>
+<div class="cell" data-execution_count="5">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>filepath_1 <span class="op">=</span> <span class="st">"notebook_example_data/TEMPO_NO2_L2_V01_20130701T131754Z_S001G04.nc"</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>filepath_2 <span class="op">=</span> <span class="st">"notebook_example_data/TEMPO_NO2-PROXY_L2_V01_20130731T141759Z_S006G04.nc"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-execution_count="6">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="op">!</span> ncompare <span class="op">--</span>column<span class="op">-</span>widths <span class="dv">28</span> <span class="dv">34</span> <span class="dv">34</span> {filepath_1} {filepath_2}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>File A: notebook_example_data/TEMPO_NO2_L2_V01_20130701T131754Z_S001G04.nc
+File B: notebook_example_data/TEMPO_NO2-PROXY_L2_V01_20130731T141759Z_S006G04.nc
+
+Root-level Dimensions:
+    Are all items the same? ---&gt; True.
+    [('mirror_step', 123), ('xtrack', 2048)]
+
+Root-level Groups:
+    Are all items the same? ---&gt; False.  (4 items are shared, out of 5 total.)
+    Which items are different?
+                                                          File A                             File B
+                          #00 -----------------------geolocation -----------------------geolocation
+                          #01 ---------------------------product ---------------------------product
+                          #02 ---------------------qa_statistics ---------------------qa_statistics
+                          #03 ----------------------support_data ----------------------support_data
+                          #04 ---------------------------------- -------------------true_quantities
+  Number of non-shared items:                                  0                                  1
+
+No variable group selected for comparison. Skipping..
+
+All variables:
+                                                          File A                             File B
+                All Variables
+                            - ---------------------------------- ----------------------------------
+
+                    GROUP #00 ---------------------------------/ ---------------------------------/
+      num variables in group:                                  2                                  2
+                            - ---------------------------------- ----------------------------------
+          -----VARIABLE-----:                        mirror_step                        mirror_step
+                       dtype:                              int32                              int32
+                       shape:                             (123,)                             (123,)
+          -----VARIABLE-----:                             xtrack                             xtrack
+                       dtype:                              int32                              int32
+                       shape:                            (2048,)                            (2048,)
+
+                    GROUP #01 ----------------------/geolocation ----------------------/geolocation
+      num variables in group:                                 10                                 10
+                            - ---------------------------------- ----------------------------------
+          -----VARIABLE-----:                           latitude                           latitude
+                       dtype:                            float32                            float32
+                       shape:                        (123, 2048)                        (123, 2048)
+          -----VARIABLE-----:                    latitude_bounds                    latitude_bounds
+                       dtype:                            float32                            float32
+                       shape:                     (123, 2048, 4)                     (123, 2048, 4)
+          -----VARIABLE-----:                          longitude                          longitude
+                       dtype:                            float32                            float32
+                       shape:                        (123, 2048)                        (123, 2048)
+          -----VARIABLE-----:                   longitude_bounds                   longitude_bounds
+                       dtype:                            float32                            float32
+                       shape:                     (123, 2048, 4)                     (123, 2048, 4)
+          -----VARIABLE-----:             relative_azimuth_angle             relative_azimuth_angle
+                       dtype:                            float32                            float32
+                       shape:                        (123, 2048)                        (123, 2048)
+          -----VARIABLE-----:                solar_azimuth_angle                solar_azimuth_angle
+                       dtype:                            float32                            float32
+                       shape:                        (123, 2048)                        (123, 2048)
+          -----VARIABLE-----:                 solar_zenith_angle                 solar_zenith_angle
+                       dtype:                            float32                            float32
+                       shape:                        (123, 2048)                        (123, 2048)
+          -----VARIABLE-----:                               time                               time
+                       dtype:                            float64                            float64
+                       shape:                             (123,)                             (123,)
+          -----VARIABLE-----:              viewing_azimuth_angle              viewing_azimuth_angle
+                       dtype:                            float32                            float32
+                       shape:                        (123, 2048)                        (123, 2048)
+          -----VARIABLE-----:               viewing_zenith_angle               viewing_zenith_angle
+                       dtype:                            float32                            float32
+                       shape:                        (123, 2048)                        (123, 2048)
+
+                    GROUP #02 --------------------------/product --------------------------/product
+      num variables in group:                                  5                                  5
+                            - ---------------------------------- ----------------------------------
+          -----VARIABLE-----:             main_data_quality_flag             main_data_quality_flag
+                       dtype:                              int16                              int16
+                       shape:                        (123, 2048)                        (123, 2048)
+          -----VARIABLE-----:       vertical_column_stratosphere       vertical_column_stratosphere
+                       dtype:                            float64                            float64
+                       shape:                        (123, 2048)                        (123, 2048)
+          -----VARIABLE-----:              vertical_column_total              vertical_column_total
+                       dtype:                            float64                            float64
+                       shape:                        (123, 2048)                        (123, 2048)
+          -----VARIABLE-----:  vertical_column_total_uncertainty  vertical_column_total_uncertainty
+                       dtype:                            float64                            float64
+                       shape:                        (123, 2048)                        (123, 2048)
+          -----VARIABLE-----:        vertical_column_troposphere        vertical_column_troposphere
+                       dtype:                            float64                            float64
+                       shape:                        (123, 2048)                        (123, 2048)
+
+                    GROUP #03 --------------------/qa_statistics --------------------/qa_statistics
+      num variables in group:                                  2                                  2
+                            - ---------------------------------- ----------------------------------
+          -----VARIABLE-----:               fit_convergence_flag               fit_convergence_flag
+                       dtype:                              int16                              int16
+                       shape:                        (123, 2048)                        (123, 2048)
+          -----VARIABLE-----:                   fit_rms_residual                   fit_rms_residual
+                       dtype:                            float32                            float32
+                       shape:                        (123, 2048)                        (123, 2048)
+
+                    GROUP #04 ---------------------/support_data ---------------------/support_data
+      num variables in group:                                 17                                 17
+                            - ---------------------------------- ----------------------------------
+          -----VARIABLE-----:                             albedo                             albedo
+                       dtype:                            float32                            float32
+                       shape:                        (123, 2048)                        (123, 2048)
+          -----VARIABLE-----:                 amf_cloud_fraction                 amf_cloud_fraction
+                       dtype:                            float32                            float32
+                       shape:                        (123, 2048)                        (123, 2048)
+          -----VARIABLE-----:                 amf_cloud_pressure                 amf_cloud_pressure
+                       dtype:                            float32                            float32
+                       shape:                        (123, 2048)                        (123, 2048)
+          -----VARIABLE-----:                amf_diagnostic_flag                amf_diagnostic_flag
+                       dtype:                              int16                              int16
+                       shape:                        (123, 2048)                        (123, 2048)
+          -----VARIABLE-----:                   amf_stratosphere                   amf_stratosphere
+                       dtype:                            float32                            float32
+                       shape:                        (123, 2048)                        (123, 2048)
+          -----VARIABLE-----:                          amf_total                          amf_total
+                       dtype:                            float32                            float32
+                       shape:                        (123, 2048)                        (123, 2048)
+          -----VARIABLE-----:                                                 amf_total_uncertainty
+                       dtype:                                                               float32
+                       shape:                                                           (123, 2048)
+          -----VARIABLE-----:                    amf_troposphere                    amf_troposphere
+                       dtype:                            float32                            float32
+                       shape:                        (123, 2048)                        (123, 2048)
+          -----VARIABLE-----:                 eff_cloud_fraction
+                       dtype:                            float32
+                       shape:                        (123, 2048)
+          -----VARIABLE-----:                fitted_slant_column                fitted_slant_column
+                       dtype:                            float64                            float64
+                       shape:                        (123, 2048)                        (123, 2048)
+          -----VARIABLE-----:    fitted_slant_column_uncertainty    fitted_slant_column_uncertainty
+                       dtype:                            float64                            float64
+                       shape:                        (123, 2048)                        (123, 2048)
+          -----VARIABLE-----:                        gas_profile                        gas_profile
+                       dtype:                            float32                            float32
+                       shape:                    (123, 2048, 72)                    (123, 2048, 47)
+          -----VARIABLE-----:          ground_pixel_quality_flag          ground_pixel_quality_flag
+                       dtype:                              int32                              int32
+                       shape:                        (123, 2048)                        (123, 2048)
+          -----VARIABLE-----:                 scattering_weights                 scattering_weights
+                       dtype:                            float32                            float32
+                       shape:                    (123, 2048, 72)                    (123, 2048, 47)
+          -----VARIABLE-----:                  snow_ice_fraction                  snow_ice_fraction
+                       dtype:                            float32                            float32
+                       shape:                        (123, 2048)                        (123, 2048)
+          -----VARIABLE-----:                   surface_pressure                   surface_pressure
+                       dtype:                            float32                            float32
+                       shape:                        (123, 2048)                        (123, 2048)
+          -----VARIABLE-----:                     terrain_height                     terrain_height
+                       dtype:                              int16                              int16
+                       shape:                        (123, 2048)                        (123, 2048)
+          -----VARIABLE-----:                tropopause_pressure                tropopause_pressure
+                       dtype:                            float32                            float32
+                       shape:                        (123, 2048)                        (123, 2048)
+
+                    GROUP #05 ---------------------------------- ------------------/true_quantities
+      num variables in group:                                  0                                  5
+                            - ---------------------------------- ----------------------------------
+          -----VARIABLE-----:                                                                albedo
+                       dtype:                                                               float32
+                       shape:                                                           (123, 2048)
+          -----VARIABLE-----:                                                             amf_total
+                       dtype:                                                               float32
+                       shape:                                                           (123, 2048)
+          -----VARIABLE-----:                                                           gas_profile
+                       dtype:                                                               float32
+                       shape:                                                       (123, 2048, 47)
+          -----VARIABLE-----:                                                    scattering_weights
+                       dtype:                                                               float32
+                       shape:                                                       (123, 2048, 47)
+          -----VARIABLE-----:                                                 vertical_column_total
+                       dtype:                                                               float64
+                       shape:                                                           (123, 2048)
+                            - ---------------------------------- ----------------------------------
+ Total number of shared items:                                 35                                 35
+ Total number of non-shared items:                                  1                                  6
+
+Done.</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="7">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="op">!</span> ncompare <span class="op">--</span>show<span class="op">-</span>attributes <span class="op">--</span>show<span class="op">-</span>chunks <span class="op">--</span>column<span class="op">-</span>widths <span class="dv">28</span> <span class="dv">34</span> <span class="dv">34</span> {filepath_1} {filepath_2}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>File A: notebook_example_data/TEMPO_NO2_L2_V01_20130701T131754Z_S001G04.nc
+File B: notebook_example_data/TEMPO_NO2-PROXY_L2_V01_20130731T141759Z_S006G04.nc
+
+Root-level Dimensions:
+    Are all items the same? ---&gt; True.
+    [('mirror_step', 123), ('xtrack', 2048)]
+
+Root-level Groups:
+    Are all items the same? ---&gt; False.  (4 items are shared, out of 5 total.)
+    Which items are different?
+                                                          File A                             File B
+                          #00 -----------------------geolocation -----------------------geolocation
+                          #01 ---------------------------product ---------------------------product
+                          #02 ---------------------qa_statistics ---------------------qa_statistics
+                          #03 ----------------------support_data ----------------------support_data
+                          #04 ---------------------------------- -------------------true_quantities
+  Number of non-shared items:                                  0                                  1
+
+No variable group selected for comparison. Skipping..
+
+All variables:
+                                                          File A                             File B
+                All Variables
+                            - ---------------------------------- ----------------------------------
+
+                    GROUP #00 ---------------------------------/ ---------------------------------/
+      num variables in group:                                  2                                  2
+                            - ---------------------------------- ----------------------------------
+          -----VARIABLE-----:                        mirror_step                        mirror_step
+                       dtype:                              int32                              int32
+                       shape:                             (123,)                             (123,)
+                   chunksize:                         contiguous                              [123]
+                   long_name:         scan mirror position index         scan mirror position index
+          -----VARIABLE-----:                             xtrack                             xtrack
+                       dtype:                              int32                              int32
+                       shape:                            (2048,)                            (2048,)
+                   chunksize:                         contiguous                             [2048]
+                   long_name:             pixel index along slit             pixel index along slit
+
+                    GROUP #01 ----------------------/geolocation ----------------------/geolocation
+      num variables in group:                                 10                                 10
+                            - ---------------------------------- ----------------------------------
+          -----VARIABLE-----:                           latitude                           latitude
+                       dtype:                            float32                            float32
+                       shape:                        (123, 2048)                        (123, 2048)
+                   chunksize:                         contiguous                        [123, 2048]
+                  _FillValue:                             -1e+30                             -1e+30
+                      bounds:                    latitude_bounds                    latitude_bounds
+                     comment:           latitude at pixel center           latitude at pixel center
+                   long_name:              pixel center latitude              pixel center latitude
+               standard_name:                           latitude
+                       units:                      degrees_north                      degrees_north
+                   valid_max:                               90.0                               90.0
+                   valid_min:                              -90.0                              -90.0
+          -----VARIABLE-----:                    latitude_bounds                    latitude_bounds
+                       dtype:                            float32                            float32
+                       shape:                     (123, 2048, 4)                     (123, 2048, 4)
+                   chunksize:                         contiguous                     [123, 2048, 2]
+                  _FillValue:                             -1e+30                             -1e+30
+                     comment: latitude at pixel corners (SW,SE,NE,NW) latitude at pixel corners (SW,SE,NE,NW)
+                   long_name:              pixel corner latitude              pixel corner latitude
+                       units:                                                         degrees_north
+                   valid_max:                               90.0                               90.0
+                   valid_min:                              -90.0                              -90.0
+          -----VARIABLE-----:                          longitude                          longitude
+                       dtype:                            float32                            float32
+                       shape:                        (123, 2048)                        (123, 2048)
+                   chunksize:                         contiguous                        [123, 2048]
+                  _FillValue:                             -1e+30                             -1e+30
+                      bounds:                   longitude_bounds                   longitude_bounds
+                     comment:          longitude at pixel center          longitude at pixel center
+                   long_name:             pixel center longitude             pixel center longitude
+               standard_name:                          longitude
+                       units:                       degrees_east                       degrees_east
+                   valid_max:                              180.0                              180.0
+                   valid_min:                             -180.0                             -180.0
+          -----VARIABLE-----:                   longitude_bounds                   longitude_bounds
+                       dtype:                            float32                            float32
+                       shape:                     (123, 2048, 4)                     (123, 2048, 4)
+                   chunksize:                         contiguous                     [123, 2048, 2]
+                  _FillValue:                             -1e+30                             -1e+30
+                     comment: longitude at pixel corners (SW,SE,NE,NW) longitude at pixel corners (SW,SE,NE,NW)
+                   long_name:             pixel corner longitude             pixel corner longitude
+                       units:                                                          degrees_east
+                   valid_max:                              180.0                              180.0
+                   valid_min:                             -180.0                             -180.0
+          -----VARIABLE-----:             relative_azimuth_angle             relative_azimuth_angle
+                       dtype:                            float32                            float32
+                       shape:                        (123, 2048)                        (123, 2048)
+                   chunksize:                         contiguous                        [123, 2048]
+                  _FillValue:                             -1e+30                             -1e+30
+                 coordinates:            time longitude latitude                 longitude latitude
+                   long_name: relative azimuth angle at pixel center relative azimuth angle at pixel center
+                       units:                            degrees                            degrees
+                   valid_max:                              180.0                              180.0
+                   valid_min:                             -180.0                             -180.0
+          -----VARIABLE-----:                solar_azimuth_angle                solar_azimuth_angle
+                       dtype:                            float32                            float32
+                       shape:                        (123, 2048)                        (123, 2048)
+                   chunksize:                         contiguous                        [123, 2048]
+                  _FillValue:                             -1e+30                             -1e+30
+                 coordinates:            time longitude latitude                 longitude latitude
+                   long_name: solar azimuth angle at pixel center solar azimuth angle at pixel center
+                       units:                            degrees                            degrees
+                   valid_max:                              180.0                              180.0
+                   valid_min:                             -180.0                             -180.0
+          -----VARIABLE-----:                 solar_zenith_angle                 solar_zenith_angle
+                       dtype:                            float32                            float32
+                       shape:                        (123, 2048)                        (123, 2048)
+                   chunksize:                         contiguous                        [123, 2048]
+                  _FillValue:                             -1e+30                             -1e+30
+                 coordinates:            time longitude latitude                 longitude latitude
+                   long_name: solar zenith angle at pixel center solar zenith angle at pixel center
+                       units:                            degrees                            degrees
+                   valid_max:                               90.0                               90.0
+                   valid_min:                                0.0                                0.0
+          -----VARIABLE-----:                               time                               time
+                       dtype:                            float64                            float64
+                       shape:                             (123,)                             (123,)
+                   chunksize:                         contiguous                              [123]
+                  _FillValue:                             -1e+30                             -1e+30
+                    calendar:                          gregorian
+                   long_name:       radiance exposure start time       radiance exposure start time
+               standard_name:                               time
+                       units: seconds since 2000-01-01T12:00:00Z seconds since 2000-01-01T12:00:00Z
+          -----VARIABLE-----:              viewing_azimuth_angle              viewing_azimuth_angle
+                       dtype:                            float32                            float32
+                       shape:                        (123, 2048)                        (123, 2048)
+                   chunksize:                         contiguous                        [123, 2048]
+                  _FillValue:                             -1e+30                             -1e+30
+                 coordinates:            time longitude latitude                 longitude latitude
+                   long_name: viewing azimuth angle at pixel center viewing azimuth angle at pixel center
+                       units:                            degrees                            degrees
+                   valid_max:                              180.0                              180.0
+                   valid_min:                             -180.0                             -180.0
+          -----VARIABLE-----:               viewing_zenith_angle               viewing_zenith_angle
+                       dtype:                            float32                            float32
+                       shape:                        (123, 2048)                        (123, 2048)
+                   chunksize:                         contiguous                        [123, 2048]
+                  _FillValue:                             -1e+30                             -1e+30
+                 coordinates:            time longitude latitude                 longitude latitude
+                   long_name: viewing zenith angle at pixel center viewing zenith angle at pixel center
+                       units:                            degrees                            degrees
+                   valid_max:                               90.0                               90.0
+                   valid_min:                                0.0                                0.0
+
+                    GROUP #02 --------------------------/product --------------------------/product
+      num variables in group:                                  5                                  5
+                            - ---------------------------------- ----------------------------------
+          -----VARIABLE-----:             main_data_quality_flag             main_data_quality_flag
+                       dtype:                              int16                              int16
+                       shape:                        (123, 2048)                        (123, 2048)
+                   chunksize:                         contiguous                        [123, 2048]
+                  _FillValue:                                 -1                                 -1
+                 coordinates:            time longitude latitude                 longitude latitude
+               flag_meanings:              normal suspicious bad              normal suspicious bad
+                 flag_values:                     [0, 1, 2, ...]                     [0, 1, 2, ...]
+                   long_name:             main data quality flag             main data quality flag
+                   valid_max:                                  2                                  2
+                   valid_min:                                  0                                  0
+          -----VARIABLE-----:       vertical_column_stratosphere       vertical_column_stratosphere
+                       dtype:                            float64                            float64
+                       shape:                        (123, 2048)                        (123, 2048)
+                   chunksize:                         contiguous                        [123, 2048]
+                  _FillValue:                             -1e+30                             -1e+30
+                 coordinates:            time longitude latitude                 longitude latitude
+                   long_name: stratosphere nitrogen dioxide vertical column stratosphere nitrogen dioxide vertical column
+                       units:                     molecules/cm^2                         molec/cm^2
+          -----VARIABLE-----:              vertical_column_total              vertical_column_total
+                       dtype:                            float64                            float64
+                       shape:                        (123, 2048)                        (123, 2048)
+                   chunksize:                         contiguous                        [123, 2048]
+                  _FillValue:                             -1e+30                             -1e+30
+                     comment: nitrogen dioxide vertical column determined from fitted slant column and total AMF calculated from surface to top of atmosphere nitrogen dioxide vertical column determined from slant column and total AMF calculated from surface to top of atmosphere
+                 coordinates:            time longitude latitude                 longitude latitude
+                   long_name:   nitrogen dioxide vertical column   nitrogen dioxide vertical column
+                       units:                     molecules/cm^2                         molec/cm^2
+          -----VARIABLE-----:  vertical_column_total_uncertainty  vertical_column_total_uncertainty
+                       dtype:                            float64                            float64
+                       shape:                        (123, 2048)                        (123, 2048)
+                   chunksize:                         contiguous                        [123, 2048]
+                  _FillValue:                             -1e+30                             -1e+30
+                 coordinates:            time longitude latitude                 longitude latitude
+                   long_name: nitrogen dioxide vertical column uncertainty nitrogen dioxide vertical column uncertainty
+                       units:                     molecules/cm^2                         molec/cm^2
+          -----VARIABLE-----:        vertical_column_troposphere        vertical_column_troposphere
+                       dtype:                            float64                            float64
+                       shape:                        (123, 2048)                        (123, 2048)
+                   chunksize:                         contiguous                        [123, 2048]
+                  _FillValue:                             -1e+30                             -1e+30
+                 coordinates:            time longitude latitude                 longitude latitude
+                   long_name: troposphere nitrogen dioxide vertical column troposphere nitrogen dioxide vertical column
+                       units:                     molecules/cm^2                         molec/cm^2
+
+                    GROUP #03 --------------------/qa_statistics --------------------/qa_statistics
+      num variables in group:                                  2                                  2
+                            - ---------------------------------- ----------------------------------
+          -----VARIABLE-----:               fit_convergence_flag               fit_convergence_flag
+                       dtype:                              int16                              int16
+                       shape:                        (123, 2048)                        (123, 2048)
+                   chunksize:                         contiguous                        [123, 2048]
+                  _FillValue:                             -30000                             -30000
+                 coordinates:            time longitude latitude                 longitude latitude
+               flag_meanings: failed maxiter_exceeded suspect good failed maxiter_exceeded suspect good
+                 flag_values:                [-2, -1, 0, 1, ...]                [-2, -1, 0, 1, ...]
+                   long_name:      radiance fit convergence flag      radiance fit convergence flag
+                   valid_max:                              12344                              12344
+                   valid_min:                                -10                                -10
+          -----VARIABLE-----:                   fit_rms_residual                   fit_rms_residual
+                       dtype:                            float32                            float32
+                       shape:                        (123, 2048)                        (123, 2048)
+                   chunksize:                         contiguous                        [123, 2048]
+                  _FillValue:                             -1e+30                             -1e+30
+                 coordinates:            time longitude latitude                 longitude latitude
+                   long_name:          radiance fit RMS residual          radiance fit RMS residual
+                   valid_max:                               0.01                               0.01
+                   valid_min:                                0.0                                0.0
+
+                    GROUP #04 ---------------------/support_data ---------------------/support_data
+      num variables in group:                                 17                                 17
+                            - ---------------------------------- ----------------------------------
+          -----VARIABLE-----:                             albedo                             albedo
+                       dtype:                            float32                            float32
+                       shape:                        (123, 2048)                        (123, 2048)
+                   chunksize:                         contiguous                        [123, 2048]
+                 coordinates:            time longitude latitude                 longitude latitude
+                   long_name:                     surface albedo                     surface albedo
+                   valid_max:                                1.0                                1.0
+                   valid_min:                                0.0                                0.0
+          -----VARIABLE-----:                 amf_cloud_fraction                 amf_cloud_fraction
+                       dtype:                            float32                            float32
+                       shape:                        (123, 2048)                        (123, 2048)
+                   chunksize:                         contiguous                        [123, 2048]
+                  _FillValue:                               -1.0                               -1.0
+                     comment: cloud radiance fraction for AMF computation cloud radiance fraction for AMF computation
+                 coordinates:            time longitude latitude                 longitude latitude
+                   long_name:                     cloud fraction                     cloud fraction
+                   valid_max:                                1.0                                1.0
+                   valid_min:                                0.0                                0.0
+          -----VARIABLE-----:                 amf_cloud_pressure                 amf_cloud_pressure
+                       dtype:                            float32                            float32
+                       shape:                        (123, 2048)                        (123, 2048)
+                   chunksize:                         contiguous                        [123, 2048]
+                  _FillValue:                             -1e+30                             -1e+30
+                     comment: cloud pressure for AMF computation cloud pressure for AMF calculation
+                 coordinates:            time longitude latitude                 longitude latitude
+                   long_name:                     cloud pressure                     cloud pressure
+                       units:                                hPa                                hPa
+                   valid_max:                             1200.0
+                   valid_min:                                0.0                                0.0
+          -----VARIABLE-----:                amf_diagnostic_flag                amf_diagnostic_flag
+                       dtype:                              int16                              int16
+                       shape:                        (123, 2048)                        (123, 2048)
+                   chunksize:                         contiguous                        [123, 2048]
+                  _FillValue:                                 -1                             -30000
+                 coordinates:            time longitude latitude                 longitude latitude
+                  flag_masks:              [1, 2, 4, 8, 16, ...]                [-2, 220, 500, ...]
+               flag_meanings: geometric_AMF glint snow_correction no_cloud_pressure adjusted_surface_pressure adjusted_cloud_pressure no_albedo no_cloud_fraction no_gas_climatology no_scattering_weights AMF_disabled out_of_bounds_view no_cloud_pressure max_sza_exceeded
+                   long_name: nitrogen dioxide air mass factor diagnostic flag nitrogen dioxide air mass factor diagnostic flag
+          -----VARIABLE-----:                   amf_stratosphere                   amf_stratosphere
+                       dtype:                            float32                            float32
+                       shape:                        (123, 2048)                        (123, 2048)
+                   chunksize:                         contiguous                        [123, 2048]
+                  _FillValue:                             -1e+30                             -1e+30
+                 coordinates:            time longitude latitude                 longitude latitude
+                   long_name: nitrogen dioxide stratospheric air mass factor nitrogen dioxide stratospheric air mass factor (AMF)
+                   valid_min:                                0.0                                0.0
+          -----VARIABLE-----:                          amf_total                          amf_total
+                       dtype:                            float32                            float32
+                       shape:                        (123, 2048)                        (123, 2048)
+                   chunksize:                         contiguous                        [123, 2048]
+                  _FillValue:                             -1e+30                             -1e+30
+                     comment: total nitrogen dioxide air mass factor (AMF) calculated from surface to top of atmosphere total nitrogen dioxide air mass factor (AMF) calculated from surface to top of atmosphere
+                 coordinates:            time longitude latitude                 longitude latitude
+                   long_name:   nitrogen dioxide air mass factor   nitrogen dioxide air mass factor
+                   valid_min:                                0.0                                0.0
+          -----VARIABLE-----:                                                 amf_total_uncertainty
+                       dtype:                                                               float32
+                       shape:                                                           (123, 2048)
+                   chunksize:                                                           [123, 2048]
+                  _FillValue:                                                                -1e+30
+                 coordinates:                                                    longitude latitude
+                   long_name:                                    nitrogen dioxide air mass factor uncertainty
+                   valid_min:                                                                   0.0
+          -----VARIABLE-----:                    amf_troposphere                    amf_troposphere
+                       dtype:                            float32                            float32
+                       shape:                        (123, 2048)                        (123, 2048)
+                   chunksize:                         contiguous                        [123, 2048]
+                  _FillValue:                             -1e+30                             -1e+30
+                 coordinates:            time longitude latitude                 longitude latitude
+                   long_name: nitrogen dioxide tropospheric air mass factor nitrogen dioxide tropospheric air mass factor
+                   valid_min:                                0.0                                0.0
+          -----VARIABLE-----:                 eff_cloud_fraction
+                       dtype:                            float32
+                       shape:                        (123, 2048)
+                   chunksize:                         contiguous
+                  _FillValue:                               -1.0
+                     comment: effective cloud fraction from cloud retrieval
+                 coordinates:            time longitude latitude
+                   long_name:           effective cloud fraction
+                   valid_max:                                1.0
+                   valid_min:                                0.0
+          -----VARIABLE-----:                fitted_slant_column                fitted_slant_column
+                       dtype:                            float64                            float64
+                       shape:                        (123, 2048)                        (123, 2048)
+                   chunksize:                         contiguous                        [123, 2048]
+                  _FillValue:                             -1e+30                             -1e+30
+                 coordinates:            time longitude latitude                 longitude latitude
+                   long_name: nitrogen dioxide fitted slant column nitrogen dioxide fitted slant column
+                       units:                     molecules/cm^2                         molec/cm^2
+          -----VARIABLE-----:    fitted_slant_column_uncertainty    fitted_slant_column_uncertainty
+                       dtype:                            float64                            float64
+                       shape:                        (123, 2048)                        (123, 2048)
+                   chunksize:                         contiguous                        [123, 2048]
+                  _FillValue:                             -1e+30                             -1e+30
+                 coordinates:            time longitude latitude                 longitude latitude
+                   long_name: nitrogen dioxide fitted slant column uncertainty nitrogen dioxide fitted slant column uncertainty
+                       units:                     molecules/cm^2                         molec/cm^2
+          -----VARIABLE-----:                        gas_profile                        gas_profile
+                       dtype:                            float32                            float32
+                       shape:                    (123, 2048, 72)                    (123, 2048, 47)
+                   chunksize:                     [123, 128, 72]                      [41, 683, 16]
+                 coordinates:            time longitude latitude                 longitude latitude
+                   long_name: vertical profile of nitrogen dioxide partial column vertical profile of nitrogen dioxide partial column
+                       units:                     molecules/cm^2                         molec/cm^2
+                   valid_min:                                0.0                                0.0
+          -----VARIABLE-----:          ground_pixel_quality_flag          ground_pixel_quality_flag
+                       dtype:                              int32                              int32
+                       shape:                        (123, 2048)                        (123, 2048)
+                   chunksize:                         contiguous                        [123, 2048]
+                 coordinates:            time longitude latitude                 longitude latitude
+               flag_meanings: shallow_ocean land shallow_inland_water shoreline intermittent_water deep_inland_water continental_shelf_ocean deep_ocean land_water_error sun_glint_possibility solar_eclipse_possibility water evergreen_needleleaf_forest evergreen_broadleaf_forest deciduous_needleleaf_forest deciduous_broadleaf_forest mixed_forest closed_shrublands open_shrublands woody_savannas savannas grasslands permanent_wetlands croplands urban_and_built_up cropland_natural_vegetation_mosaic snow_and_ice barren_or_sparsely_vegetated unclassified fill_value shallow_ocean land shallow_inland_water shoreline intermittent_water deep_inland_water continental_shelf_ocean deep_ocean land_water_error sun_glint_possibility solar_eclipse_possibility snow_free_land permanent_ice snow mixed_pixels_at_coastline suspect_ice_value corners_undefined ocean water evergreen_needleleaf_forest evergreen_broadleaf_forest deciduous_needleleaf_forest deciduous_broadleaf_forest mixed_forest closed_shrublands open_shrublands woody_savannas savannas grasslands permanent_wetlands croplands urban_and_built_up cropland_natural_vegetation_mosaic snow_and_ice barren_or_sparsely_vegetated unclassified fill_value
+                 flag_values:               [0, 1, 2, 3, 4, ...]               [0, 1, 2, 3, 4, ...]
+                   long_name:          ground pixel quality flag          ground pixel quality flag
+          -----VARIABLE-----:                 scattering_weights                 scattering_weights
+                       dtype:                            float32                            float32
+                       shape:                    (123, 2048, 72)                    (123, 2048, 47)
+                   chunksize:                     [123, 128, 72]                      [41, 683, 16]
+                     comment: vertical profile of scattering weights vertical profile of scattering weights
+                 coordinates:            time longitude latitude                 longitude latitude
+                   long_name:                 scattering weights                 scattering weights
+                   valid_min:                                0.0                                0.0
+          -----VARIABLE-----:                  snow_ice_fraction                  snow_ice_fraction
+                       dtype:                            float32                            float32
+                       shape:                        (123, 2048)                        (123, 2048)
+                   chunksize:                         contiguous                        [123, 2048]
+                  _FillValue:                             -1e+30                             -1e+30
+                 coordinates:            time longitude latitude                 longitude latitude
+                   long_name: fraction of pixel area covered by snow and/or ice Fraction of pixel area covered by snow and/or ice
+                   valid_max:                                1.0                                1.0
+                   valid_min:                                0.0                                0.0
+          -----VARIABLE-----:                   surface_pressure                   surface_pressure
+                       dtype:                            float32                            float32
+                       shape:                        (123, 2048)                        (123, 2048)
+                   chunksize:                         contiguous                        [123, 2048]
+                       Eta_A: [0.0, 0.04804826, 6.593752, 13.1348, 19.61311, ...] [0.0, 0.04804826, 6.593752, 13.1348, 19.61311, ...]
+                       Eta_B: [1.0, 0.984952, 0.963406, 0.941865, 0.920387, ...] [1.0, 0.984952, 0.963406, 0.941865, 0.920387, ...]
+                  _FillValue:                             -1e+30                             -1e+30
+                 coordinates:            time longitude latitude                 longitude latitude
+                   long_name:                   surface pressure                   surface pressure
+                       units:                                hPa                                hPa
+                   valid_max:                             1200.0                             1030.0
+                   valid_min:                                0.0                                0.0
+          -----VARIABLE-----:                     terrain_height                     terrain_height
+                       dtype:                              int16                              int16
+                       shape:                        (123, 2048)                        (123, 2048)
+                   chunksize:                         contiguous                        [123, 2048]
+                  _FillValue:                             -30000                             -30000
+                 coordinates:            time longitude latitude                 longitude latitude
+                   long_name:                     terrain height                     terrain height
+                       units:                                  m                                  m
+                   valid_max:                              10000                              10000
+                   valid_min:                              -1000                              -1000
+          -----VARIABLE-----:                tropopause_pressure                tropopause_pressure
+                       dtype:                            float32                            float32
+                       shape:                        (123, 2048)                        (123, 2048)
+                   chunksize:                         contiguous                        [123, 2048]
+                  _FillValue:                             -1e+30                             -1e+30
+                 coordinates:            time longitude latitude                 longitude latitude
+                   long_name:                tropopause pressure                tropopause pressure
+                       units:                                hPa                                hPa
+                   valid_max:                             1200.0                             1030.0
+                   valid_min:                                0.0                                0.0
+
+                    GROUP #05 ---------------------------------- ------------------/true_quantities
+      num variables in group:                                  0                                  5
+                            - ---------------------------------- ----------------------------------
+          -----VARIABLE-----:                                                                albedo
+                       dtype:                                                               float32
+                       shape:                                                           (123, 2048)
+                   chunksize:                                                           [123, 2048]
+                 coordinates:                                                    longitude latitude
+                   long_name:                                       surface albedo from model truth
+                   valid_max:                                                                   1.0
+                   valid_min:                                                                   0.0
+          -----VARIABLE-----:                                                             amf_total
+                       dtype:                                                               float32
+                       shape:                                                           (123, 2048)
+                   chunksize:                                                           [123, 2048]
+                  _FillValue:                                                                -1e+30
+                     comment:                                    total nitrogen dioxide air mass factor (AMF) calculated from model truth
+                 coordinates:                                                    longitude latitude
+                   long_name:                                      nitrogen dioxide air mass factor
+                   valid_min:                                                                   0.0
+          -----VARIABLE-----:                                                           gas_profile
+                       dtype:                                                               float32
+                       shape:                                                       (123, 2048, 47)
+                   chunksize:                                                         [41, 683, 16]
+                 coordinates:                                                    longitude latitude
+                   long_name:                                    vertical profile of nitrogen dioxide from model truth
+                       units:                                                            molec/cm^2
+                   valid_min:                                                                   0.0
+          -----VARIABLE-----:                                                    scattering_weights
+                       dtype:                                                               float32
+                       shape:                                                       (123, 2048, 47)
+                   chunksize:                                                         [41, 683, 16]
+                     comment:                                    vertical profile of scattering weights calculated from model truth
+                 coordinates:                                                    longitude latitude
+                   long_name:                                                    scattering weights
+                   valid_min:                                                                   0.0
+          -----VARIABLE-----:                                                 vertical_column_total
+                       dtype:                                                               float64
+                       shape:                                                           (123, 2048)
+                   chunksize:                                                           [123, 2048]
+                  _FillValue:                                                                -1e+30
+                     comment:                                    nitrogen dioxide vertical column from model truth
+                 coordinates:                                                    longitude latitude
+                   long_name:                                      nitrogen dioxide vertical column
+                       units:                                                            molec/cm^2
+                            - ---------------------------------- ----------------------------------
+ Total number of shared items:                                 35                                 35
+ Total number of non-shared items:                                  1                                  6
+
+Done.</code></pre>
+</div>
+</div>
+<p>END of Notebook.</p>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button,
+        { trigger: "manual",
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config);
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>
