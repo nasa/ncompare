@@ -53,7 +53,7 @@ ncompare S001G01.nc S001G01_SUBSET.nc -g product -v ozone_profile --report subse
 poetry run ncompare <netcdf file #1> <netcdf file #2>
 ```
 
-
+**A more complete usage demonstration with example output is provided in [example/ncompare-example-usage.ipynb](/example/ncompare-example-usage.ipynb).**
 
 ### Options
 
