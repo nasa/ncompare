@@ -53,10 +53,12 @@ ncompare S001G01.nc S001G01_SUBSET.nc -g product -v ozone_profile --report subse
 poetry run ncompare <netcdf file #1> <netcdf file #2>
 ```
 
-
+**A more complete usage demonstration with example output is shown in
+[this example notebook](https://nasa.github.io/ncompare/ncompare-example-usage.html).**
 
 ### Options
 
+- `-h`, `--help`            show this help message and exit
 - `--file-text` [FILE_PATH]: Text file to write output to.
 - `--file-csv` [FILE_PATH]: Comma-separated values (CSV) file to write output to.
 - `--file-xlsx` [FILE_PATH]: Excel file to write output to.
@@ -65,6 +67,7 @@ poetry run ncompare <netcdf file #1> <netcdf file #2>
 - `--show-chunks` : Include chunk sizes in the table that compares variables.
 - `-v` (`--comparison_var_name`) [VAR_NAME]: Compare specific values for this variable.
 - `-g` (`--comparison_var_group`) [VAR_GROUP]: Group that contains the `comparison_var_name`.
+- `--column-widths` [WIDTH, WIDTH, WIDTH]: Width, in number of characters, of the three columns in the comparison report
 
 ## How to test ncompare locally
 
@@ -80,12 +83,12 @@ The `cdo` (climate data operators) tool
 Moreover, `nco` operators' `ncdiff` function computes value differences, but
 --- as far as the developers of this tool are aware ---
 `nco` does not have a simple function to show structural differences between NetCDF4 datasets.
- Note that `h5diff`, provided in the HDF5 software, can also be used to find differences. 
-In comparison to `h5diff`, `ncompare` is written and runnable in Python; `ncompare` provides _aligned_ and 
-_colorized_ difference report for quicker assessments of groups, variable names, types, shapes, and attributes; 
+ Note that `h5diff`, provided in the HDF5 software, can also be used to find differences.
+In comparison to `h5diff`, `ncompare` is written and runnable in Python; `ncompare` provides _aligned_ and
+_colorized_ difference report for quicker assessments of groups, variable names, types, shapes, and attributes;
 and can generate report files formatted for other applications. However, note that
-`h5diff` provides comparison of some otherwise "hidden" hdf5 properties, such as _Netcdf4Dimid or _Netcdf4Coordinates, 
-which are not currently assessed by `ncompare`.   
+`h5diff` provides comparison of some otherwise "hidden" hdf5 properties, such as _Netcdf4Dimid or _Netcdf4Coordinates,
+which are not currently assessed by `ncompare`.
 
 ## Known limitations
 _____
@@ -97,12 +100,12 @@ In some cases, `xarray` will miss dimensions whose names do not also exist as va
 # Notices:
 _____
 Copyright 2023 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
- 
+
 ### Third-Party Software:
-This software calls the following third-party software, which is subject to the terms and conditions of its licensor, 
-as applicable at the time of licensing. Third-party software is not bundled with this software, 
+This software calls the following third-party software, which is subject to the terms and conditions of its licensor,
+as applicable at the time of licensing. Third-party software is not bundled with this software,
 but may be available from the licensor.
- 
+
 License hyperlinks are provided here for information purposes only:
 
 | item     |                               license                               | link                                                          |
@@ -115,22 +118,22 @@ License hyperlinks are provided here for information purposes only:
 | Python   | Standard Library Python Software Foundation (PSF) License Agreement | https://docs.python.org/3/license.html#psf-licenseDisclaimers |
 
 
-### No Warranty: 
-THE SUBJECT SOFTWARE IS PROVIDED "AS IS" WITHOUT ANY WARRANTY OF ANY KIND, EITHER EXPRESSED, IMPLIED, 
-OR STATUTORY, INCLUDING, BUT NOT LIMITED TO, ANY WARRANTY THAT THE SUBJECT SOFTWARE WILL CONFORM TO SPECIFICATIONS, 
-ANY IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, OR FREEDOM FROM INFRINGEMENT, 
-ANY WARRANTY THAT THE SUBJECT SOFTWARE WILL BE ERROR FREE, OR ANY WARRANTY THAT DOCUMENTATION, IF PROVIDED, 
-WILL CONFORM TO THE SUBJECT SOFTWARE. THIS AGREEMENT DOES NOT, IN ANY MANNER, 
-CONSTITUTE AN ENDORSEMENT BY GOVERNMENT AGENCY OR ANY PRIOR RECIPIENT OF ANY RESULTS, RESULTING DESIGNS, HARDWARE, 
-SOFTWARE PRODUCTS OR ANY OTHER APPLICATIONS RESULTING FROM USE OF THE SUBJECT SOFTWARE.  
-FURTHER, GOVERNMENT AGENCY DISCLAIMS ALL WARRANTIES AND LIABILITIES REGARDING THIRD-PARTY SOFTWARE, 
+### No Warranty:
+THE SUBJECT SOFTWARE IS PROVIDED "AS IS" WITHOUT ANY WARRANTY OF ANY KIND, EITHER EXPRESSED, IMPLIED,
+OR STATUTORY, INCLUDING, BUT NOT LIMITED TO, ANY WARRANTY THAT THE SUBJECT SOFTWARE WILL CONFORM TO SPECIFICATIONS,
+ANY IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, OR FREEDOM FROM INFRINGEMENT,
+ANY WARRANTY THAT THE SUBJECT SOFTWARE WILL BE ERROR FREE, OR ANY WARRANTY THAT DOCUMENTATION, IF PROVIDED,
+WILL CONFORM TO THE SUBJECT SOFTWARE. THIS AGREEMENT DOES NOT, IN ANY MANNER,
+CONSTITUTE AN ENDORSEMENT BY GOVERNMENT AGENCY OR ANY PRIOR RECIPIENT OF ANY RESULTS, RESULTING DESIGNS, HARDWARE,
+SOFTWARE PRODUCTS OR ANY OTHER APPLICATIONS RESULTING FROM USE OF THE SUBJECT SOFTWARE.
+FURTHER, GOVERNMENT AGENCY DISCLAIMS ALL WARRANTIES AND LIABILITIES REGARDING THIRD-PARTY SOFTWARE,
 IF PRESENT IN THE ORIGINAL SOFTWARE, AND DISTRIBUTES IT "AS IS."
- 
-### Waiver and Indemnity: 
-RECIPIENT AGREES TO WAIVE ANY AND ALL CLAIMS AGAINST THE UNITED STATES GOVERNMENT, 
-ITS CONTRACTORS AND SUBCONTRACTORS, AS WELL AS ANY PRIOR RECIPIENT. IF RECIPIENT'S USE OF THE SUBJECT SOFTWARE RESULTS 
-IN ANY LIABILITIES, DEMANDS, DAMAGES, EXPENSES OR LOSSES ARISING FROM SUCH USE, INCLUDING ANY DAMAGES FROM PRODUCTS 
-BASED ON, OR RESULTING FROM, RECIPIENT'S USE OF THE SUBJECT SOFTWARE, RECIPIENT SHALL INDEMNIFY AND HOLD HARMLESS 
-THE UNITED STATES GOVERNMENT, ITS CONTRACTORS AND SUBCONTRACTORS, AS WELL AS ANY PRIOR RECIPIENT, 
-TO THE EXTENT PERMITTED BY LAW. RECIPIENT'S SOLE 
+
+### Waiver and Indemnity:
+RECIPIENT AGREES TO WAIVE ANY AND ALL CLAIMS AGAINST THE UNITED STATES GOVERNMENT,
+ITS CONTRACTORS AND SUBCONTRACTORS, AS WELL AS ANY PRIOR RECIPIENT. IF RECIPIENT'S USE OF THE SUBJECT SOFTWARE RESULTS
+IN ANY LIABILITIES, DEMANDS, DAMAGES, EXPENSES OR LOSSES ARISING FROM SUCH USE, INCLUDING ANY DAMAGES FROM PRODUCTS
+BASED ON, OR RESULTING FROM, RECIPIENT'S USE OF THE SUBJECT SOFTWARE, RECIPIENT SHALL INDEMNIFY AND HOLD HARMLESS
+THE UNITED STATES GOVERNMENT, ITS CONTRACTORS AND SUBCONTRACTORS, AS WELL AS ANY PRIOR RECIPIENT,
+TO THE EXTENT PERMITTED BY LAW. RECIPIENT'S SOLE
 REMEDY FOR ANY SUCH MATTER SHALL BE THE IMMEDIATE, UNILATERAL TERMINATION OF THIS AGREEMENT.
