@@ -14,7 +14,7 @@ _____
 ### Using pip
 
 Install the latest version of the package from PyPI using pip:
-```shell
+```console
 pip install ncompare
 ```
 
@@ -22,7 +22,7 @@ pip install ncompare
 
 For local development, one can clone the repository and then use poetry or pip from the local directory:
 
-```shell
+```console
 git clone https://github.com/nasa/ncompare.git
 ```
 
@@ -38,18 +38,18 @@ ii) Run ```pip install .``` from the repository directory.
 ## Usage
 _____
 
-```shell
+```console
 ncompare <netcdf file #1> <netcdf file #2>
 ```
 
 For example:
 
-```shell
-ncompare S001G01.nc S001G01_SUBSET.nc -g product -v ozone_profile --report subset_comparison.txt
+```console
+ncompare S001G01.nc S001G01_SUBSET.nc --file-text subset_comparison.txt
 ```
 
 ###### Or, If installed using a `poetry` environment:
-```shell
+```console
 poetry run ncompare <netcdf file #1> <netcdf file #2>
 ```
 
@@ -73,7 +73,7 @@ poetry run ncompare <netcdf file #1> <netcdf file #2>
 ## How to test ncompare locally
 
 If installed using a `poetry` environment, the tests can be run with:
-```
+```console
 poetry run pytest tests
 ```
 
