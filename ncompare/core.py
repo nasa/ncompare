@@ -27,6 +27,7 @@ def compare(
     nc_b: Union[str, Path],
     comparison_var_group: Optional[str] = None,
     comparison_var_name: Optional[str] = None,
+    only_diffs: bool = True,
     no_color: bool = False,
     show_chunks: bool = False,
     show_attributes: bool = False,
@@ -78,7 +79,11 @@ def compare(
 
     # The Outputter object is initialized to handle stdout and optional writing to a text file.
     with Outputter(
-        keep_print_history=True, no_color=no_color, text_file=file_text, column_widths=column_widths
+        keep_print_history=True,
+        keep_only_diffs=only_diffs,
+        no_color=no_color,
+        text_file=file_text,
+        column_widths=column_widths,
     ) as out:
         out.print(f"File A: {nc_a}")
         out.print(f"File B: {nc_b}")
@@ -371,10 +376,45 @@ def _print_var_properties_side_by_side(
     show_chunks: bool = False,
     show_attributes: bool = False,
 ):
+    # Gather all variable property pairs first, before printing, so we can decide whether to highlight the variable header
+    pairs_to_check_and_show = [
+        (v_a.dtype, v_b.dtype),
+        (v_a.shape, v_b.shape),
+    ]
+    if show_chunks:
+        pairs_to_check_and_show.append((v_a.chunking, v_b.chunking))
+    if show_attributes:
+        for attr_a_key, attr_a, attr_b_key, attr_b in get_and_check_variable_attributes(v_a, v_b):
+            # Check whether attr_a_key is empty, because it might be if the variable doesn't exist in File A.
+            pairs_to_check_and_show.append((attr_a, attr_b))
+    # Scale Factor
+    scale_factor_pair = get_and_check_variable_scale_factor(v_a, v_b)
+    if scale_factor_pair:
+        pairs_to_check_and_show.append((scale_factor_pair[0], scale_factor_pair[1]))
+
+    # print(f"pairs_to_check_and_show === {pairs_to_check_and_show}")
+    there_is_a_difference = False
+    for pair in pairs_to_check_and_show:
+        if pair[0] != pair[1]:
+            there_is_a_difference = True
+            break
+
     # Variable name
-    out.side_by_side(
-        "-----VARIABLE-----:", v_a.varname[:47], v_b.varname[:47], highlight_diff=False
-    )
+    # header_color = None
+    # if there_is_a_difference:
+    #     header_color = Fore.RED
+
+    # If all attributes are the same, and keep-only-diffs is set -> DONT print
+    # If all attributes are the same, and keep-only-diffs is NOT set -> print
+    # If some attributes are different -> print no matter else
+    if there_is_a_difference or (not out.keep_only_diffs):
+        out.side_by_side(
+            "-----VARIABLE-----:",
+            v_a.varname[:47],
+            v_b.varname[:47],
+            highlight_diff=False,
+            force_display_even_if_same=True,
+        )
 
     # Data type
     out.side_by_side("dtype:", v_a.dtype, v_b.dtype, highlight_diff=True)
@@ -385,24 +425,19 @@ def _print_var_properties_side_by_side(
         out.side_by_side("chunksize:", v_a.chunking, v_b.chunking, highlight_diff=True)
     # Attributes
     if show_attributes:
-        # Get the name of attributes if they exist
-        attrs_a_names = []
-        if v_a.attributes:
-            attrs_a_names = v_a.attributes.keys()
-        attrs_b_names = []
-        if v_b.attributes:
-            attrs_b_names = v_b.attributes.keys()
-
-        # Iterate and print each attribute
-        for _, attr_a_key, attr_b_key in common_elements(attrs_a_names, attrs_b_names):
-            attr_a = _get_attribute_value_as_str(v_a, attr_a_key)
-            attr_b = _get_attribute_value_as_str(v_b, attr_b_key)
+        for attr_a_key, attr_a, attr_b_key, attr_b in get_and_check_variable_attributes(v_a, v_b):
             # Check whether attr_a_key is empty, because it might be if the variable doesn't exist in File A.
             out.side_by_side(
                 f"{attr_a_key if attr_a_key else attr_b_key}:", attr_a, attr_b, highlight_diff=True
             )
 
     # Scale Factor
+    scale_factor_pair = get_and_check_variable_scale_factor(v_a, v_b)
+    if scale_factor_pair:
+        out.side_by_side("sf:", scale_factor_pair[0], scale_factor_pair[1], highlight_diff=True)
+
+
+def get_and_check_variable_scale_factor(v_a, v_b) -> None | tuple[str, str]:
     if getattr(v_a.variable, 'scale_factor', None):
         sf_a = v_a.variable.scale_factor
     else:
@@ -412,7 +447,24 @@ def _print_var_properties_side_by_side(
     else:
         sf_b = ' '
     if (sf_a != " ") or (sf_b != " "):
-        out.side_by_side("sf:", str(sf_a), str(sf_b), highlight_diff=True)
+        return str(sf_a), str(sf_b)
+    else:
+        return None
+
+
+def get_and_check_variable_attributes(v_a, v_b):
+    # Get the name of attributes if they exist
+    attrs_a_names = []
+    if v_a.attributes:
+        attrs_a_names = v_a.attributes.keys()
+    attrs_b_names = []
+    if v_b.attributes:
+        attrs_b_names = v_b.attributes.keys()
+    # Iterate and print each attribute
+    for _, attr_a_key, attr_b_key in common_elements(attrs_a_names, attrs_b_names):
+        attr_a = _get_attribute_value_as_str(v_a, attr_a_key)
+        attr_b = _get_attribute_value_as_str(v_b, attr_b_key)
+        yield attr_a_key, attr_a, attr_b_key, attr_b
 
 
 def _var_properties(group: Union[netCDF4.Dataset, netCDF4.Group], varname: str) -> VarProperties:
