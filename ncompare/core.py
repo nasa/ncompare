@@ -48,6 +48,8 @@ def compare(
         The name of a group which contains a desired comparison variable
     comparison_var_name : str, optional
         The name of a variable for which we want to compare values
+    only_diffs : bool, optional
+        Whether to show only the variables/attributes that are different between the two files
     no_color : bool, default False
         Turns off the use of ANSI escape character sequences for producing colored terminal text
     show_chunks : bool, default False
