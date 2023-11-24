@@ -283,12 +283,14 @@ def compare_two_nc_files(
     show_attributes: bool = False,
 ) -> tuple[int, int, int]:
     """Go through all groups and all variables, and show them side by side - whether they align and where they don't."""
-    out.side_by_side(' ', 'File A', 'File B')
+    out.side_by_side(' ', 'File A', 'File B', force_display_even_if_same=True)
 
     num_var_diffs = {"left": 0, "right": 0, "both": 0}
     with netCDF4.Dataset(nc_one) as nc_a, netCDF4.Dataset(nc_two) as nc_b:
-        out.side_by_side('All Variables', ' ', ' ', dash_line=False)
-        out.side_by_side('-', '-', '-', dash_line=True)
+        out.side_by_side(
+            'All Variables', ' ', ' ', dash_line=False, force_display_even_if_same=True
+        )
+        out.side_by_side('-', '-', '-', dash_line=True, force_display_even_if_same=True)
 
         group_counter = 0
         _print_group_details_side_by_side(
@@ -311,12 +313,18 @@ def compare_two_nc_files(
                 )
                 group_counter += 1
 
-    out.side_by_side('-', '-', '-', dash_line=True)
+    out.side_by_side('-', '-', '-', dash_line=True, force_display_even_if_same=True)
     out.side_by_side(
-        'Total number of shared items:', str(num_var_diffs['both']), str(num_var_diffs['both'])
+        'Total number of shared items:',
+        str(num_var_diffs['both']),
+        str(num_var_diffs['both']),
+        force_display_even_if_same=True,
     )
     out.side_by_side(
-        'Total number of non-shared items:', str(num_var_diffs['left']), str(num_var_diffs['right'])
+        'Total number of non-shared items:',
+        str(num_var_diffs['left']),
+        str(num_var_diffs['right']),
+        force_display_even_if_same=True,
     )
     return num_var_diffs['left'], num_var_diffs['right'], num_var_diffs['both']
 
@@ -332,13 +340,16 @@ def _print_group_details_side_by_side(
     show_attributes: bool,
     show_chunks: bool,
 ) -> None:
-    out.side_by_side(" ", " ", " ", dash_line=False, highlight_diff=False)
+    out.side_by_side(
+        " ", " ", " ", dash_line=False, highlight_diff=False, force_display_even_if_same=True
+    )
     out.side_by_side(
         f"GROUP #{group_counter:02}",
         group_a_name.strip(),
         group_b_name.strip(),
         dash_line=True,
         highlight_diff=False,
+        force_display_even_if_same=True,
     )
 
     # Count the number of variables in this group as long as this group exists.
@@ -349,9 +360,13 @@ def _print_group_details_side_by_side(
     if group_b:
         vars_b_sorted = sorted(group_b.variables)
     out.side_by_side(
-        'num variables in group:', len(vars_a_sorted), len(vars_b_sorted), highlight_diff=True
+        'num variables in group:',
+        len(vars_a_sorted),
+        len(vars_b_sorted),
+        highlight_diff=True,
+        force_display_even_if_same=True,
     )
-    out.side_by_side('-', '-', '-', dash_line=True)
+    out.side_by_side('-', '-', '-', dash_line=True, force_display_even_if_same=True)
 
     # Count differences between the lists of variables in this group.
     left, right, both = count_diffs(vars_a_sorted, vars_b_sorted)
