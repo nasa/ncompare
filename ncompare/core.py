@@ -27,7 +27,7 @@ def compare(
     nc_b: Union[str, Path],
     comparison_var_group: Optional[str] = None,
     comparison_var_name: Optional[str] = None,
-    only_diffs: bool = True,
+    only_diffs: bool = False,
     no_color: bool = False,
     show_chunks: bool = False,
     show_attributes: bool = False,
