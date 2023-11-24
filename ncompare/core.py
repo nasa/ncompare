@@ -454,7 +454,7 @@ def _print_var_properties_side_by_side(
         out.side_by_side("sf:", scale_factor_pair[0], scale_factor_pair[1], highlight_diff=True)
 
 
-def get_and_check_variable_scale_factor(v_a, v_b) -> None | tuple[str, str]:
+def get_and_check_variable_scale_factor(v_a, v_b) -> Union[None, tuple[str, str]]:
     if getattr(v_a.variable, 'scale_factor', None):
         sf_a = v_a.variable.scale_factor
     else:
