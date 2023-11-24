@@ -16,6 +16,12 @@ def _cli() -> argparse.Namespace:
     parser.add_argument("nc_b", help="First NetCDF file")
     parser.add_argument("-v", "--comparison_var_name", help="Comparison variable name")
     parser.add_argument("-g", "--comparison_var_group", help="Comparison variable group")
+    parser.add_argument(
+        "--only-diffs",
+        action="store_true",
+        default=False,
+        help="Only display variables and attributes that are different",
+    )
     parser.add_argument("--file-text", help="A text file to which the output will be written.")
     parser.add_argument(
         "--file-csv",
