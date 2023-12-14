@@ -43,14 +43,14 @@ jobs:
 
       - name: Archive code coverage report (xml)
         if: ${{ always() }}
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: code coverage report (xml)
           path: build/reports/coverage.xml
 
       - name: Archive code coverage report (HTML)
         if: ${{ always() }}
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: code coverage report (HTML)
           path: build/reports/coverage.html
