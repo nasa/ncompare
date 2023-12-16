@@ -1,3 +1,4 @@
+import pytest
 import xarray as xr
 
 from ncompare.core import _get_vars, _match_random_value, compare
@@ -40,3 +41,8 @@ def test_matching_random_values(
 def test_get_vars_with_group(ds_3dims_3vars_4coords_1group):
     result = _get_vars(ds_3dims_3vars_4coords_1group, groupname="Group1")
     assert set(result) == {'step', 'var1', 'var2', 'w'}
+
+
+def test_get_vars_error_when_no_group(ds_3dims_2vars_4coords):
+    with pytest.raises(OSError):
+        _get_vars(ds_3dims_2vars_4coords, groupname="nonexistent_group")
