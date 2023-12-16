@@ -77,6 +77,11 @@ If installed using a `poetry` environment, the tests can be run with:
 poetry run pytest tests
 ```
 
+Or from another virtual environment, one can use:
+```console
+pytest tests
+```
+
 ## Motivation
 _____
 The `cdo` (climate data operators) tool
