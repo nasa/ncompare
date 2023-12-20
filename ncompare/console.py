@@ -52,6 +52,10 @@ def _cli() -> argparse.Namespace:
         help="Width, in number of characters, of the three columns in the comparison report",
     )
 
+    parser.add_argument(
+        "--version", action="store_true", default=False, help="Show the current version."
+    )
+
     return parser.parse_args()
 
 
