@@ -565,7 +565,13 @@ def _match_random_value(
 
 def _print_sample_values(out: Outputter, nc_filepath, groupname: str, varname: str) -> None:
     comparison_variable = xr.open_dataset(nc_filepath, backend_kwargs={"group": groupname})[varname]
-    out.print(str(comparison_variable.values[0, :]), colors=False)
+    vector_of_values = comparison_variable.values.flatten()
+    n_values = len(vector_of_values)
+    if n_values > 100:
+        sample_length = 100
+    else:
+        sample_length = n_values
+    out.print(str(vector_of_values[:sample_length]), colors=False)
 
 
 def _get_attribute_value_as_str(varprops: VarProperties, attribute_key: str) -> str:
