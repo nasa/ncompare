@@ -153,6 +153,7 @@ def run_through_comparisons(
         vlist_b = _get_vars(nc_b, comparison_var_group)
         _, _, _ = out.lists_diff(vlist_a, vlist_b)
 
+        # TODO: Remove comparison variable/val?
         if comparison_var_name:
             try:
                 # Print the first part of the values array for the selected variable.
