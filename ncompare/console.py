@@ -1,10 +1,13 @@
 #!/usr/bin/env python
 """Command line interface for `ncompare` -- to compare the structure of two NetCDF files."""
 import argparse
+import importlib.metadata
 import sys
 import traceback
 
 from ncompare.core import compare
+
+__version__ = importlib.metadata.version('ncompare')
 
 
 def _cli() -> argparse.Namespace:
@@ -50,6 +53,14 @@ def _cli() -> argparse.Namespace:
         default=None,
         type=int,
         help="Width, in number of characters, of the three columns in the comparison report",
+    )
+
+    parser.add_argument(
+        "--version",
+        action='version',
+        version=f'%(prog)s {__version__}',
+        default=False,
+        help="Show the current version.",
     )
 
     return parser.parse_args()
