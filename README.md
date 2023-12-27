@@ -1,9 +1,21 @@
 # ncompare
 _____
-[![Available on pypi](https://img.shields.io/pypi/v/ncompare.svg)](https://pypi.org/project/ncompare/)
-[![Contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/nasa/ncompare/issues)
-[![Formatted with black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/python/black)
-[![Checked with mypy](http://www.mypy-lang.org/static/mypy_badge.svg)](http://mypy-lang.org/)
+
+<a href="https://pypi.org/project/ncompare" target="_blank">
+    <img src="https://img.shields.io/pypi/v/ncompare?color=%2334D058&label=pypi%20package" alt="Package version">
+</a>
+<a href="https://pypi.org/project/ncompare/" target="_blank">
+    <img src="https://img.shields.io/pypi/pyversions/ncompare.svg" alt="Python Versions">
+</a>
+<a href="https://github.com/nasa/ncompare/issues" target="_blank">
+    <img src="https://img.shields.io/badge/contributions-welcome-brightgreen.svg?" alt="Contributions welcome">
+</a>
+<a href="https://github.com/python/black" target="_blank">
+    <img src="https://img.shields.io/badge/code%20style-black-000000.svg" alt="Code style">
+</a>
+<a href="http://mypy-lang.org/" target="_blank">
+    <img src="http://www.mypy-lang.org/static/mypy_badge.svg" alt="Mypy checked">
+</a>
 
 Compare the structure of two NetCDF files at the command line.
 `ncompare` generates a view of the matching and non-matching groups and variables between two NetCDF datasets.
