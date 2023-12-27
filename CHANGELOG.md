@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [unreleased]
 ### Added
 - [pull-request/79](https://github.com/nasa/ncompare/pull/79): Add option to only display variables and attributes that are different
+- [pull-request/100](https://github.com/nasa/ncompare/pull/100): Add version to cli
 ### Changed
 ### Deprecated
 ### Removed
