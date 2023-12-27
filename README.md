@@ -1,24 +1,87 @@
 # ncompare
 _____
-[![Available on pypi](https://img.shields.io/pypi/v/ncompare.svg)](https://pypi.org/project/ncompare/)
-[![Contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/nasa/ncompare/issues)
-[![Formatted with black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/python/black)
-[![Checked with mypy](http://www.mypy-lang.org/static/mypy_badge.svg)](http://mypy-lang.org/)
+
+<a href="https://pypi.org/project/ncompare" target="_blank">
+    <img src="https://img.shields.io/pypi/v/ncompare?color=%2334D058label=pypi%20package" alt="Package version">
+</a>
+<a href="https://pypi.org/project/ncompare/" target="_blank">
+    <img src="https://img.shields.io/pypi/pyversions/ncompare.svg" alt="Python Versions">
+</a>
+<a href="https://github.com/nasa/ncompare/issues" target="_blank">
+    <img src="https://img.shields.io/badge/contributions-welcome-brightgreen.svg?" alt="Contributions welcome">
+</a>
+<a href="https://github.com/python/black" target="_blank">
+    <img src="https://img.shields.io/badge/code%20style-black-000000.svg" alt="Code style">
+</a>
+<a href="http://mypy-lang.org/" target="_blank">
+    <img src="http://www.mypy-lang.org/static/mypy_badge.svg" alt="Mypy checked">
+</a>
+<a href="https://www.repostatus.org/#active" target="_blank">
+    <img src="https://www.repostatus.org/badges/latest/active.svg" alt="Project Status: Active – The project has reached a stable, usable state and is being actively developed">
+</a>
 
 Compare the structure of two NetCDF files at the command line.
 `ncompare` generates a view of the matching and non-matching groups and variables between two NetCDF datasets.
 
 
 ## Installing
-_____
-### Using pip
 
-Install the latest version of the package from PyPI using pip:
+Install the latest version of the package from the Python Package Index (PyPI):
 ```console
 pip install ncompare
 ```
 
-### Other methods:
+
+## Usage
+
+To compare two netCDF files,
+pass the filepaths for each of the two netCDF files directly to ncompare, as follows:
+
+```console
+ncompare <netcdf file #1> <netcdf file #2>
+```
+
+With an additional `--file-text` argument specified,
+a common use of _ncompare_ may look like this example:
+
+```console
+ncompare S001G01.nc S001G01_SUBSET.nc --file-text subset_comparison.txt
+```
+
+
+**A more complete usage demonstration with example output is shown in
+[this example notebook](https://nasa.github.io/ncompare/ncompare-example-usage.html).**
+
+### Options
+
+- `-h`, `--help` : Show this help message and exit.
+- `--file-text` [FILE_PATH]: Text file to write output to.
+- `--file-csv` [FILE_PATH]: Comma-separated values (CSV) file to write output to.
+- `--file-xlsx` [FILE_PATH]: Excel file to write output to.
+- `--only-diffs` : Only display variables and attributes that are different
+- `--no-color` : Turn off all colorized output.
+- `--show-attributes` : Include variable attributes in the table that compares variables.
+- `--show-chunks` : Include chunk sizes in the table that compares variables.
+- `-v` (`--comparison_var_name`) [VAR_NAME]: Compare specific values for this variable.
+- `-g` (`--comparison_var_group`) [VAR_GROUP]: Group that contains the `comparison_var_name`.
+- `--column-widths` [WIDTH, WIDTH, WIDTH]: Width, in number of characters, of the three columns in the comparison report
+- `--version` : Show the current version and then exit.
+
+## Contributing
+
+Contributions are welcome! For more information see [CONTRIBUTING.md](CONTRIBUTING.md).
+_ncompare_ is licensed under the NASA Open Source Agreement,
+which is included
+[in this repository's license directory](license/LAR-20274-1_ncompare  NetCDF structural comparison tool_NOSA 1.3.pdf)
+and [on the Open Source Initiative website](https://opensource.org/license/nasa1-3-php/).
+
+
+### Developing
+
+Development within this repository should occur on a feature branch.
+Pull Requests (PRs) are created with a target of the `develop` branch before being reviewed and merged.
+
+### Installing locally
 
 For local development, one can clone the repository and then use poetry or pip from the local directory:
 
@@ -35,50 +98,28 @@ iii) Run ```poetry install``` from the repository directory.
 
 ii) Run ```pip install .``` from the repository directory.
 
-## Usage
-_____
 
-```console
-ncompare <netcdf file #1> <netcdf file #2>
-```
-
-For example:
-
-```console
-ncompare S001G01.nc S001G01_SUBSET.nc --file-text subset_comparison.txt
-```
-
-###### Or, If installed using a `poetry` environment:
-```console
-poetry run ncompare <netcdf file #1> <netcdf file #2>
-```
-
-**A more complete usage demonstration with example output is shown in
-[this example notebook](https://nasa.github.io/ncompare/ncompare-example-usage.html).**
-
-### Options
-
-- `-h`, `--help`            show this help message and exit
-- `--file-text` [FILE_PATH]: Text file to write output to.
-- `--file-csv` [FILE_PATH]: Comma-separated values (CSV) file to write output to.
-- `--file-xlsx` [FILE_PATH]: Excel file to write output to.
-- `--only-diffs` : Only display variables and attributes that are different
-- `--no-color` : Turn off all colorized output.
-- `--show-attributes` : Include variable attributes in the table that compares variables.
-- `--show-chunks` : Include chunk sizes in the table that compares variables.
-- `-v` (`--comparison_var_name`) [VAR_NAME]: Compare specific values for this variable.
-- `-g` (`--comparison_var_group`) [VAR_GROUP]: Group that contains the `comparison_var_name`.
-- `--column-widths` [WIDTH, WIDTH, WIDTH]: Width, in number of characters, of the three columns in the comparison report
-
-## How to test ncompare locally
+### Testing locally
 
 If installed using a `poetry` environment, the tests can be run with:
 ```console
 poetry run pytest tests
 ```
 
-## Motivation
-_____
+Or from another virtual environment, one can use:
+```console
+pytest tests
+```
+
+### To run as a locally installed poetry module
+
+```console
+poetry run ncompare <netcdf file #1> <netcdf file #2>
+```
+
+
+## Why ncompare?
+
 The `cdo` (climate data operators) tool
 [does not support NetCDF4 groups](https://code.mpimet.mpg.de/boards/2/topics/12073).
 Moreover, `nco` operators' `ncdiff` function computes value differences, but
@@ -92,14 +133,14 @@ and can generate report files formatted for other applications. However, note th
 which are not currently assessed by `ncompare`.
 
 ## Known limitations
-_____
+
 - `ncompare` uses `xarray` to access the root-level dimensions.
 In some cases, `xarray` will miss dimensions whose names do not also exist as variable names in the dataset
   (also known as non-coordinate dimensions).
 - Some underlying HDF5 properties, such as _Netcdf4Dimid or _Netcdf4Coordinates, are not currently assesssed by `ncompare`.
 
 # Notices:
-_____
+
 Copyright 2023 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
 
 ### Third-Party Software:
