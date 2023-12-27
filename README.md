@@ -10,22 +10,24 @@ Compare the structure of two NetCDF files at the command line.
 
 
 ## Installing
-_____
 
-Install the latest version of the package from PyPI using pip:
+Install the latest version of the package from the Python Package Index (PyPI):
 ```console
 pip install ncompare
 ```
 
 
 ## Usage
-_____
+
+To compare two netCDF files,
+pass the filepaths for each of the two netCDF files directly to ncompare, as follows:
 
 ```console
 ncompare <netcdf file #1> <netcdf file #2>
 ```
 
-For example:
+With an additional `--file-text` argument specified,
+a common use of _ncompare_ may look like this example:
 
 ```console
 ncompare S001G01.nc S001G01_SUBSET.nc --file-text subset_comparison.txt
@@ -51,7 +53,7 @@ ncompare S001G01.nc S001G01_SUBSET.nc --file-text subset_comparison.txt
 - `--version` : Show the current version and then exit.
 
 ## Contributing
-_____
+
 Contributions are welcome! For more information see [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ### Developing
@@ -96,8 +98,8 @@ poetry run ncompare <netcdf file #1> <netcdf file #2>
 ```
 
 
-## Why this tool?
-_____
+## Why ncompare?
+
 The `cdo` (climate data operators) tool
 [does not support NetCDF4 groups](https://code.mpimet.mpg.de/boards/2/topics/12073).
 Moreover, `nco` operators' `ncdiff` function computes value differences, but
@@ -111,14 +113,14 @@ and can generate report files formatted for other applications. However, note th
 which are not currently assessed by `ncompare`.
 
 ## Known limitations
-_____
+
 - `ncompare` uses `xarray` to access the root-level dimensions.
 In some cases, `xarray` will miss dimensions whose names do not also exist as variable names in the dataset
   (also known as non-coordinate dimensions).
 - Some underlying HDF5 properties, such as _Netcdf4Dimid or _Netcdf4Coordinates, are not currently assesssed by `ncompare`.
 
 # Notices:
-_____
+
 Copyright 2023 United States Government as represented by the Administrator of the National Aeronautics and Space Administration.  All Rights Reserved.
 
 ### Third-Party Software:
