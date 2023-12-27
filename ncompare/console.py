@@ -70,6 +70,8 @@ def main():
     """Run from the command line."""
     args = _cli()
 
+    delattr(args, 'version')
+
     try:
         compare(**vars(args))
     except Exception:  # pylint: disable=broad-exception-caught
