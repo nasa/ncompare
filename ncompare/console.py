@@ -10,8 +10,14 @@ from ncompare.core import compare
 __version__ = importlib.metadata.version('ncompare')
 
 
-def _cli() -> argparse.Namespace:
-    """Parse input arguments from the command line."""
+def _cli(args) -> argparse.Namespace:
+    """Parse input arguments from the command line.
+
+    Parameters
+    ----------
+    args : None or list[str]
+        if None, then argparse will use sys.argv[1:]
+    """
     parser = argparse.ArgumentParser(
         description="Compare the variables contained within two different NetCDF datasets"
     )
@@ -63,12 +69,12 @@ def _cli() -> argparse.Namespace:
         help="Show the current version.",
     )
 
-    return parser.parse_args()
+    return parser.parse_args(args)
 
 
-def main():
+def main():  # pragma: no cover
     """Run from the command line."""
-    args = _cli()
+    args = _cli(None)
 
     delattr(args, 'version')
 
@@ -80,5 +86,5 @@ def main():
     sys.exit(0)  # a clean, no-issue, exit
 
 
-if __name__ == '__main__':
+if __name__ == '__main__':  # pragma: no cover
     main()
