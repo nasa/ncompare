@@ -11,29 +11,12 @@ Compare the structure of two NetCDF files at the command line.
 
 ## Installing
 _____
-### Using pip
 
 Install the latest version of the package from PyPI using pip:
 ```console
 pip install ncompare
 ```
 
-### Other methods:
-
-For local development, one can clone the repository and then use poetry or pip from the local directory:
-
-```console
-git clone https://github.com/nasa/ncompare.git
-```
-
-###### (Option A) using poetry:
-ii) Follow the instructions for installing `poetry` [here](https://python-poetry.org/docs/).
-
-iii) Run ```poetry install``` from the repository directory.
-
-###### (Option B) using pip:
-
-ii) Run ```pip install .``` from the repository directory.
 
 ## Usage
 _____
@@ -48,10 +31,6 @@ For example:
 ncompare S001G01.nc S001G01_SUBSET.nc --file-text subset_comparison.txt
 ```
 
-###### Or, If installed using a `poetry` environment:
-```console
-poetry run ncompare <netcdf file #1> <netcdf file #2>
-```
 
 **A more complete usage demonstration with example output is shown in
 [this example notebook](https://nasa.github.io/ncompare/ncompare-example-usage.html).**
@@ -71,7 +50,34 @@ poetry run ncompare <netcdf file #1> <netcdf file #2>
 - `--column-widths` [WIDTH, WIDTH, WIDTH]: Width, in number of characters, of the three columns in the comparison report
 - `--version` : Show the current version and then exit.
 
-## How to test ncompare locally
+## Contributing
+_____
+Contributions are welcome! For more information see [CONTRIBUTING.md](CONTRIBUTING.md).
+
+### Developing
+
+Development within this repository should occur on a feature branch.
+Pull Requests (PRs) are created with a target of the `develop` branch before being reviewed and merged.
+
+### Installing locally
+
+For local development, one can clone the repository and then use poetry or pip from the local directory:
+
+```console
+git clone https://github.com/nasa/ncompare.git
+```
+
+###### (Option A) using poetry:
+ii) Follow the instructions for installing `poetry` [here](https://python-poetry.org/docs/).
+
+iii) Run ```poetry install``` from the repository directory.
+
+###### (Option B) using pip:
+
+ii) Run ```pip install .``` from the repository directory.
+
+
+### Testing locally
 
 If installed using a `poetry` environment, the tests can be run with:
 ```console
@@ -83,7 +89,14 @@ Or from another virtual environment, one can use:
 pytest tests
 ```
 
-## Motivation
+### To run as a locally installed poetry module
+
+```console
+poetry run ncompare <netcdf file #1> <netcdf file #2>
+```
+
+
+## Why this tool?
 _____
 The `cdo` (climate data operators) tool
 [does not support NetCDF4 groups](https://code.mpimet.mpg.de/boards/2/topics/12073).
