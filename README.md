@@ -58,7 +58,7 @@ poetry run ncompare <netcdf file #1> <netcdf file #2>
 
 ### Options
 
-- `-h`, `--help`            show this help message and exit
+- `-h`, `--help` : Show this help message and exit.
 - `--file-text` [FILE_PATH]: Text file to write output to.
 - `--file-csv` [FILE_PATH]: Comma-separated values (CSV) file to write output to.
 - `--file-xlsx` [FILE_PATH]: Excel file to write output to.
@@ -69,6 +69,7 @@ poetry run ncompare <netcdf file #1> <netcdf file #2>
 - `-v` (`--comparison_var_name`) [VAR_NAME]: Compare specific values for this variable.
 - `-g` (`--comparison_var_group`) [VAR_GROUP]: Group that contains the `comparison_var_name`.
 - `--column-widths` [WIDTH, WIDTH, WIDTH]: Width, in number of characters, of the three columns in the comparison report
+- `--version` : Show the current version and then exit.
 
 ## How to test ncompare locally
 
