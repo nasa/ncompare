@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [pull-request/99](https://github.com/nasa/ncompare/pull/99): Improve readme in a few ways (e.g., license, badges)
 ### Deprecated
 ### Removed
+- fixed bug related to extra argument from command line
 ### Fixed
 - Updated out-dated example snippet in README
 ### Security
