@@ -25,7 +25,7 @@ website:
       align: left
       contents:
         - text: "Example"
-          href: docs/index.md
+          href: index.md
 #        - text: "Prerequisites"
 #          href: prerequisites.md
 #        - text: "Schedule"
