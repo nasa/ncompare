@@ -1,0 +1,57 @@
+project:
+  type: website
+
+website:
+  title: "ncompare"
+  site-url: https://nasa.github.io/ncompare/
+  repo-url: https://github.com/nasa/ncompare/
+  repo-actions: [edit, issue]
+  page-navigation: true
+#  page-footer: "`ncompare` (2024). NASA"
+
+  navbar:
+    background: primary
+    right:
+      - sidebar:welcome
+      - icon: github
+        href: https://github.com/nasa/ncompare/
+
+  sidebar:
+    - id: welcome
+      title: "Menu"
+      #      logo: <>.png
+      style: "docked"
+      collapse-level: 1
+      align: left
+      contents:
+        - text: "Example"
+          href: docs/index.md
+#        - text: "Prerequisites"
+#          href: prerequisites.md
+#        - text: "Schedule"
+#          href: schedule.md
+#        - text: "Slides"
+#          href: slides.md
+#        - section: "Tutorials"
+#          contents:
+#            - text: "Search & Discovery"
+#              href: tutorials/Earthdata_Search_Discovery_earthaccess.ipynb
+#            - text: "Access, Subset & Plot"
+#              href: tutorials/Earthdata_Subset_and_Plot.ipynb
+ #       - section: "Additional Resources"
+  #        contents:
+
+
+format:
+  html:
+    theme:
+      light: sandstone
+      dark: [superhero, theme-dark.scss]
+    code-background: true
+    code-copy: true
+    css: styles.css
+    toc: true
+
+#filters:
+#  - include-files.lua
+#  - quarto
