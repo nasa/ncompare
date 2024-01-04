@@ -48,6 +48,8 @@ plugins:
 nav:
   - OVERVIEW:
       - "Readme": "index.md"
+      - "Contribution guide": "CONTRIBUTING.md"
+      - "Code of conduct": "CODE_OF_CONDUCT.md"
       #      - "Getting started": "tutorials/getting-started.ipynb"
       #      - "Resources": "resources.md"
   - EXAMPLES:
