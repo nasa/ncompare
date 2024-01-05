@@ -1,54 +1,40 @@
 ---
 name: Feature request
 about: Suggest an idea for this project
-title: "[Feature]"
-labels: ''
+title: 'Please replace with a clear and descriptive title'
+labels: 'enhancement'
 assignees: ''
-
 ---
 
-name: Feature request
-description: Suggest an idea for this project
-title: "[Feature] "
-labels: [enhancement]
-body:
-  - type: checkboxes
-    attributes:
-      label: Checklist
-      description: >
-        Please make sure you check all these items before submitting your feature request.
-      options:
-        - label: There are [no similar issues or pull requests](https://github.com/nasa/ncompare/issues) for this yet.
-          required: true
-  - type: textarea
-    attributes:
-      label: Problem
-      description: >
-        A clear and concise description of what you are trying to achieve.
-      placeholder: >
-        "I want to be able to [...] but I can't because [...]".
-    validations:
-      required: false
-  - type: textarea
-    attributes:
-      label: Solution
-      description: >
-        A clear and concise description of what you would want to happen.
-        For API changes, try to provide a code snippet of what you would like the new API to look like.
-    validations:
-      required: false
-  - type: textarea
-    attributes:
-      label: Alternatives
-      description: >
-        Please describe any alternative solutions or features you've considered to solve
-        your problem and why they didn't help.
-    validations:
-      required: false
-  - type: textarea
-    attributes:
-      label: Anything else?
-      description: >
-        Provide any additional context, screenshots, tracebacks, etc. about the feature here.
-    validations:
-      required: false
+<!--
+Thanks for suggesting a new feature!
+
+Please fill in the sections below.
+-->
+
+## Which problem is this feature request solving?
+
+<!--
+Example: I'm always frustrated when [...]
+-->
+
+## Describe the solution you'd like
+
+<!--
+Example: This could be fixed by [...]
+-->
+
+## Describe alternatives you've considered
+
+<!--
+Example: Another solution would be [...]
+-->
+
+## Can you submit a pull request?
+
+Yes/No.
+
+<!--
+Pull requests are welcome! If you would like to help us add this feature, please check our
+[contributions guidelines](../blob/main/CONTRIBUTING.md).
+-->

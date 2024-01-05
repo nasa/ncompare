@@ -27,6 +27,12 @@ ruff = ">=0.0.291,<0.1.12"
 black = "^23.9.1"
 mypy = "^1.5.1"
 pytest-cov = "^4.1.0"
+mkdocs = "^1.5.3"
+mkdocs-material = "^9.5.3"
+markdown-callouts = "^0.3.0"
+markdown-include = "^0.8.1"
+mkdocstrings = "^0.24.0"
+mkdocs-jupyter = "^0.24.6"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
