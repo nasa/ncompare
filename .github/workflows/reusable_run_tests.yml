@@ -41,16 +41,7 @@ jobs:
         run: |
           poetry run pytest --cov=ncompare --cov-report=xml:build/reports/coverage${{ matrix.python-version }}.xml --cov-report=html:build/reports/coverage${{ matrix.python-version }}.html tests/
 
-      - name: Archive code coverage report (xml)
-        if: ${{ always() }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: code coverage report (xml)
-          path: build/reports/coverage.xml
-
-      - name: Archive code coverage report (HTML)
-        if: ${{ always() }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: code coverage report (HTML)
-          path: build/reports/coverage.html
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v3
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
