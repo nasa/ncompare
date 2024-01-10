@@ -1,14 +1,20 @@
 # ncompare
 _____
 
-<a href="https://pypi.org/project/ncompare" target="_blank">
-    <img src="https://img.shields.io/pypi/v/ncompare?color=%2334D058label=pypi%20package" alt="Package version">
+<a href="https://www.repostatus.org/#active" target="_blank">
+    <img src="https://www.repostatus.org/badges/latest/active.svg" alt="Project Status: Active – The project has reached a stable, usable state and is being actively developed">
+</a>
+<a href="https://codecov.io/gh/nasa/ncompare" > 
+ <img src="https://codecov.io/gh/nasa/ncompare/graph/badge.svg?token=5JJUNA1Z6S"/> 
+</a>
+<a href='https://ncompare.readthedocs.io/en/latest/?badge=latest'>
+    <img src='https://readthedocs.org/projects/ncompare/badge/?version=latest' alt='Documentation Status' />
 </a>
 <a href="https://pypi.org/project/ncompare/" target="_blank">
     <img src="https://img.shields.io/pypi/pyversions/ncompare.svg" alt="Python Versions">
 </a>
-<a href="https://github.com/nasa/ncompare/issues" target="_blank">
-    <img src="https://img.shields.io/badge/contributions-welcome-brightgreen.svg?" alt="Contributions welcome">
+<a href="https://pypi.org/project/ncompare" target="_blank">
+    <img src="https://img.shields.io/pypi/v/ncompare?color=%2334D058label=pypi%20package" alt="Package version">
 </a>
 <a href="https://github.com/python/black" target="_blank">
     <img src="https://img.shields.io/badge/code%20style-black-000000.svg" alt="Code style">
@@ -16,14 +22,8 @@ _____
 <a href="http://mypy-lang.org/" target="_blank">
     <img src="http://www.mypy-lang.org/static/mypy_badge.svg" alt="Mypy checked">
 </a>
-<a href='https://ncompare.readthedocs.io/en/latest/?badge=latest'>
-    <img src='https://readthedocs.org/projects/ncompare/badge/?version=latest' alt='Documentation Status' />
-</a>
-<a href="https://www.repostatus.org/#active" target="_blank">
-    <img src="https://www.repostatus.org/badges/latest/active.svg" alt="Project Status: Active – The project has reached a stable, usable state and is being actively developed">
-</a>
-<a href="https://github.com/nasa/ncompare/build/reports/coverage.html" target="_blank">
-    <img src=".images/coverage.svg" alt="Python Versions">
+<a href="https://github.com/nasa/ncompare/issues" target="_blank">
+    <img src="https://img.shields.io/badge/contributions-welcome-brightgreen.svg?" alt="Contributions welcome">
 </a>
 
 Compare the structure of two NetCDF files at the command line.
