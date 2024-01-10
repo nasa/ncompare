@@ -5,16 +5,28 @@ import numpy as np
 import pytest
 from xarray import Dataset
 
-from . import data_for_tests_dir
 from ncompare.printing import Outputter
 
-@pytest.fixture(scope="session")
-def outputter_obj():
-    return Outputter()
 
 @pytest.fixture(scope="session")
 def temp_data_dir(tmpdir_factory) -> Path:
     return Path(tmpdir_factory.mktemp('data'))
+
+
+@pytest.fixture(scope="function")
+def outputter_to_console():
+    return Outputter()
+
+
+@pytest.fixture(scope="session")
+def temp_test_text_file_path(temp_data_dir):
+    return Path(temp_data_dir) / "temp_test_text_file_output.txt"
+
+
+@pytest.fixture(scope="function")
+def outputter_to_text_file(temp_test_text_file_path):
+    return Outputter(keep_print_history=True, text_file=temp_test_text_file_path.resolve())
+
 
 @pytest.fixture(scope="session")
 def ds_3dims_2vars_4coords(temp_data_dir) -> Path:
@@ -35,6 +47,7 @@ def ds_3dims_2vars_4coords(temp_data_dir) -> Path:
     ds.to_netcdf(path=filepath)
 
     return filepath
+
 
 @pytest.fixture(scope="session")
 def ds_4dims_3vars_5coords(temp_data_dir):
@@ -57,6 +70,7 @@ def ds_4dims_3vars_5coords(temp_data_dir):
     ds.to_netcdf(path=filepath)
 
     return filepath
+
 
 @pytest.fixture(scope="session")
 def ds_3dims_3vars_4coords_1group(temp_data_dir):
