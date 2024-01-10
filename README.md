@@ -22,6 +22,9 @@ _____
 <a href="https://www.repostatus.org/#active" target="_blank">
     <img src="https://www.repostatus.org/badges/latest/active.svg" alt="Project Status: Active – The project has reached a stable, usable state and is being actively developed">
 </a>
+<a href="https://github.com/nasa/ncompare/build/reports/coverage.html" target="_blank">
+    <img src=".images/coverage.svg" alt="Python Versions">
+</a>
 
 Compare the structure of two NetCDF files at the command line.
 `ncompare` generates a view of the matching and non-matching groups and variables between two NetCDF datasets.
