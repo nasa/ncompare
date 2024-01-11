@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [pull-request/106](https://github.com/nasa/ncompare/pull/106): Use ReadTheDocs instead of GitHub Pages for documentation
 - [pull-request/113](https://github.com/nasa/ncompare/pull/113): Add codecov step to tests workflow
 - [issue/88](https://github.com/nasa/ncompare/issues/88): Improve test coverage, especially for ncompare/core.py and ncompare/printing.py
+- [issue/92](https://github.com/nasa/ncompare/issues/92): Ensure examples utilize publicly accessible data
 ### Deprecated
 ### Removed
 - fixed bug related to extra argument from command line
