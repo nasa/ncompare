@@ -4,10 +4,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [unreleased]
+### Added
+- [pull-request/79](https://github.com/nasa/ncompare/pull/79): Add option to only display variables and attributes that are different
+- [pull-request/100](https://github.com/nasa/ncompare/pull/100): Add version to cli
+- [pull-request/105](https://github.com/nasa/ncompare/pull/105): Add testing of ncompare with Python version 3.12
+### Changed
+- [pull-request/99](https://github.com/nasa/ncompare/pull/99): Improve readme in a few ways (e.g., license, badges)
+- [pull-request/106](https://github.com/nasa/ncompare/pull/106): Use ReadTheDocs instead of GitHub Pages for documentation
+### Deprecated
+### Removed
+- fixed bug related to extra argument from command line
+### Fixed
+- Updated out-dated example snippet in README
+### Security
+
 ## [1.5.0]
 ### Added
 - [pull-request/63](https://github.com/nasa/ncompare/pull/59): Add a tutorial example notebook.
-- Added a simple GitHub Pages that links to an quarto-produced version of the tutorial notebook.
 ### Changed
 ### Deprecated
 ### Removed

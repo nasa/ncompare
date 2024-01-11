@@ -41,6 +41,7 @@ class Outputter:
     def __init__(
         self,
         keep_print_history: bool = False,
+        keep_only_diffs: bool = False,
         no_color: bool = False,
         text_file: Optional[Union[str, Path]] = None,
         column_widths: Optional[tuple[Union[int, str], Union[int, str], Union[int, str]]] = None,
@@ -54,6 +55,7 @@ class Outputter:
         # Parse the print history option.
         self._keep_print_history = keep_print_history
         self._line_history: list[list[str]] = []
+        self.keep_only_diffs = keep_only_diffs
 
         # Assign column widths according to input, if
         default_widths = [33, 48, 48]
@@ -172,7 +174,16 @@ class Outputter:
         """Return text with normal color and style."""
         return Fore.WHITE + Style.RESET_ALL + str(string)
 
-    def side_by_side(self, str_a, str_b, str_c, dash_line=False, highlight_diff=False) -> None:
+    def side_by_side(
+        self,
+        str_a,
+        str_b,
+        str_c,
+        dash_line=False,
+        highlight_diff=False,
+        force_display_even_if_same=False,
+        force_color=None,
+    ) -> None:
         """Print three strings on one line, with customized formatting and an optional marker in the fourth column.
 
         Parameters
@@ -183,11 +194,24 @@ class Outputter:
         dash_line : bool, default False
         highlight_diff : bool, default False
         """
-        # If the 'b' and 'c' strings are different, then change the font of 'a' to the color red.
-        if highlight_diff and (str_b != str_c):
-            str_a = Fore.RED + str_a
+        are_different = str_b != str_c
+        if (
+            (force_display_even_if_same is False)
+            and (are_different is False)
+            and self.keep_only_diffs
+        ):
+            return None
+
+        # If the 'b' and 'c' strings are different (or force_color is set),
+        #   then change the font of 'a' to the color red.
+        if (highlight_diff and are_different) or (force_color is not None):
+            default_color = Fore.RED
+            if force_color is not None:
+                str_a = force_color + str_a
+            else:
+                str_a = default_color + str_a
             colors = False
-            extra_style_space = " " * len(Fore.RED)
+            extra_style_space = " " * len(default_color)
             str_marker = self._difference_marker
         else:
             colors = True

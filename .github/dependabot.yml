@@ -8,15 +8,15 @@ updates:
   - package-ecosystem: pip
     directory: "/"
     schedule:
-      interval: daily
+      interval: weekly
     # Raise pull requests for version updates
     # to pip against the `develop` branch
     target-branch: "develop"
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
-      # Check for updates to GitHub Actions every weekday
-      interval: "daily"
+      # Check for updates to GitHub Actions every week
+      interval: "weekly"
     # Raise pull requests for version updates
     # to pip against the `develop` branch
     target-branch: "develop"
