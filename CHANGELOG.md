@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [pull-request/79](https://github.com/nasa/ncompare/pull/79): Add option to only display variables and attributes that are different
 - [pull-request/100](https://github.com/nasa/ncompare/pull/100): Add version to cli
 - [pull-request/105](https://github.com/nasa/ncompare/pull/105): Add testing of ncompare with Python version 3.12
+- [issue/118](https://github.com/nasa/ncompare/issues/118): Add citation file
 ### Changed
 - [pull-request/99](https://github.com/nasa/ncompare/pull/99): Improve readme in a few ways (e.g., license, badges)
 - [pull-request/106](https://github.com/nasa/ncompare/pull/106): Use ReadTheDocs instead of GitHub Pages for documentation
