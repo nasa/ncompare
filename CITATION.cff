@@ -1,0 +1,31 @@
+cff-version: 1.2.0
+
+message: |
+  Please cite this software using these metadata.
+  Authors are listed in alphabetical order.
+
+title: "ncompare"
+abstract: "Compare the structure of two NetCDF files at the command line."
+
+contact:
+  - name: "The NASA ncompare issues page"
+    website: "https://github.com/nasa/ncompare/issues"
+keywords:
+  - "netcdf"
+  - "data comparison"
+  - "hierarchical data"
+
+url: "https://ncompare.readthedocs.io"
+repository-code: "https://github.com/nasa/ncompare"
+
+version: 1.6.0
+date-released: 2024-01-16
+
+authors:
+- family-names: "Baskin"
+  given-names: "Walter"
+  orcid: "https://orcid.org/0000-0002-2241-3266"
+- family-names: "Kaufman"
+  given-names: "Daniel E"
+  orcid: "https://orcid.org/0000-0002-1487-7298"
+  website: "https://github.com/danielfromearth"
