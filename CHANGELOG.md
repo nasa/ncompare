@@ -28,6 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.5.0]
 ### Added
 - [pull-request/63](https://github.com/nasa/ncompare/pull/59): Add a tutorial example notebook.
+- Added a simple GitHub Pages that links to an quarto-produced version of the tutorial notebook.
 ### Changed
 ### Deprecated
 ### Removed
