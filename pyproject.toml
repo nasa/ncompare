@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "ncompare"
-version = "1.7.0a0"
+version = "1.6.1"
 description = "Compare the structure of two NetCDF files at the command line"
 authors = ["Daniel Kaufman <daniel.kaufman@nasa.gov>"]
 readme = "README.md"
