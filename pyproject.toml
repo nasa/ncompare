@@ -26,7 +26,7 @@ ncompare = "ncompare.console:main"
 python = ">=3.9,<3.13"
 numpy = "^1.26.0"
 netCDF4 = "^1.6.4"
-xarray = "^2023.9.0"
+xarray = ">=2023.9,<2025.0"
 colorama = "^0.4.6"
 openpyxl = "^3.1.2"
 
