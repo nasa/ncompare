@@ -4,11 +4,11 @@ _____
 <a href="https://www.repostatus.org/#active" target="_blank">
     <img src="https://www.repostatus.org/badges/latest/active.svg" alt="Project Status: Active – The project has reached a stable, usable state and is being actively developed">
 </a>
-<a href="https://codecov.io/gh/nasa/ncompare" > 
- <img src="https://codecov.io/gh/nasa/ncompare/graph/badge.svg?token=5JJUNA1Z6S"/> 
+<a href="https://codecov.io/gh/nasa/ncompare">
+ <img src="https://codecov.io/gh/nasa/ncompare/graph/badge.svg?token=5JJUNA1Z6S" alt="Code coverage">
 </a>
-<a href='https://ncompare.readthedocs.io/en/latest/?badge=latest'>
-    <img src='https://readthedocs.org/projects/ncompare/badge/?version=latest' alt='Documentation Status' />
+<a href="https://ncompare.readthedocs.io/en/latest/?badge=latest">
+    <img src="https://readthedocs.org/projects/ncompare/badge/?version=latest" alt="Documentation Status">
 </a>
 <a href="https://pypi.org/project/ncompare/" target="_blank">
     <img src="https://img.shields.io/pypi/pyversions/ncompare.svg" alt="Python Versions">
