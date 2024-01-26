@@ -75,10 +75,9 @@ ncompare S001G01.nc S001G01_SUBSET.nc --file-text subset_comparison.txt
 
 ## Contributing
 
-Contributions are welcome! For more information see [CONTRIBUTING.md](CONTRIBUTING.md).
-_ncompare_ is licensed under the NASA Open Source Agreement,
-which is included
-[in this repository's license directory](license/LAR-20274-1_ncompare  NetCDF structural comparison tool_NOSA 1.3.pdf)
+Contributions are welcome! For more information, see [CONTRIBUTING.md](CONTRIBUTING.md).
+_ncompare_ is licensed under the NASA Open Source Agreement, which is included
+[in this repository's license directory](license/LAR-20274-1_ncompare_NetCDF_structural_comparison_tool_NOSA_1.3.pdf)
 and [on the Open Source Initiative website](https://opensource.org/license/nasa1-3-php/).
 
 
