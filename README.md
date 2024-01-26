@@ -19,8 +19,8 @@ _____
 <a href="https://github.com/python/black" target="_blank">
     <img src="https://img.shields.io/badge/code%20style-black-000000.svg" alt="Code style">
 </a>
-<a href="http://mypy-lang.org/" target="_blank">
-    <img src="http://www.mypy-lang.org/static/mypy_badge.svg" alt="Mypy checked">
+<a href="https://mypy-lang.org/" target="_blank">
+    <img src="https://www.mypy-lang.org/static/mypy_badge.svg" alt="Mypy checked">
 </a>
 <a href="https://github.com/nasa/ncompare/issues" target="_blank">
     <img src="https://img.shields.io/badge/contributions-welcome-brightgreen.svg?" alt="Contributions welcome">
