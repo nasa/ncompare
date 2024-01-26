@@ -56,7 +56,7 @@ ncompare S001G01.nc S001G01_SUBSET.nc --file-text subset_comparison.txt
 
 
 **A more complete usage demonstration with example output is shown in
-[this example notebook](https://nasa.github.io/ncompare/ncompare-example-usage.html).**
+[this example notebook](https://ncompare.readthedocs.io/en/latest/example/ncompare-example-usage/).**
 
 ### Options
 
