@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Added
 ### Changed
+- [pull/136](https://github.com/nasa/ncompare/pull/136): Replace data in example notebook with those requiring no credentials
 ### Deprecated
 ### Removed
 ### Fixed
