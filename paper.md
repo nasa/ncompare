@@ -10,15 +10,19 @@ authors:
         given-names: Daniel E.
         surname: Kaufman
     orcid: 0000-0002-1487-7298
-    affiliation: 1 # (Multiple affiliations must be quoted)
+    affiliation: "1, 2" # (Multiple affiliations must be quoted)
   - name:
         given-names: Walter E.
         surname: Baskin
     orcid: 0000-0002-2241-3266
-    affiliation: 1
+    affiliation: "1, 3"
 affiliations:
- - name: Atmospheric Science Data Center, National Aeronautics and Space Administration, Hampton, VA, USA
+ - name: NASA Langley Research Center, Atmospheric Science Data Center, Hampton, VA, USA
    index: 1
+ - name: Booz Allen Hamilton, Inc., McLean, VA, USA
+   index: 2
+ - name: Adnet Systems, Inc., Bethesda, MD, USA
+   index: 3
 date: 11 January 2024
 bibliography: paper.bib
 ---
