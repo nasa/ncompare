@@ -2478,13 +2478,13 @@ files = [
 
 [[package]]
 name = "xarray"
-version = "2024.1.0"
+version = "2024.1.1"
 description = "N-D labeled arrays and datasets in Python"
 optional = false
 python-versions = ">=3.9"
 files = [
-    {file = "xarray-2024.1.0-py3-none-any.whl", hash = "sha256:df040f835441babf0a04c0bd6eacf7780f7dad6044a86603b16f6b4d204a99bd"},
-    {file = "xarray-2024.1.0.tar.gz", hash = "sha256:56b4bcb7c7be2e31143608261c1608c0e52579b8a51ba1b240bc2509e04d28d0"},
+    {file = "xarray-2024.1.1-py3-none-any.whl", hash = "sha256:0bec81303b088c8df4f075e1579c00cfd7e5069688e4434007f0b8d7df17fc1c"},
+    {file = "xarray-2024.1.1.tar.gz", hash = "sha256:a1ba2d87a74892e213c9c83f4a462dbcdf68212320a4e31b34bd789ba7a64e35"},
 ]
 
 [package.dependencies]
