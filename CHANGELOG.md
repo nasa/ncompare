@@ -4,7 +4,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [unreleased]
+## [1.6.2]
+### Added
+### Changed
+- updated PyPI classifiers in pyproject.toml
+### Deprecated
+### Removed
+### Fixed
+### Security
+
+## [1.6.1]
+### Added
+### Changed
+### Deprecated
+### Removed
+- removed unused placeholder file and .images folder
+### Fixed
+### Security
+- [pull-request/125](https://github.com/nasa/ncompare/pull/125): Bump jinja2 from 3.1.2 to 3.1.3
+
+## [1.6.0]
 ### Added
 - [pull-request/79](https://github.com/nasa/ncompare/pull/79): Add option to only display variables and attributes that are different
 - [pull-request/100](https://github.com/nasa/ncompare/pull/100): Add version to cli
@@ -16,6 +35,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [pull-request/113](https://github.com/nasa/ncompare/pull/113): Add codecov step to tests workflow
 - [issue/88](https://github.com/nasa/ncompare/issues/88): Improve test coverage, especially for ncompare/core.py and ncompare/printing.py
 - [issue/92](https://github.com/nasa/ncompare/issues/92): Ensure examples utilize publicly accessible data
+- [pull-request/121](https://github.com/nasa/ncompare/pull/121): Disable text wrapping to properly show ncompare output in notebook example
 - Tweaked wording regarding docstrings in the contributing guide
 ### Deprecated
 ### Removed
@@ -27,6 +47,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.5.0]
 ### Added
 - [pull-request/63](https://github.com/nasa/ncompare/pull/59): Add a tutorial example notebook.
+- Added a simple GitHub Pages that links to an quarto-produced version of the tutorial notebook.
 ### Changed
 ### Deprecated
 ### Removed
