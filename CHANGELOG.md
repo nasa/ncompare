@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.7.0]
+### Added
+### Changed
+- [pull/136](https://github.com/nasa/ncompare/pull/136): Replace data in example notebook with those requiring no credentials
+### Deprecated
+### Removed
+### Fixed
+- [pull/135](https://github.com/nasa/ncompare/pull/135): Fix links in readme
+### Security
+
 ## [1.6.2]
 ### Added
 ### Changed
