@@ -25,6 +25,9 @@ _____
 <a href="https://github.com/nasa/ncompare/issues" target="_blank">
     <img src="https://img.shields.io/badge/contributions-welcome-brightgreen.svg?" alt="Contributions welcome">
 </a>
+<a href="https://github.com/pyOpenSci/software-review/issues/146" target="_blank">
+    <img src="https://tinyurl.com/y22nb8up?" alt="pyOpenSci">
+</a>
 
 Compare the structure of two NetCDF files at the command line.
 `ncompare` generates a view of the matching and non-matching groups and variables between two NetCDF datasets.
