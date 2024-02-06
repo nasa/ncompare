@@ -14,6 +14,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 ### Security
 
+## [1.7.2]
+### Added
+### Changed
+- add pyOpenSci badge to readme
+### Deprecated
+### Removed
+### Fixed
+### Security
+
+## [1.7.1]
+### Added
+### Changed
+- update dependencies
+- update citation
+### Deprecated
+### Removed
+### Fixed
+### Security
+
 ## [1.7.0]
 ### Added
 ### Changed
