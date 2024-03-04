@@ -37,10 +37,9 @@ black = ">=23.9.1,<25.0.0"
 mypy = "^1.5.1"
 pytest-cov = "^4.1.0"
 mkdocs = "^1.5.3"
-mkdocs-material = "^9.5.3"
-markdown-callouts = ">=0.3,<0.5"
+markdown-callouts = "^0.4.0"
 markdown-include = "^0.8.1"
-mkdocstrings = "^0.24.0"
+mkdocstrings = "^0.24.1"
 mkdocs-jupyter = "^0.24.6"
 
 [build-system]
