@@ -23,18 +23,18 @@ jobs:
     - uses: actions/setup-python@v5
       with:
         python-version: 3.9
-        
+
     - name: Install Poetry
       uses: abatilo/actions-poetry@v3.0.0
       with:
         poetry-version: 1.3.2
-        
+
     - name: Get version
       id: get-version
       run: |
         echo "current_version=$(poetry version | awk '{print $2}')" >> $GITHUB_OUTPUT
         echo "pyproject_name=$(poetry version | awk '{print $1}')" >> $GITHUB_ENV
-        
+
     - name: Bump pre-alpha version
       # If triggered by push to a feature branch
       if: |
@@ -45,7 +45,7 @@ jobs:
         new_ver="${{ steps.get-version.outputs.current_version }}+$(git rev-parse --short ${GITHUB_SHA})"
         poetry version $new_ver
         echo "software_version=$(poetry version | awk '{print $2}')" >> $GITHUB_ENV
-        
+
     - name: Bump alpha version
       # If triggered by push to the develop branch
       if: ${{ github.ref == 'refs/heads/develop' }}
@@ -53,7 +53,7 @@ jobs:
         poetry version prerelease
         echo "software_version=$(poetry version | awk '{print $2}')" >> $GITHUB_ENV
         echo "venue=sit" >> $GITHUB_ENV
-        
+
     - name: Bump rc version
       # If triggered by push to a release branch
       if: ${{ startsWith(github.ref, 'refs/heads/release/') }}
@@ -68,7 +68,7 @@ jobs:
         fi
         echo "software_version=$(poetry version | awk '{print $2}')" >> $GITHUB_ENV
         echo "venue=uat" >> $GITHUB_ENV
-        
+
     - name: Release version
       # If triggered by push to the main branch
       if: ${{ startsWith(github.ref, 'refs/heads/main') }}
@@ -80,9 +80,10 @@ jobs:
         poetry version ${CURRENT_VERSION%%rc*}
         echo "software_version=$(poetry version | awk '{print $2}')" >> $GITHUB_ENV
         echo "venue=ops" >> $GITHUB_ENV
-        
+
     - name: Commit Version Bump
-      # If building develop, a release branch, or main then we commit the version bump back to the repo
+      # If building the `develop`, a `release` branch, or `main`,
+      # then we commit the version bump back to the repo.
       if: |
         github.ref == 'refs/heads/develop' ||
         github.ref == 'refs/heads/main'    ||
@@ -92,7 +93,7 @@ jobs:
         git config --global user.email 'ncompare@noreply.github.com'
         git commit -am "/version ${{ env.software_version }}"
         git push
-        
+
     - name: Push Tag
       if: |
         github.ref == 'refs/heads/develop' ||

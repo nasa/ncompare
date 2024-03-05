@@ -2,10 +2,12 @@ site_name: ncompare
 site_description: Compare the structure of two netCDF files at the command line
 site_url: https://github.com/nasa/ncompare
 
+repo_name: nasa/ncompare
+repo_url: https://github.com/nasa/ncompare
+edit_uri: ""
+
 theme:
   name: "material"
-  #  logo: earth.png
-  #  favicon: earth.png
   palette:
     - scheme: default
       primary: teal
@@ -17,74 +19,16 @@ theme:
         icon: material/toggle-switch
         name: Switch to light mode
 
-repo_name: nasa/ncompare
-repo_url: https://github.com/nasa/ncompare
-edit_uri: ""
-
-extra_css:
-  - css/styles.css
-
-plugins:
-  - search
-  - mkdocstrings:
-      default_handler: python
-      handlers:
-        python:
-          options:
-            docstring_style: numpy
-            docstring_options:
-              ignore_init_summary: no
-            merge_init_into_class: yes
-            show_submodules: no
-          rendering:
-            show_root_heading: false
-            show_source: false
-  - mkdocs-jupyter:
-      execute: False
-      ignore:
-        #        - "tutorials/dask.ipynb"
-        - "**/.ipynb_checkpoints/*"
-
 nav:
   - OVERVIEW:
       - "Readme": "index.md"
       - "Contribution guide": "CONTRIBUTING.md"
       - "Code of conduct": "CODE_OF_CONDUCT.md"
-      #      - "Getting started": "tutorials/getting-started.ipynb"
-      #      - "Resources": "resources.md"
   - EXAMPLES:
       - "Basic usage of ncompare": "example/ncompare-example-usage.ipynb"
-  #  - HOW-TO:
-  #      - "Authenticate with Earthdata Login": "howto/authenticate.md"
-  #      - "Search NASA datasets using filters": "howto/search-collections.md"
-  #      - "Search for data using filters": "howto/search-granules.md"
-  #      - "Determine if a dataset is available in the cloud": "howto/storage-location.md"
-  #      - "Using authenticated sessions to access data": "howto/edl.ipynb"
-  #      - "Download data from on-prem location": "howto/onprem.md"
-  #      - "Direct S3 access - Open/stream files in the cloud": "howto/cloud.md"
-  #  - TUTORIALS:
-  #      - "Accesing remote NASA data with fsspec": "tutorials/file-access.ipynb"
-  #      - "Search and access of restricted datasets": "tutorials/restricted-datasets.ipynb"
-  #      - "Reproducing NASA sea level rise infographic": "tutorials/SSL.ipynb"
-  #      - "Accessing and visualizing EMIT data with a few lines of code": "tutorials/emit-earthaccess.ipynb"
-  #      # - 'Distributing workloads with Dask clusters': 'tutorials/dask.ipynb'
-  #  - USER REFERENCE:
-  #      - API:
-  #          - "Search and Access": "user-reference/api/api.md"
-  #      - Modules:
-  #          - Collections:
-  #              - "Collection Queries": "user-reference/collections/collections-query.md"
-  #              - "Collection Results": "user-reference/collections/collections.md"
-  #          - Granules:
-  #              - "Granule Queries": "user-reference/granules/granules-query.md"
-  #              - "Granule Results": "user-reference/granules/granules.md"
-  #          - Store:
-  #              - "Store": "user-reference/store/store.md"
-  #          - Auth:
-  #              - "Auth": "user-reference/auth/auth.md"
-  #      - Glossary:
-  #          - "NASA Glossary": "user-reference/glossary/nasa-glossary.md"
-  #          - "Cloud Computing Terminology": "user-reference/glossary/cloud-glossary.md"
+
+extra_css:
+  - css/styles.css
 
 markdown_extensions:
   - admonition
@@ -98,6 +42,25 @@ markdown_extensions:
   - pymdownx.inlinehilite
   - pymdownx.snippets
   - pymdownx.superfences
+
+plugins:
+  - search
+  - mkdocstrings:
+      default_handler: python
+      handlers:
+        python:
+          options:
+            docstring_style: numpy
+            docstring_options:
+              ignore_init_summary: no
+            merge_init_into_class: yes
+            show_submodules: no
+            show_root_heading: false
+            show_source: false
+  - mkdocs-jupyter:
+      execute: False
+      ignore:
+        - "**/.ipynb_checkpoints/*"
 
 watch:
   - docs
