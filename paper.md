@@ -64,10 +64,28 @@ the _values_ of variables, there was not a readily available, Python-based tool 
 comparisons of group and variable _structures_, _attributes_, and _chunking_. `ncompare` was
 developed to avoid the inefficient process of manually opening two netCDF files and inspecting their
 contents to determine whether there are differences in the structure and shapes of groups and
-variables. `ncompare` has been used by the National Aeronautics and Space Administration (NASA)
+variables.
+
+`ncompare` has been used by the National Aeronautics and Space Administration (NASA)
 Atmospheric Science Data Center (ASDC) to examine preliminary science data products in
 preparation for ingesting, archiving, and distributing satellite-based instrument retrievals.
+For example, to prepare for new data streams from the recently launched
+Tropospheric Emissions Monitoring of Pollution (TEMPO) instrument [@Zoogman2017JQSRT] —
+which collects measurements of major air pollutants,
+including ozone, nitrogen dioxide, and formaldehyde —
+the ASDC used `ncompare` to identify data structure changes,
+or the lack thereof, in a variety of settings.
+For instance, as data and metadata requirements were being established and refined,
+`ncompare` was used to assess changes from one version of data files to another.
+The `ncompare` package was used to confirm whether NASA's data transformation services,
+including those that perform data subsetting and concatenation,
+modified dataset variables and attributes appropriately.
+By allowing data scientists at ASDC to quickly identify any and all changes in netCDF structures,
+`ncompare` sped up and enhanced the process of validating data integrity,
+critical to ensuring the discoverability and usability of TEMPO air quality observations
+for air quality monitoring, research, and forecasting.
 
+The `ncompare` package fills a gap in the currently available range of netCDF evaluation tools.
 The `cdo` (climate data operators) library [@cdo_2022_Schulzweida]
 [does not support NetCDF4 groups](https://code.mpimet.mpg.de/boards/2/topics/12073).
 The `ncdiff` function in the `nco` (netCDF Operators) library [@Zender2008EMS] computes value
