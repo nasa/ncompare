@@ -9,6 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - update dependencies
 - update citation
+- [pull/168](https://github.com/nasa/ncompare/pull/168): updated syntax for new linting checks
+### Deprecated
+### Removed
+### Fixed
+### Security
+
+## [1.7.3]
+### Added
+### Changed
+- add Zenodo badge to readme
 ### Deprecated
 ### Removed
 ### Fixed
