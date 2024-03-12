@@ -14,6 +14,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 ### Security
 
+## [1.7.3]
+### Added
+### Changed
+- add Zenodo badge to readme
+### Deprecated
+### Removed
+### Fixed
+### Security
+
 ## [1.7.2]
 ### Added
 ### Changed
