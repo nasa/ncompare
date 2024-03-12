@@ -4,11 +4,11 @@ _____
 <a href="https://www.repostatus.org/#active" target="_blank">
     <img src="https://www.repostatus.org/badges/latest/active.svg" alt="Project Status: Active – The project has reached a stable, usable state and is being actively developed">
 </a>
-<a href="https://codecov.io/gh/nasa/ncompare" > 
- <img src="https://codecov.io/gh/nasa/ncompare/graph/badge.svg?token=5JJUNA1Z6S"/> 
+<a href="https://codecov.io/gh/nasa/ncompare">
+ <img src="https://codecov.io/gh/nasa/ncompare/graph/badge.svg?token=5JJUNA1Z6S" alt="Code coverage">
 </a>
-<a href='https://ncompare.readthedocs.io/en/latest/?badge=latest'>
-    <img src='https://readthedocs.org/projects/ncompare/badge/?version=latest' alt='Documentation Status' />
+<a href="https://ncompare.readthedocs.io/en/latest/?badge=latest">
+    <img src="https://readthedocs.org/projects/ncompare/badge/?version=latest" alt="Documentation Status">
 </a>
 <a href="https://pypi.org/project/ncompare/" target="_blank">
     <img src="https://img.shields.io/pypi/pyversions/ncompare.svg" alt="Python Versions">
@@ -19,11 +19,17 @@ _____
 <a href="https://github.com/python/black" target="_blank">
     <img src="https://img.shields.io/badge/code%20style-black-000000.svg" alt="Code style">
 </a>
-<a href="http://mypy-lang.org/" target="_blank">
-    <img src="http://www.mypy-lang.org/static/mypy_badge.svg" alt="Mypy checked">
+<a href="https://mypy-lang.org/" target="_blank">
+    <img src="https://www.mypy-lang.org/static/mypy_badge.svg" alt="Mypy checked">
 </a>
 <a href="https://github.com/nasa/ncompare/issues" target="_blank">
     <img src="https://img.shields.io/badge/contributions-welcome-brightgreen.svg?" alt="Contributions welcome">
+</a>
+<a href="https://doi.org/10.5281/zenodo.10625407" target="_blank">
+    <img src="https://zenodo.org/badge/DOI/10.5281/zenodo.10625407.svg" alt="Zenodo">
+</a>
+<a href="https://github.com/pyOpenSci/software-review/issues/146" target="_blank">
+    <img src="https://tinyurl.com/y22nb8up?" alt="pyOpenSci">
 </a>
 
 Compare the structure of two NetCDF files at the command line.
@@ -56,7 +62,7 @@ ncompare S001G01.nc S001G01_SUBSET.nc --file-text subset_comparison.txt
 
 
 **A more complete usage demonstration with example output is shown in
-[this example notebook](https://nasa.github.io/ncompare/ncompare-example-usage.html).**
+[this example notebook](https://ncompare.readthedocs.io/en/latest/example/ncompare-example-usage/).**
 
 ### Options
 
@@ -75,10 +81,9 @@ ncompare S001G01.nc S001G01_SUBSET.nc --file-text subset_comparison.txt
 
 ## Contributing
 
-Contributions are welcome! For more information see [CONTRIBUTING.md](CONTRIBUTING.md).
-_ncompare_ is licensed under the NASA Open Source Agreement,
-which is included
-[in this repository's license directory](license/LAR-20274-1_ncompare  NetCDF structural comparison tool_NOSA 1.3.pdf)
+Contributions are welcome! For more information, see [CONTRIBUTING.md](CONTRIBUTING.md).
+_ncompare_ is licensed under the NASA Open Source Agreement, which is included
+[in this repository's license directory](license/LAR-20274-1_ncompare_NetCDF_structural_comparison_tool_NOSA_1.3.pdf)
 and [on the Open Source Initiative website](https://opensource.org/license/nasa1-3-php/).
 
 
