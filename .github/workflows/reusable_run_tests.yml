@@ -35,7 +35,7 @@ jobs:
 
       - name: Lint
         run: |
-          poetry run ruff ncompare
+          poetry run ruff check ncompare
 
       - name: Run tests with coverage
         run: |
