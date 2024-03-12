@@ -1,4 +1,5 @@
 """Compare the structure of two NetCDF files."""
+
 # pylint: disable=too-many-arguments
 # pylint: disable=consider-using-f-string
 # pylint: disable=no-member
@@ -178,9 +179,8 @@ def run_through_comparisons(
                 out.print(
                     Style.BRIGHT
                     + Fore.RED
-                    + "\nError when comparing values for variable <{}> in group <{}>.".format(
-                        comparison_var_name, comparison_var_group
-                    )
+                    + f"\nError when comparing values for variable <{comparison_var_name}> "
+                    f"in group <{comparison_var_group}>."
                 )
                 out.print(traceback.format_exc())
                 out.print("\n")
@@ -266,13 +266,17 @@ def walk_common_groups_tree(  # type:ignore[misc]
     ):
         yield from walk_common_groups_tree(
             top_a_name + "/" + subgroup_a_name if subgroup_a_name else "",
-            top_a[subgroup_a_name]
-            if (subgroup_a_name and (subgroup_a_name in top_a.groups))
-            else None,
+            (
+                top_a[subgroup_a_name]
+                if (subgroup_a_name and (subgroup_a_name in top_a.groups))
+                else None
+            ),
             top_a_name + "/" + subgroup_b_name if subgroup_b_name else "",
-            top_b[subgroup_b_name]
-            if (subgroup_b_name and (subgroup_b_name in top_b.groups))
-            else None,
+            (
+                top_b[subgroup_b_name]
+                if (subgroup_b_name and (subgroup_b_name in top_b.groups))
+                else None
+            ),
         )
 
 
