@@ -25,8 +25,8 @@ _____
 <a href="https://github.com/nasa/ncompare/issues" target="_blank">
     <img src="https://img.shields.io/badge/contributions-welcome-brightgreen.svg?" alt="Contributions welcome">
 </a>
-<a href="https://doi.org/10.5281/zenodo.10625480" target="_blank">
-    <img src="https://zenodo.org/badge/DOI/10.5281/zenodo.10625480.svg" alt="Zenodo">
+<a href="https://doi.org/10.5281/zenodo.10625407" target="_blank">
+    <img src="https://zenodo.org/badge/DOI/10.5281/zenodo.10625407.svg" alt="Zenodo">
 </a>
 <a href="https://github.com/pyOpenSci/software-review/issues/146" target="_blank">
     <img src="https://tinyurl.com/y22nb8up?" alt="pyOpenSci">
