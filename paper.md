@@ -70,7 +70,8 @@ variables.
 Atmospheric Science Data Center (ASDC) to examine preliminary science data products in
 preparation for ingesting, archiving, and distributing satellite-based instrument retrievals.
 For example, to prepare for new data streams from the recently launched
-Tropospheric Emissions Monitoring of Pollution (TEMPO) instrument [@Zoogman2017JQSRT] —
+Tropospheric Emissions Monitoring of Pollution (TEMPO) instrument
+[@Zoogman2017JQSRT; @NASA-LARC-SD-ASDC2019TEMPO] —
 which collects measurements of major air pollutants,
 including ozone, nitrogen dioxide, and formaldehyde —
 the ASDC used `ncompare` to identify data structure changes,
