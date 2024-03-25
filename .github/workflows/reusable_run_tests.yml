@@ -42,7 +42,7 @@ jobs:
           poetry run pytest --cov=ncompare --cov-report=xml:build/reports/coverage${{ matrix.python-version }}.xml --cov-report=html:build/reports/coverage${{ matrix.python-version }}.html --cov-report= tests/
 
       - name: Upload coverage reports to Codecov
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v4
         with:
           verbose: true
           fail_ci_if_error: true
