@@ -39,11 +39,12 @@ jobs:
 
       - name: Run tests with coverage
         run: |
-          poetry run pytest --cov=ncompare --cov-report=xml:build/reports/coverage${{ matrix.python-version }}.xml --cov-report=html:build/reports/coverage${{ matrix.python-version }}.html --cov-report= tests/
+          poetry run pytest --cov=ncompare --cov-report=xml:build/reports/coverage${{ matrix.python-version }}.xml
 
       - name: Upload coverage reports to Codecov
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
+          directory: build/reports/
           fail_ci_if_error: true
           verbose: true
