@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Deprecated
 ### Removed
 ### Fixed
+- [pull/190](https://github.com/nasa/ncompare/pull/190): codecov upload token error
 ### Security
 
 ## [1.8.0]
