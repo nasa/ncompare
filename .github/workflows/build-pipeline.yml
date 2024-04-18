@@ -12,6 +12,8 @@ on:
 jobs:
   run_tests:
     uses: ./.github/workflows/reusable_run_tests.yml
+    secrets:
+      codecov_token: ${{ secrets.CODECOV_TOKEN }}
 
   bump_version:
     needs: run_tests
