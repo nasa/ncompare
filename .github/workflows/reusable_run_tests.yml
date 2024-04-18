@@ -7,6 +7,9 @@ name: A reusable workflow to build and run the unit test suite
 
 on:
   workflow_call:
+    secrets:
+      codecov_token:
+        required: true
   workflow_dispatch:
 
 jobs:
