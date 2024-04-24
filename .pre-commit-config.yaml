@@ -39,3 +39,8 @@ repos:
     rev: v1.9.0
     hooks:
       - id: mypy
+
+  - repo: "https://github.com/mfisher87/alexjs-pre-commit-mirror"
+    rev: "v11.0.1"  # Use the sha / tag you prefer
+    hooks:
+      - id: "alex"
