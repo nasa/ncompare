@@ -7,11 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [unreleased]
 ### Added
 ### Changed
-- changed license to Apache License 2.0.
+- [Issue #184](https://github.com/nasa/ncompare/issues/184): changed license to Apache License 2.0.
+- [Issue #200](https://github.com/nasa/ncompare/issues/200): Change dependabot frequency to monthly
 ### Deprecated
 ### Removed
 ### Fixed
-- [Pull/190](https://github.com/nasa/ncompare/pull/190): codecov upload token error
+- [Pull #190](https://github.com/nasa/ncompare/pull/190): codecov upload token error
 - [Pull #199](https://github.com/nasa/ncompare/pull/199): Resolve linting error
 ### Security
 

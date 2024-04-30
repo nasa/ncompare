@@ -40,7 +40,8 @@ repos:
     hooks:
       - id: mypy
 
-  - repo: "https://github.com/mfisher87/alexjs-pre-commit-mirror"
-    rev: "v11.0.1"  # Use the sha / tag you prefer
-    hooks:
-      - id: "alex"
+# TODO: Reconsider using the alexjs hook when there is a way to ignore particular warnings and/or files.
+#  - repo: "https://github.com/mfisher87/alexjs-pre-commit-mirror"
+#    rev: "v11.0.1"  # Use the sha / tag you prefer
+#    hooks:
+#      - id: "alex"
