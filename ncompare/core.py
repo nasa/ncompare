@@ -147,7 +147,7 @@ def run_through_comparisons(
     if comparison_var_group:
         # Show the variables within the selected group.
         out.print(
-            Fore.LIGHTBLUE_EX + "\nVariables within specified group <%s>:" % comparison_var_group,
+            Fore.LIGHTBLUE_EX + f"\nVariables within specified group <{comparison_var_group}>:",
             add_to_history=True,
         )
         vlist_a = _get_vars(nc_a, comparison_var_group)
@@ -160,7 +160,7 @@ def run_through_comparisons(
                 # Print the first part of the values array for the selected variable.
                 out.print(
                     Fore.LIGHTBLUE_EX
-                    + "\nSample values within specified variable <%s>:" % comparison_var_name
+                    + f"\nSample values within specified variable <{comparison_var_name}>:"
                 )
                 _print_sample_values(out, nc_a, comparison_var_group, comparison_var_name)
                 _print_sample_values(out, nc_b, comparison_var_group, comparison_var_name)
@@ -168,8 +168,7 @@ def run_through_comparisons(
 
                 out.print(
                     Fore.LIGHTBLUE_EX
-                    + "\nChecking multiple random values within specified variable <%s>:"
-                    % comparison_var_name
+                    + f"\nChecking multiple random values within specified variable <{comparison_var_name}>:"
                 )
                 compare_multiple_random_values(
                     out, nc_a, nc_b, groupname=comparison_var_group, varname=comparison_var_name
@@ -597,7 +596,7 @@ def _get_vars(nc_filepath: Union[str, Path], groupname: str) -> list:
     try:
         grp = xr.open_dataset(nc_filepath, backend_kwargs={"group": groupname})
     except OSError as err:
-        print("\nError occurred when attempting to open group within <%s>.\n" % nc_filepath)
+        print(f"\nError occurred when attempting to open group within <{nc_filepath}>.\n")
         raise err
     grp_varlist = sorted(list(grp.variables.keys()))  # type:ignore[type-var]
 
