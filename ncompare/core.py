@@ -261,7 +261,7 @@ def walk_common_groups_tree(  # type:ignore[misc]
     )
 
     for _, subgroup_a_name, subgroup_b_name in common_elements(
-        top_a.groups if top_a is not None else "", top_b.groups if top_a is not None else ""
+        top_a.groups if top_a is not None else "", top_b.groups if top_b is not None else ""
     ):
         yield from walk_common_groups_tree(
             top_a_name + "/" + subgroup_a_name if subgroup_a_name else "",
