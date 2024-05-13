@@ -53,13 +53,15 @@ pass the filepaths for each of the two netCDF files directly to ncompare, as fol
 ncompare <netcdf file #1> <netcdf file #2>
 ```
 
+<img src="https://github.com/nasa/ncompare/assets/114174502/1964096e-829d-4fe1-96a5-63581ade2d38" width="600" />
+
+
 With an additional `--file-text` argument specified,
 a common use of _ncompare_ may look like this example:
 
 ```console
 ncompare S001G01.nc S001G01_SUBSET.nc --file-text subset_comparison.txt
 ```
-
 
 **A more complete usage demonstration with example output is shown in
 [this example notebook](https://ncompare.readthedocs.io/en/latest/example/ncompare-example-usage/).**

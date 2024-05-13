@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [unreleased]
 ### Added
+- [Issue #210](https://github.com/nasa/ncompare/issues/210): Add gif of usage to readme
 ### Changed
 - [Issue #184](https://github.com/nasa/ncompare/issues/184): changed license to Apache License 2.0.
 - [Issue #200](https://github.com/nasa/ncompare/issues/200): Change dependabot frequency to monthly
