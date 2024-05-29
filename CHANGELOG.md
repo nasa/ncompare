@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - [Issue #184](https://github.com/nasa/ncompare/issues/184): changed license to Apache License 2.0.
 - [Issue #200](https://github.com/nasa/ncompare/issues/200): Change dependabot frequency to monthly
+- [Issue #200](https://github.com/nasa/ncompare/issues/200): Add copyright header text
 ### Deprecated
 ### Removed
 ### Fixed
