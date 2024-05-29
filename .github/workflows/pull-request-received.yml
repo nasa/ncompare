@@ -8,5 +8,7 @@ on:
     branches: [ feature/**, issue/**, issues/** ]
 
 jobs:
-  build_and_test:
+  run_test:
     uses: ./.github/workflows/reusable_run_tests.yml
+    secrets:
+      codecov_token: ${{ secrets.CODECOV_TOKEN }}

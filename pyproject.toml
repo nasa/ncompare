@@ -1,11 +1,11 @@
 [tool.poetry]
 name = "ncompare"
-version = "1.8.0"
+version = "1.9.0rc3"
 description = "Compare the structure of two NetCDF files at the command line"
 authors = ["Daniel Kaufman <daniel.kaufman@nasa.gov>"]
 readme = "README.md"
 repository = "https://github.com/nasa/ncompare"
-license = "license/LAR-20274-1_ncompare_NetCDF_structural_comparison_tool_NOSA_1.3.pdf"
+license = "Apache-2.0"
 classifiers = [
     "Environment :: Console",
     "Intended Audience :: Science/Research",
@@ -32,14 +32,14 @@ openpyxl = "^3.1.2"
 
 [tool.poetry.group.dev.dependencies]
 pytest = ">=7.4.2,<9.0.0"
-ruff = ">=0.0.291,<0.3.3"
+ruff = ">=0.0.291,<0.4.6"
 black = ">=23.9.1,<25.0.0"
 mypy = "^1.5.1"
-pytest-cov = "^4.1.0"
+pytest-cov = ">=4.1,<6.0"
 mkdocs = "^1.5.3"
 markdown-callouts = "^0.4.0"
 markdown-include = "^0.8.1"
-mkdocstrings = "^0.24.1"
+mkdocstrings = ">=0.24.1,<0.26.0"
 mkdocs-jupyter = "^0.24.6"
 mkdocs-material = "^9.5.12"
 

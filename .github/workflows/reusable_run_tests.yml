@@ -7,6 +7,9 @@ name: A reusable workflow to build and run the unit test suite
 
 on:
   workflow_call:
+    secrets:
+      codecov_token:
+        required: true
   workflow_dispatch:
 
 jobs:
@@ -39,9 +42,10 @@ jobs:
 
       - name: Run tests with coverage
         run: |
-          poetry run pytest --cov=ncompare --cov-report=xml:build/reports/coverage${{ matrix.python-version }}.xml --cov-report=html:build/reports/coverage${{ matrix.python-version }}.html --cov-report= tests/
+          poetry run pytest --cov=ncompare --cov-report=xml:build/reports/coverage${{ matrix.python-version }}.xml
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v4
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          verbose: true

@@ -1,9 +1,33 @@
-"""Compare the structure of two NetCDF files."""
-
+# Copyright 2024 United States Government as represented by the Administrator of the
+# National Aeronautics and Space Administration. All Rights Reserved.
+#
+# This software calls the following third-party software,
+# which is subject to the terms and conditions of its licensor, as applicable.
+# Users must license their own copies; the links are provided for convenience only.
+#
+# colorama - BSD-3-Clause - https://opensource.org/licenses/BSD-3-Clause
+# netCDF4 - MIT License - https://opensource.org/licenses/MIT
+# numpy - BSD-3-Clause - https://opensource.org/licenses/BSD-3-Clause
+# openpyxl - MIT License - https://opensource.org/licenses/MIT
+# xarray - Apache License, version 2.0 - https://www.apache.org/licenses/LICENSE-2.0
+# Python Standard Library - Python Software Foundation (PSF) License Agreement-
+#   https://docs.python.org/3/license.html#psf-license
+#
+# The ncompare: NetCDF structural comparison tool platform is licensed under the
+# Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0.
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and limitations under the License.
 # pylint: disable=too-many-arguments
 # pylint: disable=consider-using-f-string
 # pylint: disable=no-member
 # pylint: disable=fixme
+
+"""Compare the structure of two NetCDF files."""
 import random
 import traceback
 from collections import namedtuple
@@ -147,7 +171,7 @@ def run_through_comparisons(
     if comparison_var_group:
         # Show the variables within the selected group.
         out.print(
-            Fore.LIGHTBLUE_EX + "\nVariables within specified group <%s>:" % comparison_var_group,
+            Fore.LIGHTBLUE_EX + f"\nVariables within specified group <{comparison_var_group}>:",
             add_to_history=True,
         )
         vlist_a = _get_vars(nc_a, comparison_var_group)
@@ -160,7 +184,7 @@ def run_through_comparisons(
                 # Print the first part of the values array for the selected variable.
                 out.print(
                     Fore.LIGHTBLUE_EX
-                    + "\nSample values within specified variable <%s>:" % comparison_var_name
+                    + f"\nSample values within specified variable <{comparison_var_name}>:"
                 )
                 _print_sample_values(out, nc_a, comparison_var_group, comparison_var_name)
                 _print_sample_values(out, nc_b, comparison_var_group, comparison_var_name)
@@ -168,8 +192,7 @@ def run_through_comparisons(
 
                 out.print(
                     Fore.LIGHTBLUE_EX
-                    + "\nChecking multiple random values within specified variable <%s>:"
-                    % comparison_var_name
+                    + f"\nChecking multiple random values within specified variable <{comparison_var_name}>:"
                 )
                 compare_multiple_random_values(
                     out, nc_a, nc_b, groupname=comparison_var_group, varname=comparison_var_name
@@ -262,7 +285,7 @@ def walk_common_groups_tree(  # type:ignore[misc]
     )
 
     for _, subgroup_a_name, subgroup_b_name in common_elements(
-        top_a.groups if top_a is not None else "", top_b.groups if top_a is not None else ""
+        top_a.groups if top_a is not None else "", top_b.groups if top_b is not None else ""
     ):
         yield from walk_common_groups_tree(
             top_a_name + "/" + subgroup_a_name if subgroup_a_name else "",
@@ -597,7 +620,7 @@ def _get_vars(nc_filepath: Union[str, Path], groupname: str) -> list:
     try:
         grp = xr.open_dataset(nc_filepath, backend_kwargs={"group": groupname})
     except OSError as err:
-        print("\nError occurred when attempting to open group within <%s>.\n" % nc_filepath)
+        print(f"\nError occurred when attempting to open group within <{nc_filepath}>.\n")
         raise err
     grp_varlist = sorted(list(grp.variables.keys()))  # type:ignore[type-var]
 
