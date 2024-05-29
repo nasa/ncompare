@@ -6,13 +6,15 @@
 # which is subject to the terms and conditions of its licensor, as applicable.
 # Users must license their own copies; the links are provided for convenience only.
 #
-# dask - https://github.com/dask/dask/blob/main/LICENSE.txt
-# netCDF4 - https://github.com/Unidata/netcdf4-python/blob/master/LICENSE
-# numpy - https://github.com/numpy/numpy/blob/main/LICENSE.txt
-# xarray - https://github.com/pydata/xarray/blob/main/LICENSE
-# Python Standard Library - https://docs.python.org/3/license.html#psf-license
+# colorama - BSD-3-Clause - https://opensource.org/licenses/BSD-3-Clause
+# netCDF4 - MIT License - https://opensource.org/licenses/MIT
+# numpy - BSD-3-Clause - https://opensource.org/licenses/BSD-3-Clause
+# openpyxl - MIT License - https://opensource.org/licenses/MIT
+# xarray - Apache License, version 2.0 - https://www.apache.org/licenses/LICENSE-2.0
+# Python Standard Library - Python Software Foundation (PSF) License Agreement-
+#   https://docs.python.org/3/license.html#psf-license
 #
-# The STITCHEE: STITCH by Extending a dimEnsion platform is licensed under the
+# The ncompare: NetCDF structural comparison tool platform is licensed under the
 # Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0.
