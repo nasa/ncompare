@@ -3,13 +3,13 @@ default_language_version:
 
 repos:
   - repo: https://github.com/asottile/pyupgrade
-    rev: v3.15.1
+    rev: v3.15.2
     hooks:
       - id: pyupgrade
         args: [ "--py39-plus" ]
 
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.5.0
+    rev: v4.6.0
     hooks:
       - id: trailing-whitespace
         exclude: ".txt"
@@ -24,18 +24,24 @@ repos:
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
     # Ruff version.
-    rev: 'v0.3.2'
+    rev: 'v0.4.6'
     hooks:
       - id: ruff
         args: [ "--fix" ]
 
   # https://github.com/python/black#version-control-integration
   - repo: https://github.com/psf/black
-    rev: 24.2.0
+    rev: 24.4.2
     hooks:
       - id: black-jupyter
 
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.9.0
+    rev: v1.10.0
     hooks:
       - id: mypy
+
+# TODO: Reconsider using the alexjs hook when there is a way to ignore particular warnings and/or files.
+#  - repo: "https://github.com/mfisher87/alexjs-pre-commit-mirror"
+#    rev: "v11.0.1"  # Use the sha / tag you prefer
+#    hooks:
+#      - id: "alex"
