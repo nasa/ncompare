@@ -18,8 +18,8 @@ keywords:
 url: "https://ncompare.readthedocs.io"
 repository-code: "https://github.com/nasa/ncompare"
 
-version: 1.8.0
-date-released: 2024-02-06
+version: 1.9.0
+date-released: 2024-05-29
 
 authors:
 - family-names: "Baskin"
