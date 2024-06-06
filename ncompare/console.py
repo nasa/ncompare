@@ -99,7 +99,7 @@ def _cli(args: Optional[Sequence[str]]) -> argparse.Namespace:
     return parser.parse_args(args)
 
 
-def main():  # pragma: no cover
+def main() -> None:  # pragma: no cover
     """Run from the command line."""
     args = _cli(None)
 
