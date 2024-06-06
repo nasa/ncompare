@@ -49,7 +49,7 @@ def _cli(args: Optional[Sequence[str]]) -> argparse.Namespace:
         description="Compare the variables contained within two different NetCDF datasets"
     )
     parser.add_argument("nc_a", help="First NetCDF file")
-    parser.add_argument("nc_b", help="First NetCDF file")
+    parser.add_argument("nc_b", help="Second NetCDF file")
     parser.add_argument("-v", "--comparison_var_name", help="Comparison variable name")
     parser.add_argument("-g", "--comparison_var_group", help="Comparison variable group")
     parser.add_argument(
