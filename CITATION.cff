@@ -1,11 +1,35 @@
-cff-version: 1.2.0
-
-message: |
-  Please cite this software using these metadata.
-  Authors are listed in alphabetical order.
-
-title: "ncompare"
-abstract: "Compare the structure of two NetCDF files at the command line."
+cff-version: "1.2.0"
+authors:
+- family-names: Kaufman
+  given-names: Daniel E.
+  orcid: "https://orcid.org/0000-0002-1487-7298"
+- family-names: Baskin
+  given-names: Walter E.
+  orcid: "https://orcid.org/0000-0002-2241-3266"
+doi: 10.5281/zenodo.11448464
+message: If you use this software, please cite our article in the
+  Journal of Open Source Software.
+preferred-citation:
+  authors:
+  - family-names: Kaufman
+    given-names: Daniel E.
+    orcid: "https://orcid.org/0000-0002-1487-7298"
+  - family-names: Baskin
+    given-names: Walter E.
+    orcid: "https://orcid.org/0000-0002-2241-3266"
+  date-published: 2024-06-06
+  doi: 10.21105/joss.06490
+  issn: 2475-9066
+  issue: 98
+  journal: Journal of Open Source Software
+  publisher:
+    name: Open Journals
+  start: 6490
+  title: "ncompare: A Python package for comparing netCDF structures"
+  type: article
+  url: "https://joss.theoj.org/papers/10.21105/joss.06490"
+  volume: 9
+title: "ncompare: A Python package for comparing netCDF structures"
 
 contact:
   - name: "The NASA ncompare issues page"
@@ -14,18 +38,5 @@ keywords:
   - "netcdf"
   - "data comparison"
   - "hierarchical data"
-
 url: "https://ncompare.readthedocs.io"
 repository-code: "https://github.com/nasa/ncompare"
-
-version: 1.9.0
-date-released: 2024-05-29
-
-authors:
-- family-names: "Baskin"
-  given-names: "Walter"
-  orcid: "https://orcid.org/0000-0002-2241-3266"
-- family-names: "Kaufman"
-  given-names: "Daniel E"
-  orcid: "https://orcid.org/0000-0002-1487-7298"
-  website: "https://github.com/danielfromearth"
