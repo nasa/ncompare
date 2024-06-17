@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [Issue #233](https://github.com/nasa/ncompare/issues/233): Group dependabot updates into fewer PRs.
 ### Deprecated
 ### Removed
+- [Issue #231](https://github.com/nasa/ncompare/issues/231): Removed upper bounds from dependencies
 ### Fixed
 ### Security
 
