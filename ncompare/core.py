@@ -636,7 +636,7 @@ def _get_groups(nc_filepath: Union[str, Path]) -> list:
 def _get_dims(nc_filepath: Union[str, Path]) -> list:
     def __get_dim_list(decode_times=True):
         with xr.open_dataset(nc_filepath, decode_times=decode_times) as dataset:
-            return list(dataset.dims.items())
+            return list(dataset.sizes.items())
 
     try:
         dims_list = __get_dim_list()
