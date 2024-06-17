@@ -75,6 +75,34 @@ def ds_3dims_2vars_4coords(temp_data_dir) -> Path:
 
 
 @pytest.fixture(scope="session")
+def ds_1dim_1var_1coord(temp_data_dir) -> Path:
+    ds = Dataset(
+        data_vars=dict(z1=(["y"], np.array([5, 6]))),
+        coords=dict(
+            y=range(2),
+        ),
+    )
+    filepath = temp_data_dir / "test_1dim_1var_1coord.nc"
+    ds.to_netcdf(path=filepath)
+
+    return filepath
+
+
+@pytest.fixture(scope="session")
+def ds_1dim_1var_allnan_1coord(temp_data_dir) -> Path:
+    ds = Dataset(
+        data_vars=dict(z1=(["y"], np.array([np.nan, np.nan]))),
+        coords=dict(
+            y=range(2),
+        ),
+    )
+    filepath = temp_data_dir / "test_1dim_1var_allnan_1coord.nc"
+    ds.to_netcdf(path=filepath)
+
+    return filepath
+
+
+@pytest.fixture(scope="session")
 def ds_4dims_3vars_5coords(temp_data_dir):
     ds = Dataset(
         data_vars=dict(
