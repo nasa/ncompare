@@ -137,10 +137,7 @@ def test_comparison_group_no_error_for_duplicate_dataset(
             if "Variables within specified group <Group1>:" in line:
                 found_expected = True
 
-    if found_expected:
-        assert True
-    else:
-        assert False
+    assert found_expected
 
 
 def test_comparison_var_no_error_for_duplicate_dataset(
@@ -160,10 +157,7 @@ def test_comparison_var_no_error_for_duplicate_dataset(
             if "Sample values within specified variable <var1>:" in line:
                 found_expected = True
 
-    if found_expected:
-        assert True
-    else:
-        assert False
+    assert found_expected
 
 
 def test_get_vars_with_group(ds_3dims_3vars_4coords_1group):
