@@ -94,13 +94,4 @@ def test_full_run_to_xlsx_output(temp_data_dir):
     difference = df1[df1 != df2]
     rows_with_differences = [(idx, row) for idx, row in difference.notnull().iterrows() if any(row)]
 
-    if len(rows_with_differences) != 0:
-        print(
-            f"Test will fail because of differences in <{len(rows_with_differences)}> rows. "
-            f"Differences identified (Row index ----> row contents):"
-        )
-        for idx, row in rows_with_differences:
-            diff = difference.loc[idx]
-            print(f"  {idx} ----> {diff}")
-
     assert len(rows_with_differences) == 0
