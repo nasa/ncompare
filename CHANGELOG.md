@@ -17,7 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [Pull #230](https://github.com/nasa/ncompare/pull/230): Fixed help text for second NetCDF file passed on command line
 
 
-## [1.9.0]
+## [1.9.0] - 2024-05-29
 
 ### Changed
 - [Issue #184](https://github.com/nasa/ncompare/issues/184): Change license to Apache License 2.0. and include copyright header text
