@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 - [Issue #231](https://github.com/nasa/ncompare/issues/231): Removed upper bounds from dependencies
 ### Fixed
+- [Pull #230](https://github.com/nasa/ncompare/pull/230): Fixed help text for second NetCDF file passed on command line
 ### Security
 
 ## [1.9.0]
