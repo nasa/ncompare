@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [unreleased]
 ### Added
 - [Issue #229](https://github.com/nasa/ncompare/issues/229): Added Journal of Open Source Software (JOSS) info to README and CITATION docs.
+- [Issue #42](https://github.com/nasa/ncompare/issues/42): Made available via conda and added `conda`/`mamba` installation instructions to README.md
 ### Changed
 - [Issue #233](https://github.com/nasa/ncompare/issues/233): Group dependabot updates into fewer PRs.
 ### Deprecated
