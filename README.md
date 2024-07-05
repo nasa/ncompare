@@ -59,7 +59,7 @@ conda install -c conda-forge ncompare
 
 ```bash
 pip install ncompare
-````
+```
 
 ## Usage
 
