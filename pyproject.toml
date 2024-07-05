@@ -23,7 +23,7 @@ classifiers = [
 ncompare = "ncompare.console:main"
 
 [tool.poetry.dependencies]
-python = ">=3.9,<3.13"
+python = "^3.9"
 numpy = ">=1.26.0"
 netCDF4 = ">=1.6.4"
 xarray = ">=2023.9"
