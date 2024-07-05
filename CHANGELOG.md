@@ -7,150 +7,194 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [unreleased]
 
 ### Changed
-- [Issue #233](https://github.com/nasa/ncompare/issues/233): Group dependabot updates into fewer PRs.
+
+- Group dependabot updates into fewer PRs ([#233](https://github.com/nasa/ncompare/issues/233)) ([**@danielfromearth**](https://github.com/danielfromearth))
+
 ### Added
-- [Issue #229](https://github.com/nasa/ncompare/issues/229): Added Journal of Open Source Software (JOSS) info to README and CITATION docs.
-- [Issue #42](https://github.com/nasa/ncompare/issues/42): Made available via conda and added `conda`/`mamba` installation instructions to README.md
+
+- Add Journal of Open Source Software (JOSS) info to README and CITATION docs ([#229](https://github.com/nasa/ncompare/issues/229)) ([**@danielfromearth**](https://github.com/danielfromearth))
+- Make available via conda and add `conda`/`mamba` installation instructions to README.md ([#42](https://github.com/nasa/ncompare/issues/42)) ([**@jhkennedy**](https://github.com/jhkennedy), [**@danielfromearth**](https://github.com/danielfromearth))
+
 ### Removed
-- [Issue #231](https://github.com/nasa/ncompare/issues/231): Removed upper bounds from dependencies
+
+- Remove upper bounds from dependencies ([#231](https://github.com/nasa/ncompare/issues/231)) ([**@jhkennedy**](https://github.com/jhkennedy), [**@danielfromearth**](https://github.com/danielfromearth))
+
 ### Fixed
-- [Pull #230](https://github.com/nasa/ncompare/pull/230): Fixed help text for second NetCDF file passed on command line
+
+- Fix help text for second NetCDF file passed on command line ([#230](https://github.com/nasa/ncompare/pull/230)) ([**@berquist**](https://github.com/berquist))
 
 
 ## [1.9.0] - 2024-05-29
 
 ### Changed
-- [Issue #184](https://github.com/nasa/ncompare/issues/184): Change license to Apache License 2.0. and include copyright header text
-- [Issue #200](https://github.com/nasa/ncompare/issues/200): Change dependabot frequency to monthly
+
+- Change license to Apache License 2.0. and include copyright header text ([#184](https://github.com/nasa/ncompare/issues/184)) ([**@danielfromearth**](https://github.com/danielfromearth))
+- Change dependabot frequency to monthly ([#200](https://github.com/nasa/ncompare/issues/200)) ([**@danielfromearth**](https://github.com/danielfromearth))
+
 ### Added
-- [Issue #210](https://github.com/nasa/ncompare/issues/210): Add gif of usage to readme
+
+- Add gif of usage to readme ([#210](https://github.com/nasa/ncompare/issues/210)) ([**@danielfromearth**](https://github.com/danielfromearth))
+
 ### Fixed
-- [Issue #208](https://github.com/nasa/ncompare/issues/208): Fix missing group error
-- [Pull #190](https://github.com/nasa/ncompare/pull/190): Fix codecov upload token error
-- [Pull #199](https://github.com/nasa/ncompare/pull/199): Resolve linting error
+- Fix missing group error ([#208](https://github.com/nasa/ncompare/issues/208)) ([**@danielfromearth**](https://github.com/danielfromearth))
+- Fix codecov upload token error ([#190](https://github.com/nasa/ncompare/pull/190)) ([**@danielfromearth**](https://github.com/danielfromearth))
+- Resolve linting error ([#199](https://github.com/nasa/ncompare/pull/199)) ([**@danielfromearth**](https://github.com/danielfromearth))
 
 
 ## [1.8.0] - 2024-03-12
 
 ### Changed
-- update dependencies
-- update citation
-- [pull/168](https://github.com/nasa/ncompare/pull/168): updated syntax for new linting checks
+
+- Update dependencies ([#169](https://github.com/nasa/ncompare/pull/169)) ([**@danielfromearth**](https://github.com/danielfromearth))
+- Update citation ([`2178b97`](https://github.com/nasa/ncompare/pull/169/commits/2178b970fa32fa820c03d9c8c82b0ef8d8249150)) ([**@danielfromearth**](https://github.com/danielfromearth))
+- Update syntax for new linting checks ([#168](https://github.com/nasa/ncompare/pull/168)) ([**@danielfromearth**](https://github.com/danielfromearth))
 
 
 ## [1.7.3] - 2024-02-06
 
 ### Changed
-- add Zenodo badge to readme
+
+- Add Zenodo badge to readme ([#149](https://github.com/nasa/ncompare/pull/149)) ([**@danielfromearth**](https://github.com/danielfromearth))
 
 
 ## [1.7.2] - 2024-02-06
 
 ### Changed
-- add pyOpenSci badge to readme
+
+- Add pyOpenSci badge to readme ([#148](https://github.com/nasa/ncompare/pull/148)) ([**@danielfromearth**](https://github.com/danielfromearth))
 
 
 ## [1.7.1] - 2024-02-06
 
 ### Changed
-- update dependencies
-- update citation
+
+- Update dependencies ([#147](https://github.com/nasa/ncompare/pull/147)) ([**@danielfromearth**](https://github.com/danielfromearth))
+- Update citation ([#147](https://github.com/nasa/ncompare/pull/147)) ([**@danielfromearth**](https://github.com/danielfromearth))
 
 
 ## [1.7.0] - 2024-02-06
 
 ### Changed
-- [pull/136](https://github.com/nasa/ncompare/pull/136): Replace data in example notebook with those requiring no credentials
+
+- Replace data in example notebook with those requiring no credentials ([#136](https://github.com/nasa/ncompare/pull/136)) ([**@danielfromearth**](https://github.com/danielfromearth))
+
 ### Fixed
-- [pull/135](https://github.com/nasa/ncompare/pull/135): Fix links in readme
+
+- Fix links in readme ([#135](https://github.com/nasa/ncompare/pull/135)) ([**@danielfromearth**](https://github.com/danielfromearth))
 
 
 ## [1.6.2] - 2024-01-16
 
 ### Changed
 
-- updated PyPI classifiers in pyproject.toml
+- Update PyPI classifiers in pyproject.toml ([#130](https://github.com/nasa/ncompare/pull/130)) ([**@danielfromearth**](https://github.com/danielfromearth))
 
 
 ## [1.6.1] - 2024-01-16
 
 ### Changed
-- [pull-request/125](https://github.com/nasa/ncompare/pull/125): Bump jinja2 from 3.1.2 to 3.1.3
+
+- Bump jinja2 from 3.1.2 to 3.1.3 ([#125](https://github.com/nasa/ncompare/pull/125)) ([**@danielfromearth**](https://github.com/danielfromearth))
+
 ### Removed
-- removed unused placeholder file and .images folder
+
+- Remove unused placeholder file and .images folder ([#128](https://github.com/nasa/ncompare/pull/128)) ([**@danielfromearth**](https://github.com/danielfromearth))
 
 
 ## [1.6.0] - 2024-01-16
 
 ### Changed
-- [pull-request/99](https://github.com/nasa/ncompare/pull/99): Improve readme in a few ways (e.g., license, badges)
-- [pull-request/106](https://github.com/nasa/ncompare/pull/106): Use ReadTheDocs instead of GitHub Pages for documentation
-- [pull-request/113](https://github.com/nasa/ncompare/pull/113): Add codecov step to tests workflow
-- [issue/88](https://github.com/nasa/ncompare/issues/88): Improve test coverage, especially for ncompare/core.py and ncompare/printing.py
-- [issue/92](https://github.com/nasa/ncompare/issues/92): Ensure examples utilize publicly accessible data
-- [pull-request/121](https://github.com/nasa/ncompare/pull/121): Disable text wrapping to properly show ncompare output in notebook example
-- Tweaked wording regarding docstrings in the contributing guide
+
+- Improve readme in a few ways (e.g., license, badges) ([#99](https://github.com/nasa/ncompare/pull/99)) ([**@danielfromearth**](https://github.com/danielfromearth))
+- Use ReadTheDocs instead of GitHub Pages for documentation ([#106](https://github.com/nasa/ncompare/pull/106)) ([**@danielfromearth**](https://github.com/danielfromearth))
+- Add codecov step to tests workflow ([#113](https://github.com/nasa/ncompare/pull/113)) ([**@danielfromearth**](https://github.com/danielfromearth))
+- Improve test coverage, especially for ncompare/core.py and ncompare/printing.py ([#88](https://github.com/nasa/ncompare/issues/88)) ([**@danielfromearth**](https://github.com/danielfromearth))
+- Ensure examples utilize publicly accessible data ([#92](https://github.com/nasa/ncompare/issues/92)) ([**@danielfromearth**](https://github.com/danielfromearth))
+- Disable text wrapping to properly show ncompare output in notebook example ([#121](https://github.com/nasa/ncompare/pull/121)) ([**@danielfromearth**](https://github.com/danielfromearth))
+- Tweak wording regarding docstrings in the contributing guide ([`9c20671`](https://github.com/nasa/ncompare/pull/124/commits/9c2067147036947e47daafaf6b31a08821a1417b)) ([**@danielfromearth**](https://github.com/danielfromearth))
+
 ### Added
-- [pull-request/79](https://github.com/nasa/ncompare/pull/79): Add option to only display variables and attributes that are different
-- [pull-request/100](https://github.com/nasa/ncompare/pull/100): Add version to cli
-- [pull-request/105](https://github.com/nasa/ncompare/pull/105): Add testing of ncompare with Python version 3.12
-- [issue/118](https://github.com/nasa/ncompare/issues/118): Add citation file
+
+- Add option to only display variables and attributes that are different ([#79](https://github.com/nasa/ncompare/pull/79)) ([**@danielfromearth**](https://github.com/danielfromearth))
+- Add version to cli ([#100](https://github.com/nasa/ncompare/pull/100)) ([**@danielfromearth**](https://github.com/danielfromearth))
+- Add testing of ncompare with Python version 3.12 ([#105](https://github.com/nasa/ncompare/pull/105)) ([**@danielfromearth**](https://github.com/danielfromearth))
+- Add citation file ([#118](https://github.com/nasa/ncompare/issues/118)) ([**@danielfromearth**](https://github.com/danielfromearth))
+
 ### Removed
-- Fixed bug related to extra argument from command line
+
+- Fix bug related to extra argument from command line ([#124](https://github.com/nasa/ncompare/pull/124)) ([**@danielfromearth**](https://github.com/danielfromearth))
+
 ### Fixed
-- Updated out-dated example snippet in README
+
+- Update out-dated example snippet in README ([`eaddcad`](https://github.com/nasa/ncompare/pull/124/commits/eaddcad999ac52a06fdd95b7a8874bad4785111d)) ([**@danielfromearth**](https://github.com/danielfromearth))
 
 
 ## [1.5.0] - 2023-10-25
+
 ### Added
-- [pull-request/63](https://github.com/nasa/ncompare/pull/59): Add a tutorial example notebook.
-- Added a simple GitHub Pages that links to an quarto-produced version of the tutorial notebook.
+
+- Add a tutorial example notebook ([#63](https://github.com/nasa/ncompare/pull/63)) ([**@danielfromearth**](https://github.com/danielfromearth))
+- Add a simple GitHub Pages that links to an quarto-produced version of the tutorial notebook. ([#64](https://github.com/nasa/ncompare/pull/64)) ([**@danielfromearth**](https://github.com/danielfromearth))
 
 
 ## [1.4.0] - 2023-10-23
 
 ### Added
-- [pull-request/59](https://github.com/nasa/ncompare/pull/59): Add the ability to modify the width of each column in the comparison table.
+
+- Add the ability to modify the width of each column in the comparison table ([#59](https://github.com/nasa/ncompare/pull/59)) ([**@danielfromearth**](https://github.com/danielfromearth))
+
 ### Fixed
-- [pull-request/60](https://github.com/nasa/ncompare/pull/60): Removes an extra line of printed filepaths.
+
+- Remove an extra line of printed filepaths ([#60](https://github.com/nasa/ncompare/pull/60)) ([**@danielfromearth**](https://github.com/danielfromearth))
 
 
 ## [1.3.0] - 2023-10-20
 
 ### Fixed
-- [pull-request/55](https://github.com/nasa/ncompare/pull/55): Fix variable value matching
+
+- Fix variable value matching ([#55](https://github.com/nasa/ncompare/pull/55)) ([**@danielfromearth**](https://github.com/danielfromearth))
 
 
 ## [1.2.0] - 2023-10-11
 
 ### Changed
-- [pull-request/47](https://github.com/nasa/ncompare/pull/47): Added coverage and move test running to separate workflow yml
+
+- Add coverage and move test running to separate workflow yml ([#47](https://github.com/nasa/ncompare/pull/47)) ([**@danielfromearth**](https://github.com/danielfromearth))
+
 ### Added
-- [pull-request/44](https://github.com/nasa/ncompare/pull/44): Added issue templates and markdown guides for CONTRIBUTING and the CODE_OF_CONDUCT
+
+- Add issue templates and markdown guides for CONTRIBUTING and the CODE_OF_CONDUCT ([#44](https://github.com/nasa/ncompare/pull/44)) ([**@danielfromearth**](https://github.com/danielfromearth))
 
 
 ## [1.1.0] - 2023-09-26
 
 ### Changed
-- [pull-request/28](https://github.com/nasa/ncompare/pull/28): Updated CI/CD versions, and updated README.md
+
+- Update CI/CD versions, and updated README.md ([#28](https://github.com/nasa/ncompare/pull/28)) ([**@danielfromearth**](https://github.com/danielfromearth))
+
 ### Added
-- [commit/4b98808](https://github.com/nasa/ncompare/commit/4b98808cf3d8424da25a226687d304ce7d46738e): Set up dependabot for automated version updates
+
+- Set up dependabot for automated version updates ([`4b98808`](https://github.com/nasa/ncompare/commit/4b98808cf3d8424da25a226687d304ce7d46738e)) ([**@danielfromearth**](https://github.com/danielfromearth))
 
 
 ## [1.0.2] - 2023-09-20
 
 ### Changed
-- Use ruff and black for linting and formatting [issue/23](https://github.com/nasa/ncompare/issues/23)
+
+- Use ruff and black for linting and formatting [#23](https://github.com/nasa/ncompare/issues/23) ([**@danielfromearth**](https://github.com/danielfromearth))
+
 ### Added
-- Add automated publishing (via poetry) to TestPyPI and PyPI in Actions workflow [issue/19](https://github.com/nasa/ncompare/issues/19)
+
+- Add automated publishing (via poetry) to TestPyPI and PyPI in Actions workflow [#19](https://github.com/nasa/ncompare/issues/19) ([**@danielfromearth**](https://github.com/danielfromearth))
 
 
 ## [1.0.1] - 2023-09-06
 
 ### Changed
-- Improve test suite [#12](https://github.com/nasa/ncompare/issues/12):
-- Enable `ncompare` to work with greater group depths [#13](https://github.com/nasa/ncompare/issues/13):
-### Added
-### Removed
+
+- Improve test suite [#12](https://github.com/nasa/ncompare/issues/12) ([**@danielfromearth**](https://github.com/danielfromearth))
+- Enable `ncompare` to work with greater group depths [#13](https://github.com/nasa/ncompare/issues/13) ([**@danielfromearth**](https://github.com/danielfromearth))
+
 ### Fixed
-- Fix author attribute for poetry [#5](https://github.com/nasa/ncompare/issues/5)
+
+- Fix author attribute for poetry [#5](https://github.com/nasa/ncompare/issues/5) ([**@danielfromearth**](https://github.com/danielfromearth))
