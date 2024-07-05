@@ -41,11 +41,25 @@ Compare the structure of two NetCDF files at the command line.
 
 ## Installing
 
-Install the latest version of the package from the Python Package Index (PyPI):
-```console
-pip install ncompare
+The latest release of `ncompare` can be installed with `mamba`, `conda` or `pip`.
+
+#### Using `mamba`
+
+```bash
+mamba install -c conda-forge ncompare
 ```
 
+#### Using `conda`
+
+```bash
+conda install -c conda-forge ncompare
+```
+
+#### Using `pip`
+
+```bash
+pip install ncompare
+```
 
 ## Usage
 
