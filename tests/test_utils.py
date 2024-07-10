@@ -50,9 +50,19 @@ def test_make_valid_path_from_Path_in_repo():
     assert isinstance(returnval, Path)
 
 
+def test_error_from_wrong_path_type():
+    with pytest.raises(TypeError):
+        ensure_valid_path_exists((0, 1))
+
+
 def test_coerce_int_to_str():
     assert coerce_to_str(5) == "5"
 
 
 def test_coerce_tuple_to_str():
     assert coerce_to_str(('step', 123)) == "('step', 123)"
+
+
+def test_error_from_not_able_to_coerce_to_str():
+    with pytest.raises(TypeError):
+        coerce_to_str(list[5, 6, 7])

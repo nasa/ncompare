@@ -29,13 +29,15 @@ import argparse
 import importlib.metadata
 import sys
 import traceback
+from collections.abc import Sequence
+from typing import Optional
 
 from ncompare.core import compare
 
 __version__ = importlib.metadata.version('ncompare')
 
 
-def _cli(args) -> argparse.Namespace:
+def _cli(args: Optional[Sequence[str]]) -> argparse.Namespace:
     """Parse input arguments from the command line.
 
     Parameters
@@ -47,7 +49,7 @@ def _cli(args) -> argparse.Namespace:
         description="Compare the variables contained within two different NetCDF datasets"
     )
     parser.add_argument("nc_a", help="First NetCDF file")
-    parser.add_argument("nc_b", help="First NetCDF file")
+    parser.add_argument("nc_b", help="Second NetCDF file")
     parser.add_argument("-v", "--comparison_var_name", help="Comparison variable name")
     parser.add_argument("-g", "--comparison_var_group", help="Comparison variable group")
     parser.add_argument(
@@ -97,7 +99,7 @@ def _cli(args) -> argparse.Namespace:
     return parser.parse_args(args)
 
 
-def main():  # pragma: no cover
+def main() -> None:  # pragma: no cover
     """Run from the command line."""
     args = _cli(None)
 
