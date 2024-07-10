@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [Issue #42](https://github.com/nasa/ncompare/issues/42): Made available via conda and added `conda`/`mamba` installation instructions to README.md
 ### Changed
 - [Issue #233](https://github.com/nasa/ncompare/issues/233): Group dependabot updates into fewer PRs.
+- [Issue #246](https://github.com/nasa/ncompare/issues/246): Changed xarray Dataset.dims reference to Dataset.sizes due to FutureWarning
 ### Deprecated
 ### Removed
 - [Issue #231](https://github.com/nasa/ncompare/issues/231): Removed upper bounds from dependencies
