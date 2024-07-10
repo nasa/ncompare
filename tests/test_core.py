@@ -72,10 +72,14 @@ def test_matching_random_values(
     ds_3dims_2vars_4coords,
     ds_4dims_3vars_5coords,
     ds_3dims_3vars_4coords_1group,
+    ds_1dim_1var_1coord,
+    ds_1dim_1var_allnan_1coord,
     outputter_to_console,
 ):
     variable_array_1 = xr.open_dataset(ds_3dims_2vars_4coords).variables['z1']
     variable_array_2 = xr.open_dataset(ds_4dims_3vars_5coords).variables['z1']
+    variable_array_3 = xr.open_dataset(ds_1dim_1var_1coord).variables['z1']
+    variable_array_allnan = xr.open_dataset(ds_1dim_1var_allnan_1coord).variables['z1']
 
     assert (
         _match_random_value(
@@ -92,6 +96,32 @@ def test_matching_random_values(
             variable_array_2,
         )
         is False
+    )
+    assert (
+        _match_random_value(
+            outputter_to_console,
+            variable_array_3,
+            variable_array_3,
+        )
+        is True
+    )
+    # NaN to non-NaN is NOT considered a match
+    assert (
+        _match_random_value(
+            outputter_to_console,
+            variable_array_3,
+            variable_array_allnan,
+        )
+        is None
+    )
+    # NaN to NaN is considered a match
+    assert (
+        _match_random_value(
+            outputter_to_console,
+            variable_array_allnan,
+            variable_array_allnan,
+        )
+        is True
     )
 
 
@@ -137,10 +167,7 @@ def test_comparison_group_no_error_for_duplicate_dataset(
             if "Variables within specified group <Group1>:" in line:
                 found_expected = True
 
-    if found_expected:
-        assert True
-    else:
-        assert False
+    assert found_expected
 
 
 def test_comparison_var_no_error_for_duplicate_dataset(
@@ -160,10 +187,7 @@ def test_comparison_var_no_error_for_duplicate_dataset(
             if "Sample values within specified variable <var1>:" in line:
                 found_expected = True
 
-    if found_expected:
-        assert True
-    else:
-        assert False
+    assert found_expected
 
 
 def test_get_vars_with_group(ds_3dims_3vars_4coords_1group):

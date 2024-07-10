@@ -31,6 +31,9 @@ _____
 <a href="https://github.com/pyOpenSci/software-review/issues/146" target="_blank">
     <img src="https://tinyurl.com/y22nb8up?" alt="pyOpenSci">
 </a>
+<a style="border-width:0" href="https://doi.org/10.21105/joss.06490">
+  <img src="https://joss.theoj.org/papers/10.21105/joss.06490/status.svg" alt="DOI badge" >
+</a>
 
 Compare the structure of two NetCDF files at the command line.
 `ncompare` generates a view of the matching and non-matching groups and variables between two NetCDF datasets.
@@ -38,11 +41,25 @@ Compare the structure of two NetCDF files at the command line.
 
 ## Installing
 
-Install the latest version of the package from the Python Package Index (PyPI):
-```console
-pip install ncompare
+The latest release of `ncompare` can be installed with `mamba`, `conda` or `pip`.
+
+#### Using `mamba`
+
+```bash
+mamba install -c conda-forge ncompare
 ```
 
+#### Using `conda`
+
+```bash
+conda install -c conda-forge ncompare
+```
+
+#### Using `pip`
+
+```bash
+pip install ncompare
+```
 
 ## Usage
 

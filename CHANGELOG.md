@@ -4,9 +4,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [unreleased]
+### Added
+- [Issue #229](https://github.com/nasa/ncompare/issues/229): Added Journal of Open Source Software (JOSS) info to README and CITATION docs.
+- [Issue #42](https://github.com/nasa/ncompare/issues/42): Made available via conda and added `conda`/`mamba` installation instructions to README.md
 ### Changed
+- [Issue #233](https://github.com/nasa/ncompare/issues/233): Group dependabot updates into fewer PRs.
 - [Issue #246](https://github.com/nasa/ncompare/issues/246): Changed xarray Dataset.dims reference to Dataset.sizes due to FutureWarning
+### Deprecated
+### Removed
+- [Issue #231](https://github.com/nasa/ncompare/issues/231): Removed upper bounds from dependencies
+### Fixed
+- [Pull #230](https://github.com/nasa/ncompare/pull/230): Fixed help text for second NetCDF file passed on command line
+### Security
 
 ## [1.9.0]
 ### Added
