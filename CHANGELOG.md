@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Group dependabot updates into fewer PRs ([#233](https://github.com/nasa/ncompare/issues/233)) ([**@danielfromearth**](https://github.com/danielfromearth))
+- Change xarray `Dataset.dims` reference to `Dataset.sizes` due to FutureWarning ([#246](https://github.com/nasa/ncompare/issues/246))([**@nannau**](https://github.com/nannau))
 
 ### Added
 
