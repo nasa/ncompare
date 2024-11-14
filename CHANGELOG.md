@@ -4,7 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Common Changelog](https://common-changelog.org/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [unreleased]
+## [1.11.0] - 2024-11-14
+
+### Added
+
+- Add pre-commit autoupdating ([#cde1ae4](https://github.com/nasa/ncompare/pull/260/commits/cde1ae4d7ae8b1d9cf07d4af012e8f97b010238d)) ([**@danielfromearth**](https://github.com/danielfromearth))
 
 ### Removed
 
