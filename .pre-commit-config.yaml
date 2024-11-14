@@ -16,7 +16,6 @@ repos:
         args: [ '--allow-multiple-documents' ]
       - id: check-toml
       - id: check-json
-        args: ['--autofix', '--no-ensure-ascii', '--no-sort-keys']
       # Check for common mistakes
       - id: check-added-large-files
       - id: check-case-conflict
@@ -29,12 +28,12 @@ repos:
       - id: destroyed-symlinks
       - id: detect-private-key
       - id: end-of-file-fixer
-        exclude: ".ipynb"
+        exclude_types: ["jupyter", "text"]
       - id: mixed-line-ending
       - id: no-commit-to-branch # protects `main` by default
       - id: debug-statements
       - id: trailing-whitespace
-        exclude: ".txt"
+        exclude_types: ["jupyter", "text"]
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.7.3
