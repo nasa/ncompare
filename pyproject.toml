@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "ncompare"
-version = "1.10.0"
+version = "1.11.0rc4"
 description = "Compare the structure of two NetCDF files at the command line"
 authors = ["Daniel Kaufman <daniel.kaufman@nasa.gov>"]
 readme = "README.md"
@@ -32,14 +32,13 @@ openpyxl = ">=3.1.2"
 
 [tool.poetry.group.dev.dependencies]
 pytest = ">=7.4.2,<9.0.0"
-ruff = ">=0.5.0,<0.5.1"
-black = ">=23.9.1,<25.0.0"
+ruff = ">=0.5.1,<0.7.4"
 mypy = ">=1.5.1"
-pytest-cov = ">=4.1,<6.0"
+pytest-cov = ">=4.1,<7.0"
 mkdocs = ">=1.5.3"
 markdown-callouts = ">=0.4.0"
 markdown-include = ">=0.8.1"
-mkdocstrings = ">=0.24.1,<0.26.0"
+mkdocstrings = ">=0.24.1,<0.28.0"
 mkdocs-jupyter = ">=0.24.6"
 mkdocs-material = ">=9.5.12"
 
@@ -55,10 +54,6 @@ module = [
 ]
 ignore_missing_imports = true
 
-[tool.black]
-line-length = 100
-skip-string-normalization = true
-
 
 [tool.ruff]
 builtins = ["ellipsis"]
@@ -67,6 +62,8 @@ exclude = [
   "doc",
   "_typed_ops.pyi",
 ]
+# Allow lines to be as long as 100.
+line-length = 100
 target-version = "py39"
 
 [tool.ruff.lint]

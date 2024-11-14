@@ -16,9 +16,6 @@ _____
 <a href="https://pypi.org/project/ncompare" target="_blank">
     <img src="https://img.shields.io/pypi/v/ncompare?color=%2334D058label=pypi%20package" alt="Package version">
 </a>
-<a href="https://github.com/python/black" target="_blank">
-    <img src="https://img.shields.io/badge/code%20style-black-000000.svg" alt="Code style">
-</a>
 <a href="https://mypy-lang.org/" target="_blank">
     <img src="https://www.mypy-lang.org/static/mypy_badge.svg" alt="Mypy checked">
 </a>
