@@ -25,7 +25,6 @@
 # pylint: disable=too-many-arguments
 
 """Utility functions for printing to the console or a text file."""
-
 import csv
 import re
 import warnings
@@ -44,7 +43,7 @@ from ncompare.sequence_operations import common_elements, count_diffs
 # Set up regex remover of ANSI color escape sequences
 #   From <https://stackoverflow.com/a/14693789>
 ansi_escape = re.compile(
-    r"""
+    r'''
     \x1B  # ESC
     (?:   # 7-bit C1 Fe (except CSI)
         [@-Z\\-_]
@@ -54,7 +53,7 @@ ansi_escape = re.compile(
         [ -/]*  # Intermediate bytes
         [@-~]   # Final byte
     )
-""",
+''',
     re.VERBOSE,
 )
 
@@ -132,11 +131,7 @@ class Outputter:
             self._text_file_obj.close()
 
     def print(
-        self,
-        string: str = "",
-        colors: bool = False,
-        add_to_history: bool = False,
-        **print_args,
+        self, string: str = "", colors: bool = False, add_to_history: bool = False, **print_args
     ) -> None:
         """Print text using custom options.
 
@@ -161,7 +156,7 @@ class Outputter:
         # Optional - write text to file
         if self._text_file_obj:
             # Remove ANSI escape sequences.
-            result = ansi_escape.sub("", text_to_print)
+            result = ansi_escape.sub('', text_to_print)
             self._text_file_obj.write(result + "\n")
 
         # Optional - save text to a history list
@@ -173,7 +168,7 @@ class Outputter:
 
         def _parse_single_str(s):  # pylint: disable=invalid-name
             # Remove ANSI escape sequences before adding to a parsed string list.
-            result = ansi_escape.sub("", s)
+            result = ansi_escape.sub('', s)
             # Remove any leading or trailing newlines.
             return result.strip("\n")
 
@@ -326,16 +321,16 @@ class Outputter:
         # print(Fore.RED + "Which items are different? ---> %s." %
         #       str(set(list_a).symmetric_difference(list_b)))
 
-        self.side_by_side(" ", "File A", "File B")
+        self.side_by_side(' ', 'File A', 'File B')
         self.side_by_side_list_diff(list_a, list_b)
-        self.side_by_side("Number of non-shared items:", str(left), str(right))
+        self.side_by_side('Number of non-shared items:', str(left), str(right))
 
         return left, right, both
 
     def write_history_to_csv(self, filename: Union[str, Path] = "test.csv"):
         """Save the line history that's been stored to a CSV file."""
-        headers = ["Info", "File A", "File B", "Other marks"]
-        with open(filename, "w", encoding="utf-8") as target:
+        headers = ['Info', 'File A', 'File B', 'Other marks']
+        with open(filename, 'w', encoding="utf-8") as target:
             writer = csv.writer(target)
             writer.writerow(headers)
             writer.writerows(self._line_history)
@@ -346,7 +341,7 @@ class Outputter:
         sheet = workbook.active
 
         # Add a header row
-        sheet.append(["Info", "File A", "File B"])
+        sheet.append(['Info', 'File A', 'File B'])
 
         # Add rows and apply styles
         for row in self._line_history:
@@ -355,7 +350,7 @@ class Outputter:
                 #   First, remove difference marker that is redundant with styles applied to the row (unlike in the CSV)
                 del row[3]
                 sheet.append(_excel_red_cells(row, sheet))
-            elif (len(row) == 1) or ((len(row) == 3) and ((row[1] == "") and (row[2] == ""))):
+            elif (len(row) == 1) or ((len(row) == 3) and ((row[1] == '') and (row[2] == ''))):
                 # The case where there is a subheader and no information in the second and third columns.
                 sheet.append(_excel_bold_underline_cells(row, sheet))
             else:
@@ -384,5 +379,5 @@ def _excel_bold_underline_cells(data, sheet):
     """Stylize cells in Excel with a bold and underlined font."""
     for cell in data:
         cell = Cell(sheet, column="A", row=1, value=cell)
-        cell.font = Font(bold=True, underline="single")
+        cell.font = Font(bold=True, underline='single')
         yield cell

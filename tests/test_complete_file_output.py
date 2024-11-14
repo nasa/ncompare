@@ -42,10 +42,7 @@ def test_full_run_to_text_output(temp_data_dir):
         file_text=str(out_path),
     )
 
-    with (
-        open(data_for_tests_dir / "a-b_test_golden_file.txt") as f1,
-        open(str(out_path)) as f2,
-    ):
+    with open(data_for_tests_dir / "a-b_test_golden_file.txt") as f1, open(str(out_path)) as f2:
         exclude_n_lines = 3
 
         for _ in range(exclude_n_lines):
@@ -68,10 +65,7 @@ def test_full_run_to_csv_output(temp_data_dir):
         file_csv=str(out_path),
     )
 
-    with (
-        open(data_for_tests_dir / "a-b_test_golden_file.csv") as f1,
-        open(str(out_path)) as f2,
-    ):
+    with open(data_for_tests_dir / "a-b_test_golden_file.csv") as f1, open(str(out_path)) as f2:
         exclude_n_lines = 3
 
         for _ in range(exclude_n_lines):
