@@ -28,7 +28,6 @@ Tests for the core module.
 
 Note that full comparison tests are performed in both directions, i.e., A -> B and B -> A.
 """
-
 from contextlib import nullcontext as does_not_raise
 
 import pytest
@@ -77,10 +76,10 @@ def test_matching_random_values(
     ds_1dim_1var_allnan_1coord,
     outputter_to_console,
 ):
-    variable_array_1 = xr.open_dataset(ds_3dims_2vars_4coords).variables["z1"]
-    variable_array_2 = xr.open_dataset(ds_4dims_3vars_5coords).variables["z1"]
-    variable_array_3 = xr.open_dataset(ds_1dim_1var_1coord).variables["z1"]
-    variable_array_allnan = xr.open_dataset(ds_1dim_1var_allnan_1coord).variables["z1"]
+    variable_array_1 = xr.open_dataset(ds_3dims_2vars_4coords).variables['z1']
+    variable_array_2 = xr.open_dataset(ds_4dims_3vars_5coords).variables['z1']
+    variable_array_3 = xr.open_dataset(ds_1dim_1var_1coord).variables['z1']
+    variable_array_allnan = xr.open_dataset(ds_1dim_1var_allnan_1coord).variables['z1']
 
     assert (
         _match_random_value(
@@ -129,10 +128,7 @@ def test_matching_random_values(
 def test_print_values_runs_with_no_error(ds_3dims_3vars_4coords_1group, outputter_to_console):
     with does_not_raise():
         _print_sample_values(
-            outputter_to_console,
-            ds_3dims_3vars_4coords_1group,
-            groupname="Group1",
-            varname="step",
+            outputter_to_console, ds_3dims_3vars_4coords_1group, groupname="Group1", varname="step"
         )
 
 
@@ -140,10 +136,7 @@ def test_print_values_to_text_file_runs_with_no_error(
     ds_3dims_3vars_4coords_1group, outputter_to_text_file, temp_test_text_file_path
 ):
     _print_sample_values(
-        outputter_to_text_file,
-        ds_3dims_3vars_4coords_1group,
-        groupname="Group1",
-        varname="step",
+        outputter_to_text_file, ds_3dims_3vars_4coords_1group, groupname="Group1", varname="step"
     )
     outputter_to_text_file._text_file_obj.close()
 
@@ -199,7 +192,7 @@ def test_comparison_var_no_error_for_duplicate_dataset(
 
 def test_get_vars_with_group(ds_3dims_3vars_4coords_1group):
     result = _get_vars(ds_3dims_3vars_4coords_1group, groupname="Group1")
-    assert set(result) == {"step", "var1", "var2", "w"}
+    assert set(result) == {'step', 'var1', 'var2', 'w'}
 
 
 def test_get_vars_error_when_no_group(ds_3dims_2vars_4coords):

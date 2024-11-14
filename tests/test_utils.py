@@ -60,7 +60,7 @@ def test_coerce_int_to_str():
 
 
 def test_coerce_tuple_to_str():
-    assert coerce_to_str(("step", 123)) == "('step', 123)"
+    assert coerce_to_str(('step', 123)) == "('step', 123)"
 
 
 def test_error_from_not_able_to_coerce_to_str():

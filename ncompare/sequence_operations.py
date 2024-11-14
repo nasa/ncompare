@@ -24,7 +24,6 @@
 # See the License for the specific language governing permissions and limitations under the License.
 
 """Helper functions for operating on iterables, such as lists or sets."""
-
 from collections.abc import Generator, Iterable
 from typing import Union
 
@@ -63,9 +62,9 @@ def common_elements(
             )
 
         if item not in a_sorted:
-            item_a = ""
+            item_a = ''
         elif item not in b_sorted:
-            item_b = ""
+            item_b = ''
 
         yield i, item_a, item_b
 
