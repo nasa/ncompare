@@ -1,42 +1,54 @@
+ci:
+  autoupdate_schedule: "monthly" # Like dependabot
+  autoupdate_commit_msg: "chore: update pre-commit hooks"
+  autoupdate_branch: "develop"
+  autofix_prs: false # Comment "pre-commit.ci autofix" on a PR to trigger
+
 default_language_version:
-  python: python3
+  python: python3.9
 
 repos:
-  - repo: https://github.com/asottile/pyupgrade
-    rev: v3.16.0
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.21.2
     hooks:
-      - id: pyupgrade
-        args: [ "--py39-plus" ]
+      - id: gitleaks
 
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.6.0
+    rev: v5.0.0
     hooks:
-      - id: trailing-whitespace
-        exclude: ".txt"
-      - id: end-of-file-fixer
-        exclude: ".ipynb"
-      - id: check-json
+      # Validate format
       - id: check-yaml
         args: [ '--allow-multiple-documents' ]
+      - id: check-toml
+      - id: check-json
+      # Check for common mistakes
+      - id: check-added-large-files
+      - id: check-case-conflict
+      # - id: check-illegal-windows-names # TODO: Enable in next release
+      - id: check-merge-conflict
+      - id: check-executables-have-shebangs
+      - id: check-shebang-scripts-are-executable
+      - id: check-symlinks
+      - id: check-vcs-permalinks
+      - id: destroyed-symlinks
+      - id: detect-private-key
+      - id: end-of-file-fixer
+        exclude_types: ["jupyter", "text"]
+      - id: mixed-line-ending
+      - id: no-commit-to-branch # protects `main` by default
       - id: debug-statements
-      - id: pretty-format-json
-        args: ['--autofix', '--no-ensure-ascii', '--no-sort-keys']
+      - id: trailing-whitespace
+        exclude_types: ["jupyter", "text"]
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    # Ruff version.
-    rev: 'v0.5.1'
+    rev: v0.7.3
     hooks:
       - id: ruff
-        args: [ "--fix" ]
-
-  # https://github.com/python/black#version-control-integration
-  - repo: https://github.com/psf/black
-    rev: 24.4.2
-    hooks:
-      - id: black-jupyter
+        args: ["--fix", "--exit-non-zero-on-fix"]
+      - id: ruff-format
 
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.10.1
+    rev: v1.13.0
     hooks:
       - id: mypy
 

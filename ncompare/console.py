@@ -25,6 +25,7 @@
 # See the License for the specific language governing permissions and limitations under the License.
 
 """Command line interface for `ncompare` -- to compare the structure of two NetCDF files."""
+
 import argparse
 import importlib.metadata
 import sys
@@ -34,7 +35,7 @@ from typing import Optional
 
 from ncompare.core import compare
 
-__version__ = importlib.metadata.version('ncompare')
+__version__ = importlib.metadata.version("ncompare")
 
 
 def _cli(args: Optional[Sequence[str]]) -> argparse.Namespace:
@@ -65,7 +66,10 @@ def _cli(args: Optional[Sequence[str]]) -> argparse.Namespace:
     )
     parser.add_argument("--file-xlsx", help="An Excel file to which the output will be written.")
     parser.add_argument(
-        "--no-color", action="store_true", default=False, help="Turn off all colorized output"
+        "--no-color",
+        action="store_true",
+        default=False,
+        help="Turn off all colorized output",
     )
     parser.add_argument(
         "--show-attributes",
@@ -90,8 +94,8 @@ def _cli(args: Optional[Sequence[str]]) -> argparse.Namespace:
 
     parser.add_argument(
         "--version",
-        action='version',
-        version=f'%(prog)s {__version__}',
+        action="version",
+        version=f"%(prog)s {__version__}",
         default=False,
         help="Show the current version.",
     )
@@ -103,7 +107,7 @@ def main() -> None:  # pragma: no cover
     """Run from the command line."""
     args = _cli(None)
 
-    delattr(args, 'version')
+    delattr(args, "version")
 
     try:
         compare(**vars(args))
@@ -113,5 +117,5 @@ def main() -> None:  # pragma: no cover
     sys.exit(0)  # a clean, no-issue, exit
 
 
-if __name__ == '__main__':  # pragma: no cover
+if __name__ == "__main__":  # pragma: no cover
     main()
