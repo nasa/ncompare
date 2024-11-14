@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [unreleased]
 
+### Removed
+
+- Remove usage of black for code formatting ([#257](https://github.com/nasa/ncompare/pull/257)) ([**@danielfromearth**](https://github.com/danielfromearth))
+
+## [1.10.0] - 2024-07-10
+
 ### Changed
 
 - Group dependabot updates into fewer PRs ([#233](https://github.com/nasa/ncompare/issues/233)) ([**@danielfromearth**](https://github.com/danielfromearth))
