@@ -6,6 +6,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [unreleased]
 
+## [1.11.0] - 2024-11-14
+
+### Added
+
+- Add pre-commit autoupdating ([#cde1ae4](https://github.com/nasa/ncompare/pull/260/commits/cde1ae4d7ae8b1d9cf07d4af012e8f97b010238d)) ([**@danielfromearth**](https://github.com/danielfromearth))
+- Add gitleaks to pre-commit ([#261](https://github.com/nasa/ncompare/pull/261)) ([**@danielfromearth**](https://github.com/danielfromearth))
+
 ### Removed
 
 - Remove usage of black for code formatting ([#257](https://github.com/nasa/ncompare/pull/257)) ([**@danielfromearth**](https://github.com/danielfromearth))
