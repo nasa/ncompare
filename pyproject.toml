@@ -33,7 +33,6 @@ openpyxl = ">=3.1.2"
 [tool.poetry.group.dev.dependencies]
 pytest = ">=7.4.2,<9.0.0"
 ruff = ">=0.5.1,<0.6.9"
-black = ">=23.9.1,<25.0.0"
 mypy = ">=1.5.1"
 pytest-cov = ">=4.1,<6.0"
 mkdocs = ">=1.5.3"
@@ -55,10 +54,6 @@ module = [
 ]
 ignore_missing_imports = true
 
-[tool.black]
-line-length = 100
-skip-string-normalization = true
-
 
 [tool.ruff]
 builtins = ["ellipsis"]
@@ -67,6 +62,8 @@ exclude = [
   "doc",
   "_typed_ops.pyi",
 ]
+# Allow lines to be as long as 100.
+line-length = 100
 target-version = "py39"
 
 [tool.ruff.lint]
