@@ -28,6 +28,7 @@
 # pylint: disable=fixme
 
 """Compare the structure of two NetCDF files."""
+
 import random
 import traceback
 from collections import namedtuple
@@ -195,7 +196,11 @@ def run_through_comparisons(
                     + f"\nChecking multiple random values within specified variable <{comparison_var_name}>:"
                 )
                 compare_multiple_random_values(
-                    out, nc_a, nc_b, groupname=comparison_var_group, varname=comparison_var_name
+                    out,
+                    nc_a,
+                    nc_b,
+                    groupname=comparison_var_group,
+                    varname=comparison_var_name,
                 )
 
             except KeyError:
@@ -280,12 +285,14 @@ def walk_common_groups_tree(  # type:ignore[misc]
             top_b[group_b_name] if (group_b_name and (group_b_name in top_b.groups)) else None,
         )
         for (_, group_a_name, group_b_name) in common_elements(
-            top_a.groups if top_a is not None else "", top_b.groups if top_b is not None else ""
+            top_a.groups if top_a is not None else "",
+            top_b.groups if top_b is not None else "",
         )
     )
 
     for _, subgroup_a_name, subgroup_b_name in common_elements(
-        top_a.groups if top_a is not None else "", top_b.groups if top_b is not None else ""
+        top_a.groups if top_a is not None else "",
+        top_b.groups if top_b is not None else "",
     ):
         yield from walk_common_groups_tree(
             top_a_name + "/" + subgroup_a_name if subgroup_a_name else "",
@@ -311,18 +318,26 @@ def compare_two_nc_files(
     show_attributes: bool = False,
 ) -> tuple[int, int, int]:
     """Go through all groups and all variables, and show them side by side - whether they align and where they don't."""
-    out.side_by_side(' ', 'File A', 'File B', force_display_even_if_same=True)
+    out.side_by_side(" ", "File A", "File B", force_display_even_if_same=True)
 
     num_var_diffs = {"left": 0, "right": 0, "both": 0}
     with netCDF4.Dataset(nc_one) as nc_a, netCDF4.Dataset(nc_two) as nc_b:
         out.side_by_side(
-            'All Variables', ' ', ' ', dash_line=False, force_display_even_if_same=True
+            "All Variables", " ", " ", dash_line=False, force_display_even_if_same=True
         )
-        out.side_by_side('-', '-', '-', dash_line=True, force_display_even_if_same=True)
+        out.side_by_side("-", "-", "-", dash_line=True, force_display_even_if_same=True)
 
         group_counter = 0
         _print_group_details_side_by_side(
-            out, nc_a, "/", nc_b, "/", group_counter, num_var_diffs, show_attributes, show_chunks
+            out,
+            nc_a,
+            "/",
+            nc_b,
+            "/",
+            group_counter,
+            num_var_diffs,
+            show_attributes,
+            show_chunks,
         )
         group_counter += 1
 
@@ -341,20 +356,20 @@ def compare_two_nc_files(
                 )
                 group_counter += 1
 
-    out.side_by_side('-', '-', '-', dash_line=True, force_display_even_if_same=True)
+    out.side_by_side("-", "-", "-", dash_line=True, force_display_even_if_same=True)
     out.side_by_side(
-        'Total number of shared items:',
-        str(num_var_diffs['both']),
-        str(num_var_diffs['both']),
+        "Total number of shared items:",
+        str(num_var_diffs["both"]),
+        str(num_var_diffs["both"]),
         force_display_even_if_same=True,
     )
     out.side_by_side(
-        'Total number of non-shared items:',
-        str(num_var_diffs['left']),
-        str(num_var_diffs['right']),
+        "Total number of non-shared items:",
+        str(num_var_diffs["left"]),
+        str(num_var_diffs["right"]),
         force_display_even_if_same=True,
     )
-    return num_var_diffs['left'], num_var_diffs['right'], num_var_diffs['both']
+    return num_var_diffs["left"], num_var_diffs["right"], num_var_diffs["both"]
 
 
 def _print_group_details_side_by_side(
@@ -369,7 +384,12 @@ def _print_group_details_side_by_side(
     show_chunks: bool,
 ) -> None:
     out.side_by_side(
-        " ", " ", " ", dash_line=False, highlight_diff=False, force_display_even_if_same=True
+        " ",
+        " ",
+        " ",
+        dash_line=False,
+        highlight_diff=False,
+        force_display_even_if_same=True,
     )
     out.side_by_side(
         f"GROUP #{group_counter:02}",
@@ -388,19 +408,19 @@ def _print_group_details_side_by_side(
     if group_b:
         vars_b_sorted = sorted(group_b.variables)
     out.side_by_side(
-        'num variables in group:',
+        "num variables in group:",
         len(vars_a_sorted),
         len(vars_b_sorted),
         highlight_diff=True,
         force_display_even_if_same=True,
     )
-    out.side_by_side('-', '-', '-', dash_line=True, force_display_even_if_same=True)
+    out.side_by_side("-", "-", "-", dash_line=True, force_display_even_if_same=True)
 
     # Count differences between the lists of variables in this group.
     left, right, both = count_diffs(vars_a_sorted, vars_b_sorted)
-    num_var_diffs['left'] += left
-    num_var_diffs['right'] += right
-    num_var_diffs['both'] += both
+    num_var_diffs["left"] += left
+    num_var_diffs["right"] += right
+    num_var_diffs["both"] += both
 
     # Go through each variable in the current group.
     for variable_pair in common_elements(vars_a_sorted, vars_b_sorted):
@@ -473,7 +493,10 @@ def _print_var_properties_side_by_side(
         for attr_a_key, attr_a, attr_b_key, attr_b in get_and_check_variable_attributes(v_a, v_b):
             # Check whether attr_a_key is empty, because it might be if the variable doesn't exist in File A.
             out.side_by_side(
-                f"{attr_a_key if attr_a_key else attr_b_key}:", attr_a, attr_b, highlight_diff=True
+                f"{attr_a_key if attr_a_key else attr_b_key}:",
+                attr_a,
+                attr_b,
+                highlight_diff=True,
             )
 
     # Scale Factor
@@ -483,14 +506,14 @@ def _print_var_properties_side_by_side(
 
 
 def get_and_check_variable_scale_factor(v_a, v_b) -> Union[None, tuple[str, str]]:
-    if getattr(v_a.variable, 'scale_factor', None):
+    if getattr(v_a.variable, "scale_factor", None):
         sf_a = v_a.variable.scale_factor
     else:
-        sf_a = ' '
-    if getattr(v_b.variable, 'scale_factor', None):
+        sf_a = " "
+    if getattr(v_b.variable, "scale_factor", None):
         sf_b = v_b.variable.scale_factor
     else:
-        sf_b = ' '
+        sf_b = " "
     if (sf_a != " ") or (sf_b != " "):
         return str(sf_a), str(sf_b)
     else:
