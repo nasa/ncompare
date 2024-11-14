@@ -174,8 +174,7 @@ features or old documentation updated for any changed features
 
 ### Python Style Guide
 
-_Ncompare_ follows PEP8 as much as possible. Reference the _ruff_ and
-_black_ configuration sections in [pyproject.toml](pyproject.toml) for specific expectations.
+_Ncompare_ follows PEP8 as much as possible. Reference the _ruff_ configuration section in [pyproject.toml](pyproject.toml) for specific expectations.
 
 ### Documentation
 
