@@ -30,8 +30,8 @@ from ncompare.sequence_operations import common_elements, count_diffs
 
 @pytest.fixture
 def two_example_lists() -> tuple[list[str], list[str]]:
-    a = ['yo', 'beebop', 'hey']
-    b = ['what', 'does', 'this', 'beebop', 'mean']
+    a = ["yo", "beebop", "hey"]
+    b = ["what", "does", "this", "beebop", "mean"]
     return a, b
 
 
@@ -39,13 +39,13 @@ def test_common_elements(two_example_lists):
     composed_pairs = [e for e in common_elements(*two_example_lists)]
 
     should_be = [
-        (0, 'beebop', 'beebop'),
-        (1, '', 'does'),
-        (2, 'hey', ''),
-        (3, '', 'mean'),
-        (4, '', 'this'),
-        (5, '', 'what'),
-        (6, 'yo', ''),
+        (0, "beebop", "beebop"),
+        (1, "", "does"),
+        (2, "hey", ""),
+        (3, "", "mean"),
+        (4, "", "this"),
+        (5, "", "what"),
+        (6, "yo", ""),
     ]
 
     assert composed_pairs == should_be
