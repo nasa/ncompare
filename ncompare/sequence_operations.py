@@ -96,6 +96,6 @@ def count_diffs(
     # The number of differences is computed.
     left = len(set_a - set_b)
     right = len(set_b - set_a)
-    shared = len(set_a.intersection(set_b))
+    both = len(set_a & set_b)
 
     return left, right, shared
