@@ -49,13 +49,3 @@ def coerce_to_str(some_object: Union[str, int, tuple]) -> str:
     if isinstance(some_object, (str, int, tuple)):
         return str(some_object)
     raise TypeError(f"Unable to coerce value to str. Unexpected type <{type(some_object)}>.")
-
-
-def _coerce_str_or_path_to_path(should_be_path: Union[Path, str]) -> Path:
-    wrong_type_msg = "Unexpected type for something that should be convertable to a Path: "
-    if isinstance(should_be_path, str):
-        return Path(should_be_path)
-    elif isinstance(should_be_path, Path):
-        return should_be_path
-    else:
-        raise TypeError(wrong_type_msg + str(type(should_be_path)))
