@@ -39,8 +39,9 @@ def ensure_valid_path_exists(should_be_path: Union[str, Path]) -> Path:
 
 def ensure_valid_path_with_suffix(should_be_path: Union[str, Path], suffix: str) -> Path:
     """Coerce input to a pathlib.Path with given suffix."""
-    path_obj = _coerce_str_or_path_to_path(should_be_path)
-    return path_obj.with_suffix(suffix)
+    if not suffix.startswith("."):
+        raise ValueError(f"Invalid suffix: {suffix}. It must start with '.'")
+    return Path(should_be_path).with_suffix(suffix)
 
 
 def coerce_to_str(some_object: Union[str, int, tuple]):
