@@ -31,10 +31,10 @@ from typing import Union
 
 def ensure_valid_path_exists(should_be_path: Union[str, Path]) -> Path:
     """Coerce input to a pathlib.Path and check that the resulting filepath exists."""
-    path_obj = _coerce_str_or_path_to_path(should_be_path)
+    path_obj = Path(should_be_path)
     if path_obj.exists():
         return path_obj
-    raise FileNotFoundError("Expected file does not exist: " + str(should_be_path))
+    raise FileNotFoundError(f"Expected file does not exist: {should_be_path}")
 
 
 def ensure_valid_path_with_suffix(should_be_path: Union[str, Path], suffix: str) -> Path:
