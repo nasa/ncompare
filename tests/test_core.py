@@ -31,10 +31,17 @@ Note that full comparison tests are performed in both directions, i.e., A -> B a
 
 from contextlib import nullcontext as does_not_raise
 
+import netCDF4 as nc
 import pytest
 import xarray as xr
 
-from ncompare.core import _get_vars, _match_random_value, _print_sample_values, compare
+from ncompare.core import (
+    _get_vars,
+    _match_random_value,
+    _print_sample_values,
+    _var_properties,
+    compare,
+)
 
 
 def compare_ab(a, b):
@@ -205,3 +212,13 @@ def test_get_vars_with_group(ds_3dims_3vars_4coords_1group):
 def test_get_vars_error_when_no_group(ds_3dims_2vars_4coords):
     with pytest.raises(OSError):
         _get_vars(ds_3dims_2vars_4coords, groupname="nonexistent_group")
+
+
+def test_var_properties(ds_3dims_3vars_4coords_1group):
+    with nc.Dataset(ds_3dims_3vars_4coords_1group) as ds:
+        result = _var_properties(ds.groups["Group1"], varname="step")
+        assert result.varname == "step"
+        assert result.dtype == "float32"
+        assert result.shape == "(3,)"
+        assert result.chunking == "contiguous"
+        assert result.attributes == {}
