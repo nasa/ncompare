@@ -568,7 +568,15 @@ def _var_properties(group: Union[netCDF4.Dataset, netCDF4.Group], varname: str) 
         v_dtype = str(the_variable.dtype)
         v_shape = str(the_variable.shape).strip()
         v_chunking = str(the_variable.chunking()).strip()
-        v_attributes = {name: getattr(the_variable, name) for name in the_variable.ncattrs()}
+
+        v_attributes = {}
+        for name in the_variable.ncattrs():
+            try:
+                v_attributes[name] = the_variable.getncattr(name)
+            except KeyError as key_err:
+                # Added this check because of "unsupported datatype" error that prevented
+                # fully running comparisons on S5P_OFFL_L1B_IR_UVN collections.
+                v_attributes[name] = f"netCDF error: {str(key_err)}"
     else:
         the_variable = None
         v_dtype = ""
