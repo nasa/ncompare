@@ -90,8 +90,6 @@ ncompare S001G01.nc S001G01_SUBSET.nc --file-text subset_comparison.txt
 - `--no-color` : Turn off all colorized output.
 - `--show-attributes` : Include variable attributes in the table that compares variables.
 - `--show-chunks` : Include chunk sizes in the table that compares variables.
-- `-v` (`--comparison_var_name`) [VAR_NAME]: Compare specific values for this variable.
-- `-g` (`--comparison_var_group`) [VAR_GROUP]: Group that contains the `comparison_var_name`.
 - `--column-widths` [WIDTH, WIDTH, WIDTH]: Width, in number of characters, of the three columns in the comparison report
 - `--version` : Show the current version and then exit.
 
