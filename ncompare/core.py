@@ -29,17 +29,14 @@
 
 """Compare the structure of two NetCDF files."""
 
-import random
-import traceback
 from collections import namedtuple
 from collections.abc import Iterable, Iterator
 from pathlib import Path
 from typing import Optional, Union
 
 import netCDF4
-import numpy as np
 import xarray as xr
-from colorama import Fore, Style
+from colorama import Fore
 
 from ncompare.printing import Outputter
 from ncompare.sequence_operations import common_elements, count_diffs
@@ -57,8 +54,6 @@ GroupPair = namedtuple(
 def compare(
     nc_a: Union[str, Path],
     nc_b: Union[str, Path],
-    comparison_var_group: Optional[str] = None,
-    comparison_var_name: Optional[str] = None,
     only_diffs: bool = False,
     no_color: bool = False,
     show_chunks: bool = False,
@@ -76,10 +71,6 @@ def compare(
         filepath to NetCDF4
     nc_b : str
         filepath to NetCDF4
-    comparison_var_group : str, optional
-        The name of a group which contains a desired comparison variable
-    comparison_var_name : str, optional
-        The name of a variable for which we want to compare values
     only_diffs : bool, optional
         Whether to show only the variables/attributes that are different between the two files
     no_color : bool, default False
@@ -127,8 +118,6 @@ def compare(
             out,
             nc_a,
             nc_b,
-            comparison_var_group=comparison_var_group,
-            comparison_var_name=comparison_var_name,
             show_chunks=show_chunks,
             show_attributes=show_attributes,
         )
@@ -146,8 +135,6 @@ def run_through_comparisons(
     out: Outputter,
     nc_a: Union[str, Path],
     nc_b: Union[str, Path],
-    comparison_var_group: Optional[str],
-    comparison_var_name: Optional[str],
     show_chunks: bool,
     show_attributes: bool,
 ) -> None:
@@ -158,8 +145,6 @@ def run_through_comparisons(
     out
     nc_a
     nc_b
-    comparison_var_group
-    comparison_var_name
     show_chunks
     show_attributes
     """
@@ -175,90 +160,10 @@ def run_through_comparisons(
     list_b = _get_groups(nc_b)
     _, _, _ = out.lists_diff(list_a, list_b)
 
-    if comparison_var_group:
-        # Show the variables within the selected group.
-        out.print(
-            Fore.LIGHTBLUE_EX + f"\nVariables within specified group <{comparison_var_group}>:",
-            add_to_history=True,
-        )
-        vlist_a = _get_vars(nc_a, comparison_var_group)
-        vlist_b = _get_vars(nc_b, comparison_var_group)
-        _, _, _ = out.lists_diff(vlist_a, vlist_b)
-
-        # TODO: Remove comparison variable/val?
-        if comparison_var_name:
-            try:
-                # Print the first part of the values array for the selected variable.
-                out.print(
-                    Fore.LIGHTBLUE_EX
-                    + f"\nSample values within specified variable <{comparison_var_name}>:"
-                )
-                _print_sample_values(out, nc_a, comparison_var_group, comparison_var_name)
-                _print_sample_values(out, nc_b, comparison_var_group, comparison_var_name)
-                # compare_sample_values(nc_a, nc_b, groupname=comparison_var_group, varname=comparison_var_name)
-
-                out.print(
-                    Fore.LIGHTBLUE_EX
-                    + f"\nChecking multiple random values within specified variable <{comparison_var_name}>:"
-                )
-                compare_multiple_random_values(
-                    out,
-                    nc_a,
-                    nc_b,
-                    groupname=comparison_var_group,
-                    varname=comparison_var_name,
-                )
-
-            except KeyError:
-                out.print(
-                    Style.BRIGHT
-                    + Fore.RED
-                    + f"\nError when comparing values for variable <{comparison_var_name}> "
-                    f"in group <{comparison_var_group}>."
-                )
-                out.print(traceback.format_exc())
-                out.print("\n")
-        else:
-            out.print(Fore.LIGHTBLACK_EX + "\nNo variable selected for comparison. Skipping..")
-    else:
-        out.print(Fore.LIGHTBLACK_EX + "\nNo variable group selected for comparison. Skipping..")
-
     out.print(Fore.LIGHTBLUE_EX + "\nAll variables:", add_to_history=True)
     _, _, _ = compare_two_nc_files(
         out, nc_a, nc_b, show_chunks=show_chunks, show_attributes=show_attributes
     )
-
-
-def compare_multiple_random_values(
-    out: Outputter,
-    nc_a: Union[str, Path],
-    nc_b: Union[str, Path],
-    groupname: str,
-    varname: str,
-    num_comparisons: int = 100,
-):
-    """Iterate through N random samples, and evaluate whether the differences exceed a threshold."""
-    # Open a variable from each NetCDF
-    nc_var_a = xr.open_dataset(nc_a, backend_kwargs={"group": groupname}).variables[varname]
-    nc_var_b = xr.open_dataset(nc_b, backend_kwargs={"group": groupname}).variables[varname]
-
-    num_mismatches = 0
-    for _ in range(num_comparisons):
-        match_result = _match_random_value(out, nc_var_a, nc_var_b)
-        if match_result is True:
-            out.print(".", colors=False, end="")
-        elif match_result is None:
-            out.print("n", colors=False, end="")
-            num_mismatches += 1
-        else:
-            out.print("x", colors=False, end="")
-            num_mismatches += 1
-
-    if num_mismatches > 0:
-        out.print(Fore.RED + f" {num_mismatches} mismatches, out of {num_comparisons} samples.")
-    else:
-        out.print(Fore.CYAN + " No mismatches.")
-    out.print("Done.", colors=False)
 
 
 def walk_common_groups_tree(
@@ -585,59 +490,6 @@ def _var_properties(group: Union[netCDF4.Dataset, netCDF4.Group], varname: str) 
         v_attributes = None
 
     return VarProperties(varname, the_variable, v_dtype, v_shape, v_chunking, v_attributes)
-
-
-def _match_random_value(
-    out: Outputter, nc_var_a: xr.Variable, nc_var_b: xr.Variable, thresh: float = 1e-6
-) -> Union[bool, None]:
-    """Check whether a randomly selected data point matches between two variables.
-
-    Returns
-    -------
-    None or bool
-        None if data point is null for one and only one of the variables
-        True if values match
-        False if the difference exceeds the given threshold
-    """
-    # Get a random indexer
-    rand_index = []
-    for dim_length in nc_var_a.shape:
-        rand_index.append(random.randint(0, dim_length - 1))
-    rand_index_tuple = tuple(rand_index)
-
-    # Get the values from each variable
-    value_a = nc_var_a.values[rand_index_tuple]
-    value_b = nc_var_b.values[rand_index_tuple]
-
-    # Check whether null
-    if np.isnan(value_a) and np.isnan(value_b):
-        return True
-    elif np.isnan(value_a) or np.isnan(value_b):
-        return None
-
-    # Evaluate difference between values
-    diff = value_b - value_a
-    if abs(diff) > thresh:
-        out.print()
-        out.print(Fore.RED + f"Difference exceeded threshold (diff == {diff}")
-        out.print(f"var shape: {nc_var_a.shape}", colors=False)
-        out.print(f"indices:   {rand_index_tuple}", colors=False)
-        out.print(f"value a: {value_a}", colors=False)
-        out.print(f"value b: {value_b}", colors=False, end="\n\n")
-        return False
-
-    return True
-
-
-def _print_sample_values(out: Outputter, nc_filepath, groupname: str, varname: str) -> None:
-    comparison_variable = xr.open_dataset(nc_filepath, backend_kwargs={"group": groupname})[varname]
-    vector_of_values = comparison_variable.values.flatten()
-    n_values = len(vector_of_values)
-    if n_values > 100:
-        sample_length = 100
-    else:
-        sample_length = n_values
-    out.print(str(vector_of_values[:sample_length]), colors=False)
 
 
 def _get_attribute_value_as_str(varprops: VarProperties, attribute_key: str) -> str:
