@@ -29,7 +29,7 @@
 import csv
 import re
 import warnings
-from collections.abc import Iterable
+from collections.abc import Iterable, Iterator
 from pathlib import Path
 from typing import Optional, TextIO, Union
 
@@ -77,6 +77,15 @@ class Outputter:
         Parameters
         ----------
         keep_print_history
+            whether to keep printing history or not - used for file output
+        keep_only_diffs
+            whether to keep and print only comparisons that show differences
+        no_color
+            whether to turn off colorized output
+        text_file
+            optional path to a text file to write output to
+        column_widths
+            optional tuple of column widths to use for printing
         """
         # Parse the print history option.
         self._keep_print_history = keep_print_history
@@ -140,10 +149,10 @@ class Outputter:
 
         Parameters
         ----------
-        string : str
-        colors : bool
+        string
+        colors
             If False, ANSI colors will be turned off.
-        add_to_history : bool
+        add_to_history
         print_args
             Additional keyword arguments that are passed to the standard Python print() function.
         """
@@ -219,8 +228,10 @@ class Outputter:
         str_a
         str_b
         str_c
-        dash_line : bool, default False
-        highlight_diff : bool, default False
+        dash_line
+        highlight_diff
+        force_display_even_if_same
+        force_color
         """
         are_different = str_b != str_c
         if (
@@ -289,7 +300,24 @@ class Outputter:
         list_b: list,
         ignore_order: bool = True,
     ) -> tuple[int, int, int]:
-        """Compare two lists and state whether there are differences."""
+        """Compare two lists and state whether there are differences.
+
+        Parameters
+        ----------
+        list_a
+        list_b
+        ignore_order
+
+        Returns
+        -------
+        tuple
+            int
+                number of entries only present in the first (left) list
+            int
+                number of entries only present in the second (right) list
+            int
+                number of entries present in both the first (left) and second (right) list
+        """
         set_a, set_b = set(list_a), set(list_b)
 
         s_union = set_a.union(set_b)
@@ -330,7 +358,7 @@ class Outputter:
 
         return left, right, both
 
-    def write_history_to_csv(self, filename: Union[str, Path] = "test.csv"):
+    def write_history_to_csv(self, filename: Union[str, Path] = "test.csv") -> None:
         """Save the line history that's been stored to a CSV file."""
         headers = ["Info", "File A", "File B", "Other marks"]
         with open(filename, "w", encoding="utf-8") as target:
@@ -338,8 +366,8 @@ class Outputter:
             writer.writerow(headers)
             writer.writerows(self._line_history)
 
-    def write_history_to_excel(self, filename: Union[str, Path] = "test.xlsx"):
-        """Save the line history that's been stored to a CSV file."""
+    def write_history_to_excel(self, filename: Union[str, Path] = "test.xlsx") -> None:
+        """Save the line history that's been stored to an Excel file."""
         workbook = openpyxl.Workbook()
         sheet = workbook.active
 
@@ -363,14 +391,14 @@ class Outputter:
         workbook.save(filename)
 
 
-def _item_is_or_are(count):
+def _item_is_or_are(count) -> str:
     if count == 1:
         return f"{count} item is"
 
     return f"{count} items are"
 
 
-def _excel_red_cells(data, sheet):
+def _excel_red_cells(data, sheet) -> Iterator:
     """Stylize cells in Excel with a red font."""
     for cell in data:
         cell = Cell(sheet, column="A", row=1, value=cell)
@@ -378,7 +406,7 @@ def _excel_red_cells(data, sheet):
         yield cell
 
 
-def _excel_bold_underline_cells(data, sheet):
+def _excel_bold_underline_cells(data, sheet) -> Iterator:
     """Stylize cells in Excel with a bold and underlined font."""
     for cell in data:
         cell = Cell(sheet, column="A", row=1, value=cell)

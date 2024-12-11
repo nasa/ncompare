@@ -43,8 +43,8 @@ def _cli(args: Optional[Sequence[str]]) -> argparse.Namespace:
 
     Parameters
     ----------
-    args : None or list[str]
-        if None, then argparse will use sys.argv[1:]
+    args
+        if None, then argparse will use `sys.argv[1:]`
     """
     parser = argparse.ArgumentParser(
         description="Compare the variables contained within two different NetCDF datasets"
