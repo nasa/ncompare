@@ -9,8 +9,6 @@ Root-level Groups:
 	Are all items the same? ---> True.
 	['Data', 'Position', 'Statistics']
 
-No variable group selected for comparison. Skipping..
-
 All variables:
                                                                              File A                                           File B
                      All Variables                                                                                                  
