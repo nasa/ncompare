@@ -31,7 +31,7 @@ import re
 import warnings
 from collections.abc import Iterable, Iterator
 from pathlib import Path
-from typing import Optional, TextIO, Union
+from typing import Literal, Optional, TextIO, Union
 
 import colorama
 import openpyxl
@@ -40,6 +40,8 @@ from openpyxl.cell import Cell
 from openpyxl.styles import Font
 
 from ncompare.sequence_operations import common_elements, count_diffs
+
+SummaryDifferenceKeys = Literal["shared", "left", "right", "both"]
 
 # Set up regex remover of ANSI color escape sequences
 #   From <https://stackoverflow.com/a/14693789>
@@ -220,7 +222,7 @@ class Outputter:
         highlight_diff=False,
         force_display_even_if_same=False,
         force_color=None,
-    ) -> None:
+    ) -> SummaryDifferenceKeys:
         """Print three strings on one line, with customized formatting and an optional marker in the fourth column.
 
         Parameters
@@ -232,6 +234,14 @@ class Outputter:
         highlight_diff
         force_display_even_if_same
         force_color
+
+        Returns
+        -------
+        str
+            "shared" if str_b == str_c,
+            "left" if only str_c is empty,
+            "right" if str_b is empty, and
+            "both" if they are different from each other.
         """
         are_different = str_b != str_c
         if (
@@ -239,7 +249,7 @@ class Outputter:
             and (are_different is False)
             and self.keep_only_diffs
         ):
-            return None
+            return "shared"  # there are two non-empty strings, and they are equal to each other.
 
         # If the 'b' and 'c' strings are different (or force_color is set),
         #   then change the font of 'a' to the color red.
@@ -275,6 +285,15 @@ class Outputter:
             )
 
         self._add_to_history(str_a, str_b, str_c, str_marker)
+
+        if not are_different:
+            return "shared"
+        elif str_b and (not str_c):
+            return "left"  # there is only a non-empty string on the left side.
+        elif str_c and (not str_b):
+            return "right"  # there is only a non-empty string on the right side.
+        else:
+            return "both"  # there are non-empty strings on both sides, and they are not equal.
 
     def side_by_side_list_diff(self, list_a: list, list_b: list, counter_prefix="") -> None:
         """Print the items from two lists vertically (i.e., side by side), with customized formatting.
@@ -316,7 +335,7 @@ class Outputter:
             int
                 number of entries only present in the second (right) list
             int
-                number of entries present in both the first (left) and second (right) list
+                number of entries shared among the first (left) and second (right) list
         """
         set_a, set_b = set(list_a), set(list_b)
 
@@ -339,11 +358,11 @@ class Outputter:
                 self.print(msg + "  (No items exist.)", add_to_history=True)
             return 0, 0, len(list_a)
 
-        # If contents are not the same, continue...
-        left, right, both = count_diffs(list_a, list_b)
+        # If contents are different, continue...
+        left, right, shared = count_diffs(list_a, list_b)
         self.print(
             "\t" + "Are all items the same? ---> " + Fore.RED + f"{str(contents_are_same)}."
-            f"  ({_item_is_or_are(both)} shared, out of {len(s_union)} total.)",
+            f"  ({_item_is_or_are(shared)} shared, out of {len(s_union)} total.)",
             add_to_history=True,
         )
 
@@ -356,7 +375,7 @@ class Outputter:
         self.side_by_side_list_diff(list_a, list_b)
         self.side_by_side("Number of non-shared items:", str(left), str(right))
 
-        return left, right, both
+        return left, right, shared
 
     def write_history_to_csv(self, filename: Union[str, Path] = "test.csv") -> None:
         """Save the line history that's been stored to a CSV file."""

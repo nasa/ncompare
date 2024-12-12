@@ -52,12 +52,12 @@ def test_common_elements(two_example_lists):
 
 
 def test_count_str_list_diffs(two_example_lists):
-    left, right, both = count_diffs(*two_example_lists)
+    left, right, shared = count_diffs(*two_example_lists)
 
-    assert (left, right, both) == (2, 4, 1)
+    assert (left, right, shared) == (2, 4, 1)
 
 
 def test_count_int_list_diffs():
-    left, right, both = count_diffs([1, 9, 5, 44, 89, 13], [3, 0, 5, 1])
+    left, right, shared = count_diffs([1, 9, 5, 44, 89, 13], [3, 0, 5, 1])
 
-    assert (left, right, both) == (4, 2, 2)
+    assert (left, right, shared) == (4, 2, 2)
