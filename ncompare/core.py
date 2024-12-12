@@ -32,13 +32,13 @@
 from collections import namedtuple
 from collections.abc import Iterable, Iterator
 from pathlib import Path
-from typing import Optional, Union
+from typing import Optional, TypedDict, Union
 
 import netCDF4
 import xarray as xr
 from colorama import Fore
 
-from ncompare.printing import Outputter
+from ncompare.printing import Outputter, SummaryDifferenceKeys
 from ncompare.sequence_operations import common_elements, count_diffs
 from ncompare.utils import ensure_valid_path_exists, ensure_valid_path_with_suffix
 
@@ -49,6 +49,14 @@ GroupPair = namedtuple(
     "group_a_name group_a group_b_name group_b",
     defaults=("", None, "", None),
 )
+
+
+class SummaryDifferencesDict(TypedDict):
+    shared: int
+    left: int
+    right: int
+    both: int
+    difference_types: set
 
 
 def compare(
@@ -252,7 +260,7 @@ def compare_two_nc_files(
     nc_two
         path to the second dataset
     show_chunks
-        whether to include chunks along side variables
+        whether to include chunks alongside variables
     show_attributes
         whether to include variable attributes
 
@@ -264,11 +272,30 @@ def compare_two_nc_files(
         int
             number of entries only present in the second (right) dataset
         int
-            number of entries present in both the first (left) and second (right) datasets
+            number of entries shared among the first (left) and second (right) datasets
     """
     out.side_by_side(" ", "File A", "File B", force_display_even_if_same=True)
-
-    num_var_diffs = {"left": 0, "right": 0, "both": 0}
+    num_group_diffs: SummaryDifferencesDict = {
+        "shared": 0,
+        "left": 0,
+        "right": 0,
+        "both": 0,
+        "difference_types": set(),
+    }
+    num_var_diffs: SummaryDifferencesDict = {
+        "shared": 0,
+        "left": 0,
+        "right": 0,
+        "both": 0,
+        "difference_types": set(),
+    }
+    num_attribute_diffs: SummaryDifferencesDict = {
+        "shared": 0,
+        "left": 0,
+        "right": 0,
+        "both": 0,
+        "difference_types": set(),
+    }
     with netCDF4.Dataset(nc_one) as nc_a, netCDF4.Dataset(nc_two) as nc_b:
         out.side_by_side(
             "All Variables", " ", " ", dash_line=False, force_display_even_if_same=True
@@ -284,12 +311,20 @@ def compare_two_nc_files(
             "/",
             group_counter,
             num_var_diffs,
+            num_attribute_diffs,
             show_attributes,
             show_chunks,
         )
         group_counter += 1
 
         for group_pair in walk_common_groups_tree("", nc_a, "", nc_b):
+            if group_pair.group_a_name == "":
+                num_group_diffs["right"] += 1
+            elif group_pair.group_b_name == "":
+                num_group_diffs["left"] += 1
+            else:
+                num_group_diffs["shared"] += 1
+
             _print_group_details_side_by_side(
                 out,
                 group_pair.group_a,
@@ -298,25 +333,52 @@ def compare_two_nc_files(
                 group_pair.group_b_name,
                 group_counter,
                 num_var_diffs,
+                num_attribute_diffs,
                 show_attributes,
                 show_chunks,
             )
             group_counter += 1
 
     out.side_by_side("-", "-", "-", dash_line=True, force_display_even_if_same=True)
+    out.side_by_side("SUMMARY", "-", "-", dash_line=True, force_display_even_if_same=True)
+
+    _print_summary_count_comparison_side_by_side(out, "variable", num_var_diffs)
+    _print_summary_count_comparison_side_by_side(out, "group", num_group_diffs)
+    _print_summary_count_comparison_side_by_side(out, "attribute", num_attribute_diffs)
+    if num_attribute_diffs["difference_types"]:
+        out.print(
+            Fore.LIGHTBLUE_EX + "\nDifferences were found in these attributes:", add_to_history=True
+        )
+        out.print(
+            Fore.LIGHTBLUE_EX + f"\n{sorted(num_attribute_diffs['difference_types'])}",
+            add_to_history=True,
+        )
+
+    return num_var_diffs["left"], num_var_diffs["right"], num_var_diffs["shared"]
+
+
+def _print_summary_count_comparison_side_by_side(
+    out: Outputter,
+    item_type: str,
+    diff_dictionary: SummaryDifferencesDict,
+) -> None:
+    # Tally up instances where there were non-empty entries on both left and right sides.
+    diff_dictionary["left"] += diff_dictionary["both"]
+    diff_dictionary["right"] += diff_dictionary["both"]
+
     out.side_by_side(
-        "Total number of shared items:",
-        str(num_var_diffs["both"]),
-        str(num_var_diffs["both"]),
+        f"Total # of shared {item_type}s:",
+        str(diff_dictionary["shared"]),
+        str(diff_dictionary["shared"]),
         force_display_even_if_same=True,
     )
+
     out.side_by_side(
-        "Total number of non-shared items:",
-        str(num_var_diffs["left"]),
-        str(num_var_diffs["right"]),
+        f"Total # of non-shared {item_type}s:",
+        str(diff_dictionary["left"]),
+        str(diff_dictionary["right"]),
         force_display_even_if_same=True,
     )
-    return num_var_diffs["left"], num_var_diffs["right"], num_var_diffs["both"]
 
 
 def _print_group_details_side_by_side(
@@ -326,18 +388,14 @@ def _print_group_details_side_by_side(
     group_b: Union[netCDF4.Dataset, netCDF4.Group],
     group_b_name: str,
     group_counter: int,
-    num_var_diffs: dict,
+    num_var_diffs: SummaryDifferencesDict,
+    num_attribute_diffs: SummaryDifferencesDict,
     show_attributes: bool,
     show_chunks: bool,
 ) -> None:
     """Align and display group details side by side."""
     out.side_by_side(
-        " ",
-        " ",
-        " ",
-        dash_line=False,
-        highlight_diff=False,
-        force_display_even_if_same=True,
+        " ", " ", " ", dash_line=False, highlight_diff=False, force_display_even_if_same=True
     )
     out.side_by_side(
         f"GROUP #{group_counter:02}",
@@ -365,10 +423,10 @@ def _print_group_details_side_by_side(
     out.side_by_side("-", "-", "-", dash_line=True, force_display_even_if_same=True)
 
     # Count differences between the lists of variables in this group.
-    left, right, both = count_diffs(vars_a_sorted, vars_b_sorted)
+    left, right, shared = count_diffs(vars_a_sorted, vars_b_sorted)
     num_var_diffs["left"] += left
     num_var_diffs["right"] += right
-    num_var_diffs["both"] += both
+    num_var_diffs["shared"] += shared
 
     # Go through each variable in the current group.
     for variable_pair in common_elements(vars_a_sorted, vars_b_sorted):
@@ -377,6 +435,7 @@ def _print_group_details_side_by_side(
             out,
             _var_properties(group_a, variable_pair[1]),
             _var_properties(group_b, variable_pair[2]),
+            num_attribute_diffs,
             show_chunks=show_chunks,
             show_attributes=show_attributes,
         )
@@ -386,6 +445,7 @@ def _print_var_properties_side_by_side(
     out,
     v_a: VarProperties,
     v_b: VarProperties,
+    num_attribute_diffs: SummaryDifferencesDict,
     show_chunks: bool = False,
     show_attributes: bool = False,
 ) -> None:
@@ -414,11 +474,6 @@ def _print_var_properties_side_by_side(
             there_is_a_difference = True
             break
 
-    # Variable name
-    # header_color = None
-    # if there_is_a_difference:
-    #     header_color = Fore.RED
-
     # If all attributes are the same, and keep-only-diffs is set -> DON'T print
     # If all attributes are the same, and keep-only-diffs is NOT set -> print
     # If some attributes are different -> print no matter else
@@ -432,28 +487,47 @@ def _print_var_properties_side_by_side(
         )
 
     # Data type
-    out.side_by_side("dtype:", v_a.dtype, v_b.dtype, highlight_diff=True)
+    diff_condition: SummaryDifferenceKeys = out.side_by_side(
+        "dtype:", v_a.dtype, v_b.dtype, highlight_diff=True
+    )
+    num_attribute_diffs[diff_condition] += 1
+    if diff_condition in ("left", "right", "both"):
+        num_attribute_diffs["difference_types"].add("dtype")
     # Shape
-    out.side_by_side("shape:", v_a.shape, v_b.shape, highlight_diff=True)
+    diff_condition = out.side_by_side("shape:", v_a.shape, v_b.shape, highlight_diff=True)
+    num_attribute_diffs[diff_condition] += 1
+    if diff_condition in ("left", "right", "both"):
+        num_attribute_diffs["difference_types"].add("shape")
     # Chunking
     if show_chunks:
-        out.side_by_side("chunksize:", v_a.chunking, v_b.chunking, highlight_diff=True)
+        diff_condition = out.side_by_side(
+            "chunksize:", v_a.chunking, v_b.chunking, highlight_diff=True
+        )
+        num_attribute_diffs[diff_condition] += 1
+        if diff_condition in ("left", "right", "both"):
+            num_attribute_diffs["difference_types"].add("chunksize")
     # Attributes
     if show_attributes:
         for attr_a_key, attr_a, attr_b_key, attr_b in _get_and_check_variable_attributes(v_a, v_b):
             # Check whether attr_a_key is empty,
             # because it might be if the variable doesn't exist in File A.
-            out.side_by_side(
-                f"{attr_a_key if attr_a_key else attr_b_key}:",
-                attr_a,
-                attr_b,
-                highlight_diff=True,
+            attribute_key = attr_a_key if attr_a_key else attr_b_key
+            diff_condition = out.side_by_side(
+                f"{attribute_key}:", attr_a, attr_b, highlight_diff=True
             )
+            num_attribute_diffs[diff_condition] += 1
+            if diff_condition in ("left", "right", "both"):
+                num_attribute_diffs["difference_types"].add(attribute_key)
 
     # Scale Factor
     scale_factor_pair = _get_and_check_variable_scale_factor(v_a, v_b)
     if scale_factor_pair:
-        out.side_by_side("sf:", scale_factor_pair[0], scale_factor_pair[1], highlight_diff=True)
+        diff_condition = out.side_by_side(
+            "sf:", scale_factor_pair[0], scale_factor_pair[1], highlight_diff=True
+        )
+        num_attribute_diffs[diff_condition] += 1
+        if diff_condition in ("left", "right", "both"):
+            num_attribute_diffs["difference_types"].add("scale_factor")
 
 
 def _get_and_check_variable_scale_factor(
