@@ -29,6 +29,7 @@
 
 """Compare the structure of two NetCDF files."""
 
+import warnings
 from collections import namedtuple
 from collections.abc import Iterable, Iterator
 from pathlib import Path
@@ -631,8 +632,10 @@ def _get_dims(nc_filepath: Union[str, Path]) -> list:
     """Get a list of dimensions from a netCDF."""
 
     def __get_dim_list(decode_times=True):
-        with xr.open_dataset(nc_filepath, decode_times=decode_times) as dataset:
-            return list(dataset.sizes.items())
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            with xr.open_dataset(nc_filepath, decode_times=decode_times) as dataset:
+                return list(dataset.sizes.items())
 
     try:
         dims_list = __get_dim_list()
