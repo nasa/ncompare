@@ -497,7 +497,7 @@ def _print_var_properties_side_by_side(
         )
         num_attribute_diffs[diff_condition] += 1
         if diff_condition in ("left", "right", "both"):
-            num_attribute_diffs["difference_types"].add("dtype")
+            num_attribute_diffs["difference_types"].add(attribute_name)
 
     _var_attribute_side_by_side("dtype", v_a.dtype, v_b.dtype)
     _var_attribute_side_by_side("dimensions", v_a.dimensions, v_b.dimensions)
