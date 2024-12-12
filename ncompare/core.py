@@ -43,7 +43,9 @@ from ncompare.printing import Outputter, SummaryDifferenceKeys
 from ncompare.sequence_operations import common_elements, count_diffs
 from ncompare.utils import ensure_valid_path_exists, ensure_valid_path_with_suffix
 
-VarProperties = namedtuple("VarProperties", "varname, variable, dtype, shape, chunking, attributes")
+VarProperties = namedtuple(
+    "VarProperties", "varname, variable, dtype, dimensions, shape, chunking, attributes"
+)
 
 GroupPair = namedtuple(
     "GroupPair",
@@ -443,7 +445,7 @@ def _print_group_details_side_by_side(
 
 
 def _print_var_properties_side_by_side(
-    out,
+    out: Outputter,
     v_a: VarProperties,
     v_b: VarProperties,
     num_attribute_diffs: SummaryDifferencesDict,
@@ -455,6 +457,7 @@ def _print_var_properties_side_by_side(
     # so we can decide whether to highlight the variable header.
     pairs_to_check_and_show = [
         (v_a.dtype, v_b.dtype),
+        (v_a.dimensions, v_b.dimensions),
         (v_a.shape, v_b.shape),
     ]
     if show_chunks:
@@ -487,48 +490,32 @@ def _print_var_properties_side_by_side(
             force_display_even_if_same=True,
         )
 
-    # Data type
-    diff_condition: SummaryDifferenceKeys = out.side_by_side(
-        "dtype:", v_a.dtype, v_b.dtype, highlight_diff=True
-    )
-    num_attribute_diffs[diff_condition] += 1
-    if diff_condition in ("left", "right", "both"):
-        num_attribute_diffs["difference_types"].add("dtype")
-    # Shape
-    diff_condition = out.side_by_side("shape:", v_a.shape, v_b.shape, highlight_diff=True)
-    num_attribute_diffs[diff_condition] += 1
-    if diff_condition in ("left", "right", "both"):
-        num_attribute_diffs["difference_types"].add("shape")
-    # Chunking
-    if show_chunks:
-        diff_condition = out.side_by_side(
-            "chunksize:", v_a.chunking, v_b.chunking, highlight_diff=True
+    # Go through each attribute, show differences, and add differences to running tally.
+    def _var_attribute_side_by_side(attribute_name, attribute_a, attribute_b):
+        diff_condition: SummaryDifferenceKeys = out.side_by_side(
+            f"{attribute_name}:", attribute_a, attribute_b, highlight_diff=True
         )
         num_attribute_diffs[diff_condition] += 1
         if diff_condition in ("left", "right", "both"):
-            num_attribute_diffs["difference_types"].add("chunksize")
-    # Attributes
+            num_attribute_diffs["difference_types"].add("dtype")
+
+    _var_attribute_side_by_side("dtype", v_a.dtype, v_b.dtype)
+    _var_attribute_side_by_side("dimensions", v_a.dimensions, v_b.dimensions)
+    _var_attribute_side_by_side("shape", v_a.shape, v_b.shape)
+    # Chunking
+    if show_chunks:
+        _var_attribute_side_by_side("chunksize", v_a.chunking, v_b.chunking)
+    # Scale Factor
+    scale_factor_pair = _get_and_check_variable_scale_factor(v_a, v_b)
+    if scale_factor_pair:
+        _var_attribute_side_by_side("scale_factor", scale_factor_pair[0], scale_factor_pair[1])
+    # Other attributes
     if show_attributes:
         for attr_a_key, attr_a, attr_b_key, attr_b in _get_and_check_variable_attributes(v_a, v_b):
             # Check whether attr_a_key is empty,
             # because it might be if the variable doesn't exist in File A.
             attribute_key = attr_a_key if attr_a_key else attr_b_key
-            diff_condition = out.side_by_side(
-                f"{attribute_key}:", attr_a, attr_b, highlight_diff=True
-            )
-            num_attribute_diffs[diff_condition] += 1
-            if diff_condition in ("left", "right", "both"):
-                num_attribute_diffs["difference_types"].add(attribute_key)
-
-    # Scale Factor
-    scale_factor_pair = _get_and_check_variable_scale_factor(v_a, v_b)
-    if scale_factor_pair:
-        diff_condition = out.side_by_side(
-            "sf:", scale_factor_pair[0], scale_factor_pair[1], highlight_diff=True
-        )
-        num_attribute_diffs[diff_condition] += 1
-        if diff_condition in ("left", "right", "both"):
-            num_attribute_diffs["difference_types"].add("scale_factor")
+            _var_attribute_side_by_side(attribute_key, attr_a, attr_b)
 
 
 def _get_and_check_variable_scale_factor(
@@ -584,6 +571,7 @@ def _var_properties(group: Union[netCDF4.Dataset, netCDF4.Group], varname: str) 
     if varname:
         the_variable = group.variables[varname]
         v_dtype = str(the_variable.dtype)
+        v_dimensions = str(the_variable.dimensions)
         v_shape = str(the_variable.shape).strip()
         v_chunking = str(the_variable.chunking()).strip()
 
@@ -598,11 +586,14 @@ def _var_properties(group: Union[netCDF4.Dataset, netCDF4.Group], varname: str) 
     else:
         the_variable = None
         v_dtype = ""
+        v_dimensions = ""
         v_shape = ""
         v_chunking = ""
         v_attributes = None
 
-    return VarProperties(varname, the_variable, v_dtype, v_shape, v_chunking, v_attributes)
+    return VarProperties(
+        varname, the_variable, v_dtype, v_dimensions, v_shape, v_chunking, v_attributes
+    )
 
 
 def _get_attribute_value_as_str(varprops: VarProperties, attribute_key: str) -> str:
