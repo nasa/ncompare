@@ -620,18 +620,6 @@ def _get_attribute_value_as_str(varprops: VarProperties, attribute_key: str) -> 
     return ""
 
 
-def _get_vars(nc_filepath: Union[str, Path], groupname: str) -> list:
-    """Get a list of variables from a netCDF group."""
-    try:
-        grp = xr.open_dataset(nc_filepath, backend_kwargs={"group": groupname})
-    except OSError as err:
-        print(f"\nError occurred when attempting to open group within <{nc_filepath}>.\n")
-        raise err
-    grp_varlist = sorted(list(grp.variables.keys()))  # type:ignore[type-var]
-
-    return grp_varlist
-
-
 def _get_groups(nc_filepath: Union[str, Path]) -> list:
     """Get a list of groups from a netCDF."""
     with netCDF4.Dataset(nc_filepath) as dataset:
