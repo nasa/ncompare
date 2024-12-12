@@ -99,5 +99,12 @@ dtype:,,float64,***
 shape:,,"(2,)",***
 chunksize:,,contiguous,***
 -,-,-,
-Total number of shared items:,7,7,
-Total number of non-shared items:,1,3,
+SUMMARY,-,-,
+Total # of shared variables:,7,7,
+Total # of non-shared variables:,1,3,
+Total # of shared groups:,5,5,
+Total # of non-shared groups:,0,2,
+Total # of shared attributes:,24,24,
+Total # of non-shared attributes:,12,19,
+Differences were found in these attributes:
+"['chunksize', 'coordinates', 'dtype', 'long_name', 'shape', 'units']"
