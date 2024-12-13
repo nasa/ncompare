@@ -108,10 +108,11 @@ def main() -> None:  # pragma: no cover
     delattr(args, "version")
 
     try:
-        compare(**vars(args))
+        total_diff_count = compare(**vars(args))
     except Exception:  # pylint: disable=broad-exception-caught
         print(traceback.format_exc())
         sys.exit(1)
+    print(total_diff_count)
     sys.exit(0)  # a clean, no-issue, exit
 
 

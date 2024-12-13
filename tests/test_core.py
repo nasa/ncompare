@@ -71,6 +71,10 @@ def test_no_error_compare_2groupsTo1Subgroup(
     compare_ba(ds_3dims_3vars_4coords_2groups, ds_3dims_3vars_4coords_1subgroup)
 
 
+def test_zero_for_comparison_with_no_differences(ds_3dims_3vars_4coords_1subgroup):
+    assert compare(ds_3dims_3vars_4coords_1subgroup, ds_3dims_3vars_4coords_1subgroup) == 0
+
+
 def test_var_properties(ds_3dims_3vars_4coords_1group):
     with nc.Dataset(ds_3dims_3vars_4coords_1group) as ds:
         result = _var_properties(ds.groups["Group1"], varname="step")

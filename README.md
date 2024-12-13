@@ -38,28 +38,21 @@ Compare the structure of two NetCDF files at the command line.
 
 ## Installing
 
-The latest release of `ncompare` can be installed with `mamba`, `conda` or `pip`.
-
-#### Using `mamba`
+The latest release of `ncompare` can be installed with `mamba`, `conda` or `pip`:
 
 ```bash
 mamba install -c conda-forge ncompare
 ```
-
-#### Using `conda`
-
 ```bash
 conda install -c conda-forge ncompare
 ```
-
-#### Using `pip`
-
 ```bash
 pip install ncompare
 ```
 
-## Usage
+## Usage Examples
 
+### At a command line:
 To compare two netCDF files,
 pass the filepaths for each of the two netCDF files directly to ncompare, as follows:
 
@@ -77,21 +70,22 @@ a common use of _ncompare_ may look like this example:
 ncompare S001G01.nc S001G01_SUBSET.nc --file-text subset_comparison.txt
 ```
 
-**A more complete usage demonstration with example output is shown in
-[this example notebook](https://ncompare.readthedocs.io/en/latest/example/ncompare-example-usage/).**
+### In a Python kernel:
 
-### Options
+```python
+from ncompare import compare
 
-- `-h`, `--help` : Show this help message and exit.
-- `--file-text` [FILE_PATH]: Text file to write output to.
-- `--file-csv` [FILE_PATH]: Comma-separated values (CSV) file to write output to.
-- `--file-xlsx` [FILE_PATH]: Excel file to write output to.
-- `--only-diffs` : Only display variables and attributes that are different
-- `--no-color` : Turn off all colorized output.
-- `--show-attributes` : Include variable attributes in the table that compares variables.
-- `--show-chunks` : Include chunk sizes in the table that compares variables.
-- `--column-widths` [WIDTH, WIDTH, WIDTH]: Width, in number of characters, of the three columns in the comparison report
-- `--version` : Show the current version and then exit.
+total_number_of_differences = compare(
+    "<netcdf file 1>", 
+    "<netcdf file 2>", 
+    only_diffs=True,
+    show_attributes=True,
+    show_chunks=True,
+)
+```
+
+
+### More complete usage demonstrations, with example output, are shown in [this example notebook](https://ncompare.readthedocs.io/en/latest/example/ncompare-example-usage/).
 
 ## Contributing
 
