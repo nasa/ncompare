@@ -24,3 +24,15 @@
 # See the License for the specific language governing permissions and limitations under the License.
 
 """Main code for comparing NetCDF files."""
+
+from importlib.metadata import version
+
+from .core import (
+    compare,
+)
+
+__all__ = [
+    "compare",
+]
+
+__version__ = version("ncompare")
