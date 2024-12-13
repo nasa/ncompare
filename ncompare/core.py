@@ -395,7 +395,7 @@ def _print_summary_count_comparison_side_by_side(
 
 
 def _print_group_details_side_by_side(
-    out,
+    out: Outputter,
     group_a: Union[netCDF4.Dataset, netCDF4.Group],
     group_a_name: str,
     group_b: Union[netCDF4.Dataset, netCDF4.Group],
