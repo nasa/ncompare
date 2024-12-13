@@ -73,7 +73,7 @@ def compare(
     file_csv: Union[str, Path] = "",
     file_xlsx: Union[str, Path] = "",
     column_widths: Optional[tuple[Union[int, str], Union[int, str], Union[int, str]]] = None,
-) -> None:
+) -> int:
     """Compare the variables contained within two different netCDF datasets.
 
     Parameters
@@ -101,7 +101,8 @@ def compare(
 
     Returns
     -------
-    None
+    int
+        total number of differences found (across variables, groups, and attributes)
     """
     # Check the validity of paths.
     nc_a = ensure_valid_path_exists(nc_a)
@@ -125,7 +126,7 @@ def compare(
         out.print(f"File B: {nc_b}")
 
         # Start the comparison process.
-        run_through_comparisons(
+        total_diff_count = run_through_comparisons(
             out,
             nc_a,
             nc_b,
@@ -141,6 +142,8 @@ def compare(
 
         out.print("\nDone.", colors=False)
 
+        return total_diff_count
+
 
 def run_through_comparisons(
     out: Outputter,
@@ -148,7 +151,7 @@ def run_through_comparisons(
     nc_b: Union[str, Path],
     show_chunks: bool,
     show_attributes: bool,
-) -> None:
+) -> int:
     """Execute a series of comparisons between two netCDF files.
 
     Parameters
@@ -163,6 +166,11 @@ def run_through_comparisons(
         whether to include data chunk sizes in the displayed comparison of variables
     show_attributes
         whether to include variable attributes in the displayed comparison of variables
+
+    Returns
+    -------
+    int
+        total number of differences found (across variables, groups, and attributes)
     """
     # Show the dimensions of each file and evaluate differences.
     out.print(Fore.LIGHTBLUE_EX + "\nRoot-level Dimensions:", add_to_history=True)
@@ -177,9 +185,11 @@ def run_through_comparisons(
     _, _, _ = out.lists_diff(list_a, list_b)
 
     out.print(Fore.LIGHTBLUE_EX + "\nAll variables:", add_to_history=True)
-    _, _, _ = compare_two_nc_files(
+    total_diff_count = compare_two_nc_files(
         out, nc_a, nc_b, show_chunks=show_chunks, show_attributes=show_attributes
     )
+
+    return total_diff_count
 
 
 def walk_common_groups_tree(
@@ -250,7 +260,7 @@ def compare_two_nc_files(
     nc_two: Union[str, Path],
     show_chunks: bool = False,
     show_attributes: bool = False,
-) -> tuple[int, int, int]:
+) -> int:
     """Go through all groups and all variables, and show them side by side,
     highlighting whether they align and where they don't.
 
@@ -269,13 +279,8 @@ def compare_two_nc_files(
 
     Returns
     -------
-    tuple
-        int
-            number of entries only present in the first (left) dataset
-        int
-            number of entries only present in the second (right) dataset
-        int
-            number of entries shared among the first (left) and second (right) datasets
+    int
+        total number of differences found (across variables, groups, and attributes)
     """
     out.side_by_side(" ", "File A", "File B", force_display_even_if_same=True)
     num_group_diffs: SummaryDifferencesDict = {
@@ -357,7 +362,12 @@ def compare_two_nc_files(
             add_to_history=True,
         )
 
-    return num_var_diffs["left"], num_var_diffs["right"], num_var_diffs["shared"]
+    # Return the total number of differences; thus, zero means no differences were found.
+    total_diff_count = sum(
+        [x["left"] + x["right"] for x in [num_var_diffs, num_group_diffs, num_attribute_diffs]]
+    )
+
+    return total_diff_count
 
 
 def _print_summary_count_comparison_side_by_side(
