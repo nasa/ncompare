@@ -73,7 +73,7 @@ def common_elements(
 def count_diffs(
     list_a: Union[list[str], list[int], str], list_b: Union[list[str], list[int], str]
 ) -> tuple[int, int, int]:
-    """Count how many elements are either uniquely in one list or the other, or in both.
+    """Count how many elements are either uniquely in one list or the other, or shared.
 
     Note
     ----
@@ -96,6 +96,6 @@ def count_diffs(
     # The number of differences is computed.
     left = len(set_a - set_b)
     right = len(set_b - set_a)
-    both = len(set_a.intersection(set_b))
+    shared = len(set_a.intersection(set_b))
 
-    return left, right, both
+    return left, right, shared

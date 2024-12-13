@@ -31,10 +31,12 @@ Note that full comparison tests are performed in both directions, i.e., A -> B a
 
 from contextlib import nullcontext as does_not_raise
 
-import pytest
-import xarray as xr
+import netCDF4 as nc
 
-from ncompare.core import _get_vars, _match_random_value, _print_sample_values, compare
+from ncompare.core import (
+    _var_properties,
+    compare,
+)
 
 
 def compare_ab(a, b):
@@ -69,139 +71,15 @@ def test_no_error_compare_2groupsTo1Subgroup(
     compare_ba(ds_3dims_3vars_4coords_2groups, ds_3dims_3vars_4coords_1subgroup)
 
 
-def test_matching_random_values(
-    ds_3dims_2vars_4coords,
-    ds_4dims_3vars_5coords,
-    ds_3dims_3vars_4coords_1group,
-    ds_1dim_1var_1coord,
-    ds_1dim_1var_allnan_1coord,
-    outputter_to_console,
-):
-    variable_array_1 = xr.open_dataset(ds_3dims_2vars_4coords).variables["z1"]
-    variable_array_2 = xr.open_dataset(ds_4dims_3vars_5coords).variables["z1"]
-    variable_array_3 = xr.open_dataset(ds_1dim_1var_1coord).variables["z1"]
-    variable_array_allnan = xr.open_dataset(ds_1dim_1var_allnan_1coord).variables["z1"]
-
-    assert (
-        _match_random_value(
-            outputter_to_console,
-            variable_array_1,
-            variable_array_1,
-        )
-        is True
-    )
-    assert (
-        _match_random_value(
-            outputter_to_console,
-            variable_array_1,
-            variable_array_2,
-        )
-        is False
-    )
-    assert (
-        _match_random_value(
-            outputter_to_console,
-            variable_array_3,
-            variable_array_3,
-        )
-        is True
-    )
-    # NaN to non-NaN is NOT considered a match
-    assert (
-        _match_random_value(
-            outputter_to_console,
-            variable_array_3,
-            variable_array_allnan,
-        )
-        is None
-    )
-    # NaN to NaN is considered a match
-    assert (
-        _match_random_value(
-            outputter_to_console,
-            variable_array_allnan,
-            variable_array_allnan,
-        )
-        is True
-    )
+def test_zero_for_comparison_with_no_differences(ds_3dims_3vars_4coords_1subgroup):
+    assert compare(ds_3dims_3vars_4coords_1subgroup, ds_3dims_3vars_4coords_1subgroup) == 0
 
 
-def test_print_values_runs_with_no_error(ds_3dims_3vars_4coords_1group, outputter_to_console):
-    with does_not_raise():
-        _print_sample_values(
-            outputter_to_console,
-            ds_3dims_3vars_4coords_1group,
-            groupname="Group1",
-            varname="step",
-        )
-
-
-def test_print_values_to_text_file_runs_with_no_error(
-    ds_3dims_3vars_4coords_1group, outputter_to_text_file, temp_test_text_file_path
-):
-    _print_sample_values(
-        outputter_to_text_file,
-        ds_3dims_3vars_4coords_1group,
-        groupname="Group1",
-        varname="step",
-    )
-    outputter_to_text_file._text_file_obj.close()
-
-    comparison_variable = xr.open_dataset(
-        ds_3dims_3vars_4coords_1group, backend_kwargs={"group": "Group1"}
-    )["step"]
-
-    with open(temp_test_text_file_path) as f:
-        lines = f.readlines()
-        assert lines[0].strip().replace("[", "").replace("]", "").split() == [
-            str(round(x, 1)) for x in comparison_variable[:].values
-        ]
-
-
-def test_comparison_group_no_error_for_duplicate_dataset(
-    ds_3dims_3vars_4coords_1group, temp_test_text_file_path
-):
-    compare(
-        ds_3dims_3vars_4coords_1group,
-        ds_3dims_3vars_4coords_1group,
-        comparison_var_group="Group1",
-        file_text=temp_test_text_file_path,
-    )
-
-    found_expected = False
-    with open(temp_test_text_file_path) as f:
-        for line in f.readlines():
-            if "Variables within specified group <Group1>:" in line:
-                found_expected = True
-
-    assert found_expected
-
-
-def test_comparison_var_no_error_for_duplicate_dataset(
-    ds_3dims_3vars_4coords_1group, temp_test_text_file_path
-):
-    compare(
-        ds_3dims_3vars_4coords_1group,
-        ds_3dims_3vars_4coords_1group,
-        comparison_var_group="Group1",
-        comparison_var_name="var1",
-        file_text=temp_test_text_file_path,
-    )
-
-    found_expected = False
-    with open(temp_test_text_file_path) as f:
-        for line in f.readlines():
-            if "Sample values within specified variable <var1>:" in line:
-                found_expected = True
-
-    assert found_expected
-
-
-def test_get_vars_with_group(ds_3dims_3vars_4coords_1group):
-    result = _get_vars(ds_3dims_3vars_4coords_1group, groupname="Group1")
-    assert set(result) == {"step", "var1", "var2", "w"}
-
-
-def test_get_vars_error_when_no_group(ds_3dims_2vars_4coords):
-    with pytest.raises(OSError):
-        _get_vars(ds_3dims_2vars_4coords, groupname="nonexistent_group")
+def test_var_properties(ds_3dims_3vars_4coords_1group):
+    with nc.Dataset(ds_3dims_3vars_4coords_1group) as ds:
+        result = _var_properties(ds.groups["Group1"], varname="step")
+        assert result.varname == "step"
+        assert result.dtype == "float32"
+        assert result.shape == "(3,)"
+        assert result.chunking == "contiguous"
+        assert result.attributes == {}
