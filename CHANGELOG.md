@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Categorize counts of differences (including attributes) in a summary ([#276](https://github.com/nasa/ncompare/pull/276)) ([**@danielfromearth**](https://github.com/danielfromearth))
 - Include dimensions in variable attribute comparisons. ([#277](https://github.com/nasa/ncompare/pull/277)) ([**@danielfromearth**](https://github.com/danielfromearth))
+- Provide numerical output where zero means no differences found ([#278](https://github.com/nasa/ncompare/pull/278)) ([**@danielfromearth**](https://github.com/danielfromearth))
 
 ### Changed
 
