@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "ncompare"
-version = "1.11.0"
+version = "1.12.0rc5"
 description = "Compare the structure of two NetCDF files at the command line"
 authors = ["Daniel Kaufman <daniel.kaufman@nasa.gov>"]
 readme = "README.md"
@@ -32,7 +32,7 @@ openpyxl = ">=3.1.2"
 
 [tool.poetry.group.dev.dependencies]
 pytest = ">=7.4.2,<9.0.0"
-ruff = ">=0.5.1,<0.7.4"
+ruff = ">=0.5.1,<0.8.2"
 mypy = ">=1.5.1"
 pytest-cov = ">=4.1,<7.0"
 mkdocs = ">=1.5.3"
