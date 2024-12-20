@@ -1,5 +1,5 @@
-File A: ncompare/tests/data/test_a.nc
-File B: ncompare/tests/data/test_b.nc
+File A: /Users/dkaufma3/projects/ncompare_project/2_ExperimentFolder/ncompare/tests/data/test_a.nc
+File B: /Users/dkaufma3/projects/ncompare_project/2_ExperimentFolder/ncompare/tests/data/test_b.nc
 
 Root-level Dimensions:
 	Are all items the same? ---> True.
@@ -8,8 +8,6 @@ Root-level Dimensions:
 Root-level Groups:
 	Are all items the same? ---> True.
 	['Data', 'Position', 'Statistics']
-
-No variable group selected for comparison. Skipping..
 
 All variables:
                                                                              File A                                           File B
@@ -21,10 +19,12 @@ All variables:
                                  - ------------------------------------------------ ------------------------------------------------
                -----VARIABLE-----:                                       conditions                                       conditions
                             dtype:                                            int32                                            int32
+                       dimensions:                                  ('conditions',)                                  ('conditions',)
                             shape:                                             (2,)                                             (2,)
                         chunksize:                                       contiguous                                       contiguous
                -----VARIABLE-----:                                             time                                             time
                             dtype:                                          float64                                          float64
+                       dimensions:                                        ('time',)                                        ('time',)
                             shape:                                             (5,)                                             (5,)
                         chunksize:                                            [512]                                            [512]
                          calendar:                                        gregorian                                        gregorian
@@ -37,6 +37,7 @@ All variables:
                                  - ------------------------------------------------ ------------------------------------------------
                -----VARIABLE-----:                                            level                                            level
                             dtype:                                            int32                                            int32
+                       dimensions:                                       ('level',)                                       ('level',)
                             shape:                                             (2,)                                             (2,)
                         chunksize:                                           [1024]                                           [1024]
                             units:                                              hPa                                              hPa
@@ -46,11 +47,13 @@ All variables:
                                  - ------------------------------------------------ ------------------------------------------------
                -----VARIABLE-----:                                              lat                                              lat
                             dtype:                                          float32                                          float32
+                       dimensions:                                         ('lat',)                                         ('lat',)
                             shape:                                             (3,)                                             (2,)
                         chunksize:                                       contiguous                                       contiguous
                             units:                                    degrees north                                    degrees north
                -----VARIABLE-----:                                              lon                                              lon
                             dtype:                                          float32                                          float32
+                       dimensions:                                         ('lon',)                                         ('lon',)
                             shape:                                             (4,)                                             (2,)
                         chunksize:                                       contiguous                                       contiguous
                             units:                                     degrees east                                     degrees east
@@ -60,12 +63,14 @@ All variables:
                                  - ------------------------------------------------ ------------------------------------------------
                -----VARIABLE-----:                                       mean_value                                                 
                             dtype:                                          float32                                                 
+                       dimensions:                                        ('time',)                                                 
                             shape:                                             (5,)                                                 
                         chunksize:                                           [1024]                                                 
                       coordinates:                                             time                                                 
                         long_name:                      average value for each time                                                 
                -----VARIABLE-----:                                                                                         std_value
                             dtype:                                                                                           float32
+                       dimensions:                                                                                         ('time',)
                             shape:                                                                                              (5,)
                         chunksize:                                                                                            [1024]
                       coordinates:                                                                                              time
@@ -76,6 +81,7 @@ All variables:
                                  - ------------------------------------------------ ------------------------------------------------
                -----VARIABLE-----:                                             temp                                             temp
                             dtype:                                          float32                                          float32
+                       dimensions:                  ('time', 'level', 'lat', 'lon')                  ('time', 'level', 'lat', 'lon')
                             shape:                                     (5, 2, 3, 4)                                     (5, 2, 2, 2)
                         chunksize:                                     [1, 1, 3, 4]                                     [1, 1, 2, 2]
                         long_name:                                      temperature                                      temperature
@@ -86,6 +92,7 @@ All variables:
                                  - ------------------------------------------------ ------------------------------------------------
                -----VARIABLE-----:                                     quality_flag                                     quality_flag
                             dtype:                                            int32                                            int32
+                       dimensions:                  ('time', 'level', 'lat', 'lon')                  ('time', 'level', 'lat', 'lon')
                             shape:                                     (5, 2, 3, 4)                                     (5, 2, 2, 2)
                         chunksize:                                     [1, 1, 3, 4]                                     [1, 1, 2, 2]
                             units:                                         unitless                                         unitless
@@ -95,6 +102,7 @@ All variables:
                                  - ------------------------------------------------ ------------------------------------------------
                -----VARIABLE-----:                                                                                 supplemental_flag
                             dtype:                                                                                             int32
+                       dimensions:                                                                            ('time', 'conditions')
                             shape:                                                                                            (5, 2)
                         chunksize:                                                                                            [1, 2]
                             units:                                                                                          unitless
@@ -104,10 +112,20 @@ All variables:
                                  - ------------------------------------------------ ------------------------------------------------
                -----VARIABLE-----:                                                                                 condition_details
                             dtype:                                                                                           float64
+                       dimensions:                                                                                   ('conditions',)
                             shape:                                                                                              (2,)
                         chunksize:                                                                                        contiguous
                                  - ------------------------------------------------ ------------------------------------------------
-     Total number of shared items:                                                7                                                7
- Total number of non-shared items:                                                1                                                3
+                           SUMMARY ------------------------------------------------ ------------------------------------------------
+      Total # of shared variables:                                                7                                                7
+  Total # of non-shared variables:                                                1                                                3
+         Total # of shared groups:                                                5                                                5
+     Total # of non-shared groups:                                                0                                                2
+     Total # of shared attributes:                                               31                                               31
+ Total # of non-shared attributes:                                               13                                               22
+
+Differences were found in these attributes:
+
+['chunksize', 'coordinates', 'dimensions', 'dtype', 'long_name', 'shape', 'units']
 
 Done.
