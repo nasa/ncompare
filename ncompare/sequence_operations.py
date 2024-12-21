@@ -49,24 +49,17 @@ def common_elements(
     str
         item from sequence_b, or an empty string
     """
-    a_sorted = sorted(map(coerce_to_str, sequence_a))
-    b_sorted = sorted(map(coerce_to_str, sequence_b))
-    all_items = sorted(set(a_sorted).union(set(b_sorted)))
+    # Use sets for faster membership checking
+    a_set = set(map(coerce_to_str, sequence_a))
+    b_set = set(map(coerce_to_str, sequence_b))
+
+    # Sort the union of both sets
+    all_items = sorted(a_set | b_set)
 
     for i, item in enumerate(all_items):
-        item_a = item
-        item_b = item
-        if (item not in a_sorted) and (item not in b_sorted):
-            raise ValueError(
-                "Unexpected condition where an item was not found "
-                "but all items should exist in at least one list."
-            )
-
-        if item not in a_sorted:
-            item_a = ""
-        elif item not in b_sorted:
-            item_b = ""
-
+        # Determine presence in each set
+        item_a = item if item in a_set else ""
+        item_b = item if item in b_set else ""
         yield i, item_a, item_b
 
 
@@ -96,6 +89,6 @@ def count_diffs(
     # The number of differences is computed.
     left = len(set_a - set_b)
     right = len(set_b - set_a)
-    shared = len(set_a.intersection(set_b))
+    shared = len(set_a & set_b)
 
     return left, right, shared
