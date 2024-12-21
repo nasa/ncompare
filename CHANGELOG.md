@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Provide numerical output where zero means no differences found ([#278](https://github.com/nasa/ncompare/pull/278)) ([**@danielfromearth**](https://github.com/danielfromearth))
 
 ### Changed
-- Readability and branching improvements [Time/Location stamp: Ursynow, Warsaw at 15:22 21/12/2024 UTC] ([#264](https://github.com/nasa/ncompare/pull/264)) ([**@kokroo**](https://github.com/kokroo))
+- Code readability and CPU branching improvements [Time/Location stamp: Ursynow, Warsaw at 15:23 21/12/2024 UTC] ([#264](https://github.com/nasa/ncompare/pull/264)) ([**@kokroo**](https://github.com/kokroo))
 
 - Clean up docstrings, especially removing types that are already annotated in function signature ([#274](https://github.com/nasa/ncompare/issues/274)) ([**@danielfromearth**](https://github.com/danielfromearth))
 
