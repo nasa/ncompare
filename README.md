@@ -32,7 +32,7 @@ _____
   <img src="https://joss.theoj.org/papers/10.21105/joss.06490/status.svg" alt="DOI badge" >
 </a>
 
-Compare the structure of two NetCDF files at the command line.
+Compare the structure of two NetCDF files at the command line or via Python.
 `ncompare` generates a view of the matching and non-matching groups and variables between two NetCDF datasets.
 
 

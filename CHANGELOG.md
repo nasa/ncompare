@@ -6,24 +6,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [unreleased]
 
-### Added
-
-- Categorize counts of differences (including attributes) in a summary ([#276](https://github.com/nasa/ncompare/pull/276)) ([**@danielfromearth**](https://github.com/danielfromearth))
-- Include dimensions in variable attribute comparisons. ([#277](https://github.com/nasa/ncompare/pull/277)) ([**@danielfromearth**](https://github.com/danielfromearth))
-- Provide numerical output where zero means no differences found ([#278](https://github.com/nasa/ncompare/pull/278)) ([**@danielfromearth**](https://github.com/danielfromearth))
-
 ### Changed
 - Code readability and CPU branching improvements [Time/Location stamp: Ursynow, Warsaw at 15:23 21/12/2024 UTC] ([#264](https://github.com/nasa/ncompare/pull/264)) ([**@kokroo**](https://github.com/kokroo))
 
+## [1.12.0] - 2024-12-20
+
+### Changed
 - Clean up docstrings, especially removing types that are already annotated in function signature ([#274](https://github.com/nasa/ncompare/issues/274)) ([**@danielfromearth**](https://github.com/danielfromearth))
+
+### Added
+
+- Categorize counts of differences (including attributes) in a summary ([#276](https://github.com/nasa/ncompare/pull/276)) ([**@danielfromearth**](https://github.com/danielfromearth))
+- Include dimensions in variable attribute comparisons ([#277](https://github.com/nasa/ncompare/pull/277)) ([**@danielfromearth**](https://github.com/danielfromearth))
+- Provide numerical output where zero means no differences found ([#278](https://github.com/nasa/ncompare/pull/278)) ([**@danielfromearth**](https://github.com/danielfromearth))
+
+### Removed
+
+- **Breaking:** drop support for randomized value checks, which are no longer part of API ([#271](https://github.com/nasa/ncompare/pull/271)) ([**@danielfromearth**](https://github.com/danielfromearth))
 
 ### Fixed
 
 - Catch "unsupported datatype" exception from netCDF library ([#268](https://github.com/nasa/ncompare/pull/268)) ([**@danielfromearth**](https://github.com/danielfromearth))
-
-### Removed
-
-- **Breaking:** remove randomized value check logic and from API ([#271](https://github.com/nasa/ncompare/pull/271)) ([**@danielfromearth**](https://github.com/danielfromearth))
 
 ## [1.11.0] - 2024-11-14
 
