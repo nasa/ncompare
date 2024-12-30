@@ -27,14 +27,16 @@
 # pylint: disable=no-member
 # pylint: disable=fixme
 
-"""Compare the structure of two NetCDF files."""
+"""Compare the structure of two netCDF or HDF files."""
 
 import warnings
 from collections import namedtuple
 from collections.abc import Iterable, Iterator
+from dataclasses import dataclass
 from pathlib import Path
-from typing import Optional, TypedDict, Union
+from typing import Literal, Optional, TypedDict, Union
 
+import h5py
 import netCDF4
 import xarray as xr
 from colorama import Fore
@@ -53,6 +55,24 @@ GroupPair = namedtuple(
     defaults=("", None, "", None),
 )
 
+valid_file_type_ids = Literal["netcdf", "hdf5"]
+
+
+@dataclass
+class FileToCompare:
+    path: Union[Path, str]
+    type: valid_file_type_ids = "netcdf"
+
+    def __post_init__(self):
+        # We'll validate the inputs here.
+        if not isinstance(self.path, (str, Path)):
+            raise ValueError(f"'path' must be a str or Path, was {type(self.path)}")
+        if self.type not in ("netcdf", "hdf5"):
+            raise ValueError("'type' must be either 'netcdf' or 'hdf5'")
+
+    def __str__(self):
+        return f"path: {self.path} is considered a {self.type} file"
+
 
 class SummaryDifferencesDict(TypedDict):
     shared: int
@@ -63,8 +83,8 @@ class SummaryDifferencesDict(TypedDict):
 
 
 def compare(
-    nc_a: Union[str, Path],
-    nc_b: Union[str, Path],
+    file_a: Union[str, Path],
+    file_b: Union[str, Path],
     only_diffs: bool = False,
     no_color: bool = False,
     show_chunks: bool = False,
@@ -74,14 +94,14 @@ def compare(
     file_xlsx: Union[str, Path] = "",
     column_widths: Optional[tuple[Union[int, str], Union[int, str], Union[int, str]]] = None,
 ) -> int:
-    """Compare the variables contained within two different netCDF datasets.
+    """Compare the variables contained within two netCDF or HDF files.
 
     Parameters
     ----------
-    nc_a
-        filepath to the first netCDF
-    nc_b
-        filepath to the second netCDF
+    file_a
+        filepath to the first netCDF or HDF
+    file_b
+        filepath to the second netCDF or HDF
     only_diffs
         Whether to show only the variables/attributes that are different between the two files
     no_color
@@ -105,8 +125,8 @@ def compare(
         total number of differences found (across variables, groups, and attributes)
     """
     # Check the validity of paths.
-    nc_a = ensure_valid_path_exists(nc_a)
-    nc_b = ensure_valid_path_exists(nc_b)
+    file_a = ensure_valid_path_exists(file_a)
+    file_b = ensure_valid_path_exists(file_b)
     if file_text:
         file_text = ensure_valid_path_with_suffix(file_text, ".txt")
     if file_csv:
@@ -122,16 +142,12 @@ def compare(
         text_file=file_text,
         column_widths=column_widths,
     ) as out:
-        out.print(f"File A: {nc_a}")
-        out.print(f"File B: {nc_b}")
+        out.print(f"File A: {file_a}")
+        out.print(f"File B: {file_b}")
 
         # Start the comparison process.
         total_diff_count = run_through_comparisons(
-            out,
-            nc_a,
-            nc_b,
-            show_chunks=show_chunks,
-            show_attributes=show_attributes,
+            out, file_a, file_b, show_chunks=show_chunks, show_attributes=show_attributes
         )
 
         # Write to CSV and Excel files.
@@ -147,20 +163,20 @@ def compare(
 
 def run_through_comparisons(
     out: Outputter,
-    nc_a: Union[str, Path],
-    nc_b: Union[str, Path],
+    file_a: Path,
+    file_b: Path,
     show_chunks: bool,
     show_attributes: bool,
 ) -> int:
-    """Execute a series of comparisons between two netCDF files.
+    """Execute a series of comparisons between two netCDF or HDF files.
 
     Parameters
     ----------
     out
         instance of Outputter
-    nc_a
+    file_a
         path to the first netCDF file
-    nc_b
+    file_b
         path to the second netCDF file
     show_chunks
         whether to include data chunk sizes in the displayed comparison of variables
@@ -172,27 +188,51 @@ def run_through_comparisons(
     int
         total number of differences found (across variables, groups, and attributes)
     """
+    # Get types of files
+    FileA = validate_file_type(file_a)
+    FileB = validate_file_type(file_b)
+    if FileA.type != FileB.type:
+        # I'm not sure if there is ever a use-case where we'd want to compare a netCDF with an HDF file?
+        # This assumption, of both files being the same type, affects the rest of the comparison logic.
+        raise TypeError("Both files must be of the same type (either both netCDF or both HDF).")
+
     # Show the dimensions of each file and evaluate differences.
     out.print(Fore.LIGHTBLUE_EX + "\nRoot-level Dimensions:", add_to_history=True)
-    list_a = _get_dims(nc_a)
-    list_b = _get_dims(nc_b)
+    list_a = _get_dims(FileA)
+    list_b = _get_dims(FileB)
     _, _, _ = out.lists_diff(list_a, list_b)
 
     # Show the groups in each NetCDF file and evaluate differences.
     out.print(Fore.LIGHTBLUE_EX + "\nRoot-level Groups:", add_to_history=True)
-    list_a = _get_groups(nc_a)
-    list_b = _get_groups(nc_b)
+    list_a = _get_root_groups(FileA)
+    list_b = _get_root_groups(FileB)
     _, _, _ = out.lists_diff(list_a, list_b)
 
     out.print(Fore.LIGHTBLUE_EX + "\nAll variables:", add_to_history=True)
     total_diff_count = compare_two_nc_files(
-        out, nc_a, nc_b, show_chunks=show_chunks, show_attributes=show_attributes
+        out, FileA, FileB, show_chunks=show_chunks, show_attributes=show_attributes
     )
 
     return total_diff_count
 
 
-def walk_common_groups_tree(
+def validate_file_type(file_path: Path) -> FileToCompare:
+    """Validate a file type and return a FileToCompare instance."""
+    if file_path.suffix in (".h5", ".hdf", ".hdf5"):
+        file_type: valid_file_type_ids = "hdf5"
+    elif file_path.suffix in (".nc", ".nc4", ".nc3"):
+        file_type = "netcdf"
+    else:
+        raise TypeError(
+            f"{file_path.suffix} is not a valid file type. "
+            f"Expected a netcdf ('.nc', '.nc4', '.nc3') or "
+            f"hdf5 ('.h5', '.hdf', '.hdf5')."
+        )
+
+    return FileToCompare(path=file_path, type=file_type)
+
+
+def _walk_common_groups_tree(
     top_a_name: str,
     top_a: Union[netCDF4.Dataset, netCDF4.Group],
     top_b_name: str,
@@ -238,7 +278,7 @@ def walk_common_groups_tree(
         top_a.groups if top_a is not None else "",
         top_b.groups if top_b is not None else "",
     ):
-        yield from walk_common_groups_tree(
+        yield from _walk_common_groups_tree(
             top_a_name + "/" + subgroup_a_name if subgroup_a_name else "",
             (
                 top_a[subgroup_a_name]
@@ -256,8 +296,8 @@ def walk_common_groups_tree(
 
 def compare_two_nc_files(
     out: Outputter,
-    nc_one: Union[str, Path],
-    nc_two: Union[str, Path],
+    file_one: FileToCompare,
+    file_two: FileToCompare,
     show_chunks: bool = False,
     show_attributes: bool = False,
 ) -> int:
@@ -268,9 +308,9 @@ def compare_two_nc_files(
     ----------
     out
         instance of Outputter
-    nc_one
+    file_one
         path to the first dataset
-    nc_two
+    file_two
         path to the second dataset
     show_chunks
         whether to include chunks alongside variables
@@ -304,7 +344,7 @@ def compare_two_nc_files(
         "both": 0,
         "difference_types": set(),
     }
-    with netCDF4.Dataset(nc_one) as nc_a, netCDF4.Dataset(nc_two) as nc_b:
+    with netCDF4.Dataset(file_one.path) as nc_a, netCDF4.Dataset(file_two.path) as nc_b:
         out.side_by_side(
             "All Variables", " ", " ", dash_line=False, force_display_even_if_same=True
         )
@@ -325,7 +365,7 @@ def compare_two_nc_files(
         )
         group_counter += 1
 
-        for group_pair in walk_common_groups_tree("", nc_a, "", nc_b):
+        for group_pair in _walk_common_groups_tree("", nc_a, "", nc_b):
             if group_pair.group_a_name == "":
                 num_group_diffs["right"] += 1
             elif group_pair.group_b_name == "":
@@ -622,20 +662,24 @@ def _get_attribute_value_as_str(varprops: VarProperties, attribute_key: str) -> 
     return ""
 
 
-def _get_groups(nc_filepath: Union[str, Path]) -> list:
+def _get_root_groups(file: FileToCompare) -> list:
     """Get a list of groups from a netCDF."""
-    with netCDF4.Dataset(nc_filepath) as dataset:
-        groups_list = list(dataset.groups.keys())
+    if file.type == "netcdf":
+        with netCDF4.Dataset(file.path) as dataset:
+            groups_list = list(dataset.groups.keys())
+    elif file.type == "hdf5":
+        with h5py.File(file.path) as dataset:
+            groups_list = list(dataset.keys())
     return groups_list
 
 
-def _get_dims(nc_filepath: Union[str, Path]) -> list:
-    """Get a list of dimensions from a netCDF."""
+def _get_dims(file: FileToCompare) -> list:
+    """Get a list of dimensions from a netCDF or HDF5."""
 
     def __get_dim_list(decode_times=True):
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
-            with xr.open_dataset(nc_filepath, decode_times=decode_times) as dataset:
+            with xr.open_dataset(file.path, decode_times=decode_times) as dataset:
                 return list(dataset.sizes.items())
 
     try:
