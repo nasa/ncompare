@@ -34,9 +34,9 @@ from contextlib import nullcontext as does_not_raise
 import netCDF4 as nc
 
 from ncompare.core import (
-    _var_properties,
     compare,
 )
+from ncompare.getters import _get_var_properties
 
 from . import data_for_tests_dir
 
@@ -79,7 +79,7 @@ def test_zero_for_comparison_with_no_differences(ds_3dims_3vars_4coords_1subgrou
 
 def test_var_properties(ds_3dims_3vars_4coords_1group):
     with nc.Dataset(ds_3dims_3vars_4coords_1group) as ds:
-        result = _var_properties(ds.groups["Group1"], varname="step")
+        result = _get_var_properties(ds.groups["Group1"], varname="step")
         assert result.varname == "step"
         assert result.dtype == "float32"
         assert result.shape == "(3,)"
