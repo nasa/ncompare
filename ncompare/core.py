@@ -44,11 +44,11 @@ from ncompare.core_types import (
     valid_file_type_ids,
 )
 from ncompare.getters import (
-    _get_and_check_variable_attributes,
-    _get_and_check_variable_scale_factor,
-    _get_root_dims,
-    _get_root_groups,
-    _get_var_properties,
+    get_and_check_variable_attributes,
+    get_and_check_variable_scale_factor,
+    get_root_dims,
+    get_root_groups,
+    get_var_properties,
 )
 from ncompare.printing import Outputter, SummaryDifferenceKeys
 from ncompare.sequence_operations import common_elements, count_diffs
@@ -171,14 +171,14 @@ def _run_through_comparisons(
     """
     # Show the dimensions of each file and evaluate differences.
     out.print(Fore.LIGHTBLUE_EX + "\nRoot-level Dimensions:", add_to_history=True)
-    list_a = _get_root_dims(file_a)
-    list_b = _get_root_dims(file_b)
+    list_a = get_root_dims(file_a)
+    list_b = get_root_dims(file_b)
     _, _, _ = out.lists_diff(list_a, list_b)
 
     # Show the groups in each NetCDF file and evaluate differences.
     out.print(Fore.LIGHTBLUE_EX + "\nRoot-level Groups:", add_to_history=True)
-    list_a = _get_root_groups(file_a)
-    list_b = _get_root_groups(file_b)
+    list_a = get_root_groups(file_a)
+    list_b = get_root_groups(file_b)
     _, _, _ = out.lists_diff(list_a, list_b)
 
     # Run through all the rest of the groups and variables, tallying differences along the way.
@@ -409,8 +409,8 @@ def _print_group_details_side_by_side(
         # Get and print the properties of each variable
         _print_var_properties_side_by_side(
             out,
-            _get_var_properties(group_a, variable_pair[1]),
-            _get_var_properties(group_b, variable_pair[2]),
+            get_var_properties(group_a, variable_pair[1]),
+            get_var_properties(group_b, variable_pair[2]),
             num_attribute_diffs,
             show_chunks=show_chunks,
             show_attributes=show_attributes,
@@ -436,12 +436,12 @@ def _print_var_properties_side_by_side(
     if show_chunks:
         pairs_to_check_and_show.append((v_a.chunking, v_b.chunking))
     if show_attributes:
-        for attr_a_key, attr_a, attr_b_key, attr_b in _get_and_check_variable_attributes(v_a, v_b):
+        for attr_a_key, attr_a, attr_b_key, attr_b in get_and_check_variable_attributes(v_a, v_b):
             # Check whether attr_a_key is empty,
             # because it might be if the variable doesn't exist in File A.
             pairs_to_check_and_show.append((attr_a, attr_b))
     # Scale Factor
-    scale_factor_pair = _get_and_check_variable_scale_factor(v_a, v_b)
+    scale_factor_pair = get_and_check_variable_scale_factor(v_a, v_b)
     if scale_factor_pair:
         pairs_to_check_and_show.append((scale_factor_pair[0], scale_factor_pair[1]))
 
@@ -479,12 +479,12 @@ def _print_var_properties_side_by_side(
     if show_chunks:
         _var_attribute_side_by_side("chunksize", v_a.chunking, v_b.chunking)
     # Scale Factor
-    scale_factor_pair = _get_and_check_variable_scale_factor(v_a, v_b)
+    scale_factor_pair = get_and_check_variable_scale_factor(v_a, v_b)
     if scale_factor_pair:
         _var_attribute_side_by_side("scale_factor", scale_factor_pair[0], scale_factor_pair[1])
     # Other attributes
     if show_attributes:
-        for attr_a_key, attr_a, attr_b_key, attr_b in _get_and_check_variable_attributes(v_a, v_b):
+        for attr_a_key, attr_a, attr_b_key, attr_b in get_and_check_variable_attributes(v_a, v_b):
             # Check whether attr_a_key is empty,
             # because it might be if the variable doesn't exist in File A.
             attribute_key = attr_a_key if attr_a_key else attr_b_key

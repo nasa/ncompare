@@ -10,7 +10,7 @@ from ncompare.core_types import FileToCompare, VarProperties
 from ncompare.sequence_operations import common_elements
 
 
-def _get_and_check_variable_scale_factor(
+def get_and_check_variable_scale_factor(
     v_a: VarProperties, v_b: VarProperties
 ) -> Union[None, tuple[str, str]]:
     """Get a string representation of the scale factor for two variables."""
@@ -23,7 +23,7 @@ def _get_and_check_variable_scale_factor(
         return None
 
 
-def _get_and_check_variable_attributes(
+def get_and_check_variable_attributes(
     v_a: VarProperties, v_b: VarProperties
 ) -> Iterator[tuple[str, str, str, str]]:
     """Go through and yield each attribute pair for two variables."""
@@ -36,14 +36,12 @@ def _get_and_check_variable_attributes(
         attrs_b_names = v_b.attributes.keys()
     # Iterate and print each attribute
     for _, attr_a_key, attr_b_key in common_elements(attrs_a_names, attrs_b_names):
-        attr_a = _get_attribute_value_as_str(v_a, attr_a_key)
-        attr_b = _get_attribute_value_as_str(v_b, attr_b_key)
+        attr_a = get_attribute_value_as_str(v_a, attr_a_key)
+        attr_b = get_attribute_value_as_str(v_b, attr_b_key)
         yield attr_a_key, attr_a, attr_b_key, attr_b
 
 
-def _get_var_properties(
-    group: Union[netCDF4.Dataset, netCDF4.Group], varname: str
-) -> VarProperties:
+def get_var_properties(group: Union[netCDF4.Dataset, netCDF4.Group], varname: str) -> VarProperties:
     """Get the properties of a variable.
 
     Parameters
@@ -85,7 +83,7 @@ def _get_var_properties(
     )
 
 
-def _get_attribute_value_as_str(varprops: VarProperties, attribute_key: str) -> str:
+def get_attribute_value_as_str(varprops: VarProperties, attribute_key: str) -> str:
     """Get a string representation of the attribute value."""
     if attribute_key and (attribute_key in varprops.attributes):
         attr = varprops.attributes[attribute_key]
@@ -101,7 +99,7 @@ def _get_attribute_value_as_str(varprops: VarProperties, attribute_key: str) -> 
     return ""
 
 
-def _get_root_groups(file: FileToCompare) -> list:
+def get_root_groups(file: FileToCompare) -> list:
     """Get a list of groups from a netCDF."""
     if file.type == "netcdf":
         with netCDF4.Dataset(file.path) as dataset:
@@ -112,7 +110,7 @@ def _get_root_groups(file: FileToCompare) -> list:
     return groups_list
 
 
-def _get_root_dims(file: FileToCompare) -> list:
+def get_root_dims(file: FileToCompare) -> list:
     """Get a list of dimensions from a netCDF or HDF5."""
 
     def __get_dim_list(decode_times=True):
