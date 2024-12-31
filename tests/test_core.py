@@ -38,6 +38,8 @@ from ncompare.core import (
     compare,
 )
 
+from . import data_for_tests_dir
+
 
 def compare_ab(a, b):
     with does_not_raise():
@@ -83,3 +85,18 @@ def test_var_properties(ds_3dims_3vars_4coords_1group):
         assert result.shape == "(3,)"
         assert result.chunking == "contiguous"
         assert result.attributes == {}
+
+
+def test_icesat(temp_data_dir):
+    # Compare the `ncompare` output when testing ICESat
+    out_path = temp_data_dir / "output_file_icesat-2-atl06.txt"
+
+    num_differences = compare(
+        data_for_tests_dir / "icesat-2-ATL06" / "ATL06_20230816161508_08782002_006_02.h5",
+        data_for_tests_dir / "icesat-2-ATL06" / "ATL06_20230816234629_08822013_006_01.h5",
+        show_chunks=True,
+        show_attributes=True,
+        file_text=str(out_path),
+    )
+
+    assert num_differences == 4982
