@@ -32,8 +32,13 @@ _____
   <img src="https://joss.theoj.org/papers/10.21105/joss.06490/status.svg" alt="DOI badge" >
 </a>
 
-Compare the structure of two NetCDF files at the command line or via Python.
-`ncompare` generates a view of the matching and non-matching groups and variables between two NetCDF datasets.
+Compare the structure of two [netCDF](https://www.unidata.ucar.edu/software/netcdf) files 
+at the command line or via Python. `ncompare` generates a view of the matching and 
+non-matching groups and variables between two netCDF datasets.
+
+Allthough tailored for netCDF files, `ncompare`
+also works with some [HDF5](https://www.hdfgroup.org/solutions/hdf5/) files 
+(see [notes and known limitations](#notes-and-known-limitations)).
 
 
 ## Installing
@@ -134,7 +139,7 @@ poetry run ncompare <netcdf file #1> <netcdf file #2>
 ## Why ncompare?
 
 The `cdo` (climate data operators) tool
-[does not support NetCDF4 groups](https://code.mpimet.mpg.de/boards/2/topics/12073).
+[does not support netCDF4 groups](https://code.mpimet.mpg.de/boards/2/topics/12073).
 Moreover, `nco` operators' `ncdiff` function computes value differences, but
 --- as far as the developers of this tool are aware ---
 `nco` does not have a simple function to show structural differences between NetCDF4 datasets.
@@ -145,8 +150,11 @@ and can generate report files formatted for other applications. However, note th
 `h5diff` provides comparison of some otherwise "hidden" hdf5 properties, such as _Netcdf4Dimid or _Netcdf4Coordinates,
 which are not currently assessed by `ncompare`.
 
-## Known limitations
+## Notes and known limitations
 
+- `ncompare` works successfully with select HDF5 files,
+  although it has not been tested extensively; therefore,
+  it would not be surprising to find additional limitations with other HDF files.
 - `ncompare` uses `xarray` to access the root-level dimensions.
 In some cases, `xarray` will miss dimensions whose names do not also exist as variable names in the dataset
   (also known as non-coordinate dimensions).
