@@ -198,8 +198,8 @@ def run_through_comparisons(
 
     # Show the dimensions of each file and evaluate differences.
     out.print(Fore.LIGHTBLUE_EX + "\nRoot-level Dimensions:", add_to_history=True)
-    list_a = _get_dims(FileA)
-    list_b = _get_dims(FileB)
+    list_a = _get_root_dims(FileA)
+    list_b = _get_root_dims(FileB)
     _, _, _ = out.lists_diff(list_a, list_b)
 
     # Show the groups in each NetCDF file and evaluate differences.
@@ -673,13 +673,20 @@ def _get_root_groups(file: FileToCompare) -> list:
     return groups_list
 
 
-def _get_dims(file: FileToCompare) -> list:
+def _get_root_dims(file: FileToCompare) -> list:
     """Get a list of dimensions from a netCDF or HDF5."""
 
     def __get_dim_list(decode_times=True):
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
-            with xr.open_dataset(file.path, decode_times=decode_times) as dataset:
+            if file.type == "netcdf":
+                xarray_engine = "netcdf4"
+            elif file.type == "hdf5":
+                xarray_engine = "h5netcdf"
+
+            with xr.open_dataset(
+                file.path, decode_times=decode_times, engine=xarray_engine
+            ) as dataset:
                 return list(dataset.sizes.items())
 
     try:
