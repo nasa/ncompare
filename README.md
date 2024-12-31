@@ -75,13 +75,8 @@ ncompare S001G01.nc S001G01_SUBSET.nc --file-text subset_comparison.txt
 ```python
 from ncompare import compare
 
-total_number_of_differences = compare(
-    "<netcdf file 1>", 
-    "<netcdf file 2>", 
-    only_diffs=True,
-    show_attributes=True,
-    show_chunks=True,
-)
+total_number_of_differences = compare("<netcdf file 1>", "<netcdf file 2>", only_diffs=True,
+                                      show_chunks=True, show_attributes=True)
 ```
 
 
