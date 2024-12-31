@@ -14,14 +14,9 @@ def _get_and_check_variable_scale_factor(
     v_a: VarProperties, v_b: VarProperties
 ) -> Union[None, tuple[str, str]]:
     """Get a string representation of the scale factor for two variables."""
-    if getattr(v_a.variable, "scale_factor", None):
-        sf_a = v_a.variable.scale_factor
-    else:
-        sf_a = " "
-    if getattr(v_b.variable, "scale_factor", None):
-        sf_b = v_b.variable.scale_factor
-    else:
-        sf_b = " "
+    sf_a = getattr(v_a.variable, "scale_factor", " ")
+    sf_b = getattr(v_b.variable, "scale_factor", " ")
+
     if (sf_a != " ") or (sf_b != " "):
         return str(sf_a), str(sf_b)
     else:
