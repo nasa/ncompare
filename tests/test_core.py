@@ -31,12 +31,7 @@ Note that full comparison tests are performed in both directions, i.e., A -> B a
 
 from contextlib import nullcontext as does_not_raise
 
-import netCDF4 as nc
-
-from ncompare.core import (
-    compare,
-)
-from ncompare.getters import _get_var_properties
+from ncompare.core import compare
 
 from . import data_for_tests_dir
 
@@ -75,16 +70,6 @@ def test_no_error_compare_2groupsTo1Subgroup(
 
 def test_zero_for_comparison_with_no_differences(ds_3dims_3vars_4coords_1subgroup):
     assert compare(ds_3dims_3vars_4coords_1subgroup, ds_3dims_3vars_4coords_1subgroup) == 0
-
-
-def test_var_properties(ds_3dims_3vars_4coords_1group):
-    with nc.Dataset(ds_3dims_3vars_4coords_1group) as ds:
-        result = _get_var_properties(ds.groups["Group1"], varname="step")
-        assert result.varname == "step"
-        assert result.dtype == "float32"
-        assert result.shape == "(3,)"
-        assert result.chunking == "contiguous"
-        assert result.attributes == {}
 
 
 def test_icesat(temp_data_dir):

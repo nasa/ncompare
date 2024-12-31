@@ -147,6 +147,8 @@ def ds_3dims_3vars_4coords_1group(temp_data_dir):
     #
     grp1.createVariable("step", "f4", ("step",), fill_value=False)
     grp1["step"][:] = [-0.9, -1.8, -2.7]
+    grp1["step"].scale_factor = 0.5
+    grp1["step"].add_offset = 5
     #
     grp1.createVariable("w", "u1", ("x", "step"), fill_value=False)
 
