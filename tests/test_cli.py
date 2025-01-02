@@ -41,8 +41,8 @@ def test_console_help():
 def test_arg_parser():
     parsed = _cli(["first_netcdf.nc", "second_netcdf.nc"])
 
-    assert getattr(parsed, "file_a") == "first_netcdf.nc"
-    assert getattr(parsed, "file_b") == "second_netcdf.nc"
+    assert getattr(parsed, "path_a") == "first_netcdf.nc"
+    assert getattr(parsed, "path_b") == "second_netcdf.nc"
     assert getattr(parsed, "show_attributes") is False
     assert getattr(parsed, "show_chunks") is False
     assert getattr(parsed, "only_diffs") is False

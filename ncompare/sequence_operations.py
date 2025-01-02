@@ -28,17 +28,18 @@
 from collections.abc import Generator, Iterable
 from typing import Union
 
-from ncompare.utils import coerce_to_str
+from ncompare.path_and_string_operations import coerce_to_str
 
 
 def common_elements(
     sequence_a: Iterable, sequence_b: Iterable
 ) -> Generator[tuple[int, str, str], None, None]:
-    """Loop over combined items of two iterables, and yield aligned item pairs.
+    """Yield all items from two iterables, sorted and as aligned pairs.
 
     Note
     ----
-    When there isn't a matching item, an empty string is used instead.
+    When there isn't a matching item for one of the iterables,
+    an empty string is used instead.
 
     Yields
     ------

@@ -6,8 +6,8 @@ import h5py
 import netCDF4
 import xarray as xr
 
-from ncompare.core_types import FileToCompare, VarProperties
 from ncompare.sequence_operations import common_elements
+from ncompare.utility_types import FileToCompare, VarProperties
 
 
 def get_and_check_variable_scale_factor(
@@ -41,48 +41,6 @@ def get_and_check_variable_attributes(
         yield attr_a_key, attr_a, attr_b_key, attr_b
 
 
-def get_var_properties(group: Union[netCDF4.Dataset, netCDF4.Group], varname: str) -> VarProperties:
-    """Get the properties of a variable.
-
-    Parameters
-    ----------
-    group
-        a dataset or group of variables
-    varname
-        the name of the variable
-
-    Returns
-    -------
-    VarProperties
-    """
-    if varname:
-        the_variable = group.variables[varname]
-        v_dtype = str(the_variable.dtype)
-        v_dimensions = str(the_variable.dimensions)
-        v_shape = str(the_variable.shape).strip()
-        v_chunking = str(the_variable.chunking()).strip()
-
-        v_attributes = {}
-        for name in the_variable.ncattrs():
-            try:
-                v_attributes[name] = the_variable.getncattr(name)
-            except KeyError as key_err:
-                # Added this check because of "unsupported datatype" error that prevented
-                # fully running comparisons on S5P_OFFL_L1B_IR_UVN collections.
-                v_attributes[name] = f"netCDF error: {str(key_err)}"
-    else:
-        the_variable = None
-        v_dtype = ""
-        v_dimensions = ""
-        v_shape = ""
-        v_chunking = ""
-        v_attributes = None
-
-    return VarProperties(
-        varname, the_variable, v_dtype, v_dimensions, v_shape, v_chunking, v_attributes
-    )
-
-
 def get_attribute_value_as_str(varprops: VarProperties, attribute_key: str) -> str:
     """Get a string representation of the attribute value."""
     if attribute_key and (attribute_key in varprops.attributes):
@@ -108,6 +66,35 @@ def get_root_groups(file: FileToCompare) -> list:
         with h5py.File(file.path) as dataset:
             groups_list = list(dataset.keys())
     return groups_list
+
+
+def get_subgroups(node: Union[netCDF4.Dataset, netCDF4.Group, h5py.Group], file_type: str) -> list:
+    """Get a list of subgroups from a netCDF or HDF5 group.
+
+    Parameters
+    ----------
+    node
+    file_type
+
+    Returns
+    -------
+    list
+        subgroups under the node
+    """
+    if file_type == "hdf5":
+        return [key for key in node.keys() if isinstance(node[key], h5py.Group)]
+    else:  # should be "netcdf"
+        return list(node.groups)
+
+
+def get_variables(node: Union[netCDF4.Dataset, netCDF4.Group, h5py.Group], file_type: str) -> list:
+    """Get a sorted list of variables from a netCDF or HDF5 group."""
+    if file_type == "hdf5":
+        return [key for key in node.keys() if isinstance(node[key], h5py.Dataset)]
+    elif file_type == "netcdf":
+        return sorted(node.variables)
+    else:
+        raise RuntimeError(f"Unsupported file type: {file_type}")
 
 
 def get_root_dims(file: FileToCompare) -> list:
