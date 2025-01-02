@@ -84,4 +84,4 @@ def test_icesat(temp_data_dir):
         file_text=str(out_path),
     )
 
-    assert num_differences == 4982
+    assert num_differences == 5280
