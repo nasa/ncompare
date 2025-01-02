@@ -78,13 +78,17 @@ def get_subgroups(node: Union[netCDF4.Dataset, netCDF4.Group, h5py.Group], file_
 
     Returns
     -------
-    list
+    list or None
         subgroups under the node
     """
-    if file_type == "hdf5":
+    if node is None:
+        return []
+    elif file_type == "hdf5":
         return [key for key in node.keys() if isinstance(node[key], h5py.Group)]
-    else:  # should be "netcdf"
+    elif file_type == "netcdf":  # should be "netcdf"
         return list(node.groups)
+    else:
+        return []
 
 
 def get_variables(node: Union[netCDF4.Dataset, netCDF4.Group, h5py.Group], file_type: str) -> list:
