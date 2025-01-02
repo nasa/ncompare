@@ -49,8 +49,8 @@ def _cli(args: Optional[Sequence[str]]) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Compare the variables contained within two different netCDF datasets"
     )
-    parser.add_argument("file_a", help="First (netCDF or HDF) file")
-    parser.add_argument("file_b", help="Second (netCDF or HDF) file")
+    parser.add_argument("path_a", help="First (netCDF or HDF) file")
+    parser.add_argument("path_b", help="Second (netCDF or HDF) file")
     parser.add_argument(
         "--only-diffs",
         action="store_true",

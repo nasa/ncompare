@@ -23,29 +23,46 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and limitations under the License.
 
-"""Helper utilities."""
-
 from pathlib import Path
-from typing import Union
+
+import pytest
+
+from ncompare.path_and_string_operations import coerce_to_str, ensure_valid_path_exists
 
 
-def ensure_valid_path_exists(should_be_path: Union[str, Path]) -> Path:
-    """Coerce input to a pathlib.Path and check that the resulting filepath exists."""
-    path_obj = Path(should_be_path)
-    if path_obj.exists():
-        return path_obj
-    raise FileNotFoundError(f"Expected file does not exist: {should_be_path}")
+def test_make_valid_path_with_simple_invalid_str_path():
+    with pytest.raises(FileNotFoundError):
+        ensure_valid_path_exists("whereisthatfile")
 
 
-def ensure_valid_path_with_suffix(should_be_path: Union[str, Path], suffix: str) -> Path:
-    """Coerce input to a pathlib.Path with given suffix."""
-    if not suffix.startswith("."):
-        raise ValueError(f"Invalid suffix: {suffix}. It must start with '.'")
-    return Path(should_be_path).with_suffix(suffix)
+def test_make_valid_path_with_close_invalid_Path_path():
+    with pytest.raises(FileNotFoundError):
+        ensure_valid_path_exists(Path(__file__).parents[0].resolve() / "thisdoesntexist.py")
 
 
-def coerce_to_str(some_object: Union[str, int, tuple]) -> str:
-    """Ensure the type is a string."""
-    if isinstance(some_object, (str, int, tuple)):
-        return str(some_object)
-    raise TypeError(f"Unable to coerce value to str. Unexpected type <{type(some_object)}>.")
+def test_make_valid_path_from_str_in_repo():
+    returnval = ensure_valid_path_exists(str(Path(__file__).parents[0].resolve() / "conftest.py"))
+    assert isinstance(returnval, Path)
+
+
+def test_make_valid_path_from_Path_in_repo():
+    returnval = ensure_valid_path_exists(Path(__file__).parents[0].resolve() / "conftest.py")
+    assert isinstance(returnval, Path)
+
+
+def test_error_from_wrong_path_type():
+    with pytest.raises(TypeError):
+        ensure_valid_path_exists((0, 1))
+
+
+def test_coerce_int_to_str():
+    assert coerce_to_str(5) == "5"
+
+
+def test_coerce_tuple_to_str():
+    assert coerce_to_str(("step", 123)) == "('step', 123)"
+
+
+def test_error_from_not_able_to_coerce_to_str():
+    with pytest.raises(TypeError):
+        coerce_to_str(list[5, 6, 7])

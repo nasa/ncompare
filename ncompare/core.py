@@ -29,30 +29,16 @@
 
 """Compare the structure of two netCDF or HDF files."""
 
-from collections.abc import Iterator
 from pathlib import Path
 from typing import Optional, Union
 
-import netCDF4
-from colorama import Fore
-
-from ncompare.core_types import (
-    FileToCompare,
-    GroupPair,
-    SummaryDifferencesDict,
-    VarProperties,
-    valid_file_type_ids,
+from ncompare.Comparison import Comparison
+from ncompare.path_and_string_operations import (
+    ensure_valid_path_exists,
+    ensure_valid_path_with_suffix,
+    validate_file_type,
 )
-from ncompare.getters import (
-    get_and_check_variable_attributes,
-    get_and_check_variable_scale_factor,
-    get_root_dims,
-    get_root_groups,
-    get_var_properties,
-)
-from ncompare.printing import Outputter, SummaryDifferenceKeys
-from ncompare.sequence_operations import common_elements, count_diffs
-from ncompare.utils import ensure_valid_path_exists, ensure_valid_path_with_suffix
+from ncompare.printing import Outputter
 
 
 def compare(
@@ -108,8 +94,8 @@ def compare(
         file_xlsx = ensure_valid_path_with_suffix(file_xlsx, ".xlsx")
 
     # Check the validity of file types
-    file_a = _validate_file_type(path_a)
-    file_b = _validate_file_type(path_b)
+    file_a = validate_file_type(path_a)
+    file_b = validate_file_type(path_b)
     if file_a.type != file_b.type:
         # I'm not sure if there is a use-case where we'd want to compare a netCDF with an HDF file?
         # This assumption of files being the same type, affects the rest of the comparison logic.
@@ -127,381 +113,17 @@ def compare(
         out.print(f"File B: {file_b.path}")
 
         # Start the comparison process.
-        total_diff_count = _run_through_comparisons(
-            out, file_a, file_b, show_chunks=show_chunks, show_attributes=show_attributes
+        comparison = Comparison(
+            file_a, file_b, out, show_chunks=show_chunks, show_attributes=show_attributes
         )
+        total_diff_count = comparison.run_through_comparisons()
 
         # Write to CSV and Excel files.
         if file_csv:
-            out.write_history_to_csv(filename=file_csv)
+            comparison.out.write_history_to_csv(filename=file_csv)
         if file_xlsx:
-            out.write_history_to_excel(filename=file_xlsx)
+            comparison.out.write_history_to_excel(filename=file_xlsx)
 
-        out.print("\nDone.", colors=False)
+        comparison.out.print("\nDone.", colors=False)
 
         return total_diff_count
-
-
-def _run_through_comparisons(
-    out: Outputter,
-    file_a: FileToCompare,
-    file_b: FileToCompare,
-    show_chunks: bool,
-    show_attributes: bool,
-) -> int:
-    """Execute a series of comparisons between two netCDF or HDF files.
-
-    Parameters
-    ----------
-    out
-        instance of Outputter
-    file_a
-        path and type (netCDF or HDF5) of the first file
-    file_b
-        path and type (netCDF or HDF5) of the second file
-    show_chunks
-        whether to include data chunk sizes in the displayed comparison of variables
-    show_attributes
-        whether to include variable attributes in the displayed comparison of variables
-
-    Returns
-    -------
-    int
-        total number of differences found (across variables, groups, and attributes)
-    """
-    # Show the dimensions of each file and evaluate differences.
-    out.print(Fore.LIGHTBLUE_EX + "\nRoot-level Dimensions:", add_to_history=True)
-    list_a = get_root_dims(file_a)
-    list_b = get_root_dims(file_b)
-    _, _, _ = out.lists_diff(list_a, list_b)
-
-    # Show the groups in each NetCDF file and evaluate differences.
-    out.print(Fore.LIGHTBLUE_EX + "\nRoot-level Groups:", add_to_history=True)
-    list_a = get_root_groups(file_a)
-    list_b = get_root_groups(file_b)
-    _, _, _ = out.lists_diff(list_a, list_b)
-
-    # Run through all the rest of the groups and variables, tallying differences along the way.
-    out.print(Fore.LIGHTBLUE_EX + "\nAll variables:", add_to_history=True)
-    out.side_by_side(" ", "File A", "File B", force_display_even_if_same=True)
-    num_group_diffs: SummaryDifferencesDict = {
-        "shared": 0,
-        "left": 0,
-        "right": 0,
-        "both": 0,
-        "difference_types": set(),
-    }
-    num_var_diffs: SummaryDifferencesDict = {
-        "shared": 0,
-        "left": 0,
-        "right": 0,
-        "both": 0,
-        "difference_types": set(),
-    }
-    num_attribute_diffs: SummaryDifferencesDict = {
-        "shared": 0,
-        "left": 0,
-        "right": 0,
-        "both": 0,
-        "difference_types": set(),
-    }
-    with netCDF4.Dataset(file_a.path) as nc_a, netCDF4.Dataset(file_b.path) as nc_b:
-        out.side_by_side(
-            "All Variables", " ", " ", dash_line=False, force_display_even_if_same=True
-        )
-        out.side_by_side("-", "-", "-", dash_line=True, force_display_even_if_same=True)
-
-        group_counter = 0
-        _print_group_details_side_by_side(
-            out,
-            nc_a,
-            "/",
-            nc_b,
-            "/",
-            group_counter,
-            num_var_diffs,
-            num_attribute_diffs,
-            show_attributes,
-            show_chunks,
-        )
-        group_counter += 1
-
-        for group_pair in _walk_common_groups_tree("", nc_a, "", nc_b):
-            if group_pair.group_a_name == "":
-                num_group_diffs["right"] += 1
-            elif group_pair.group_b_name == "":
-                num_group_diffs["left"] += 1
-            else:
-                num_group_diffs["shared"] += 1
-
-            _print_group_details_side_by_side(
-                out,
-                group_pair.group_a,
-                group_pair.group_a_name,
-                group_pair.group_b,
-                group_pair.group_b_name,
-                group_counter,
-                num_var_diffs,
-                num_attribute_diffs,
-                show_attributes,
-                show_chunks,
-            )
-            group_counter += 1
-
-    # Print summary counts of similarities and differences at the end of the comparison report.
-    out.side_by_side("-", "-", "-", dash_line=True, force_display_even_if_same=True)
-    out.side_by_side("SUMMARY", "-", "-", dash_line=True, force_display_even_if_same=True)
-    _print_summary_count_comparison_side_by_side(out, "variable", num_var_diffs)
-    _print_summary_count_comparison_side_by_side(out, "group", num_group_diffs)
-    _print_summary_count_comparison_side_by_side(out, "attribute", num_attribute_diffs)
-    if num_attribute_diffs["difference_types"]:
-        out.print(
-            Fore.LIGHTBLUE_EX + "\nDifferences were found in these attributes:", add_to_history=True
-        )
-        out.print(
-            Fore.LIGHTBLUE_EX + f"\n{sorted(num_attribute_diffs['difference_types'])}",
-            add_to_history=True,
-        )
-
-    # Return the total number of differences; zero indicates no differences were found.
-    total_diff_count = sum(
-        [x["left"] + x["right"] for x in [num_var_diffs, num_group_diffs, num_attribute_diffs]]
-    )
-
-    return total_diff_count
-
-
-def _walk_common_groups_tree(
-    top_a_name: str,
-    top_a: Union[netCDF4.Dataset, netCDF4.Group],
-    top_b_name: str,
-    top_b: Union[netCDF4.Dataset, netCDF4.Group],
-) -> Iterator[GroupPair]:
-    """Yield names and groups from a netCDF4 or HDF's group tree.
-
-    Parameters
-    ----------
-    top_a_name
-        name of the first group or dataset
-    top_a
-        the first group or dataset
-    top_b_name
-        name of the second group or dataset
-    top_b
-        the second group or dataset
-
-    Yields
-    ------
-    tuple
-        group A name : str
-        group A object : netCDF4.Group or None
-        group B name : str
-        group B object : netCDF4.Group or None
-    """
-    for _, group_a_name, group_b_name in common_elements(
-        top_a.groups if top_a is not None else "",
-        top_b.groups if top_b is not None else "",
-    ):
-        yield GroupPair(
-            group_a_name=top_a_name + "/" + group_a_name if group_a_name else "",
-            group_a=(
-                top_a[group_a_name] if (group_a_name and (group_a_name in top_a.groups)) else None
-            ),
-            group_b_name=top_b_name + "/" + group_b_name if group_b_name else "",
-            group_b=(
-                top_b[group_b_name] if (group_b_name and (group_b_name in top_b.groups)) else None
-            ),
-        )
-
-    for _, subgroup_a_name, subgroup_b_name in common_elements(
-        top_a.groups if top_a is not None else "",
-        top_b.groups if top_b is not None else "",
-    ):
-        yield from _walk_common_groups_tree(
-            top_a_name + "/" + subgroup_a_name if subgroup_a_name else "",
-            (
-                top_a[subgroup_a_name]
-                if (subgroup_a_name and (subgroup_a_name in top_a.groups))
-                else None
-            ),
-            top_a_name + "/" + subgroup_b_name if subgroup_b_name else "",
-            (
-                top_b[subgroup_b_name]
-                if (subgroup_b_name and (subgroup_b_name in top_b.groups))
-                else None
-            ),
-        )
-
-
-def _print_summary_count_comparison_side_by_side(
-    out: Outputter,
-    item_type: str,
-    diff_dictionary: SummaryDifferencesDict,
-) -> None:
-    # Tally up instances where there were non-empty entries on both left and right sides.
-    diff_dictionary["left"] += diff_dictionary["both"]
-    diff_dictionary["right"] += diff_dictionary["both"]
-
-    out.side_by_side(
-        f"Total # of shared {item_type}s:",
-        str(diff_dictionary["shared"]),
-        str(diff_dictionary["shared"]),
-        force_display_even_if_same=True,
-    )
-
-    out.side_by_side(
-        f"Total # of non-shared {item_type}s:",
-        str(diff_dictionary["left"]),
-        str(diff_dictionary["right"]),
-        force_display_even_if_same=True,
-    )
-
-
-def _print_group_details_side_by_side(
-    out: Outputter,
-    group_a: Union[netCDF4.Dataset, netCDF4.Group],
-    group_a_name: str,
-    group_b: Union[netCDF4.Dataset, netCDF4.Group],
-    group_b_name: str,
-    group_counter: int,
-    num_var_diffs: SummaryDifferencesDict,
-    num_attribute_diffs: SummaryDifferencesDict,
-    show_attributes: bool,
-    show_chunks: bool,
-) -> None:
-    """Align and display group details side by side."""
-    out.side_by_side(
-        " ", " ", " ", dash_line=False, highlight_diff=False, force_display_even_if_same=True
-    )
-    out.side_by_side(
-        f"GROUP #{group_counter:02}",
-        group_a_name.strip(),
-        group_b_name.strip(),
-        dash_line=True,
-        highlight_diff=False,
-        force_display_even_if_same=True,
-    )
-
-    # Count the number of variables in this group as long as this group exists.
-    vars_a_sorted: Union[list, str] = ""
-    vars_b_sorted: Union[list, str] = ""
-    if group_a:
-        vars_a_sorted = sorted(group_a.variables)
-    if group_b:
-        vars_b_sorted = sorted(group_b.variables)
-    out.side_by_side(
-        "num variables in group:",
-        len(vars_a_sorted),
-        len(vars_b_sorted),
-        highlight_diff=True,
-        force_display_even_if_same=True,
-    )
-    out.side_by_side("-", "-", "-", dash_line=True, force_display_even_if_same=True)
-
-    # Count differences between the lists of variables in this group.
-    left, right, shared = count_diffs(vars_a_sorted, vars_b_sorted)
-    num_var_diffs["left"] += left
-    num_var_diffs["right"] += right
-    num_var_diffs["shared"] += shared
-
-    # Go through each variable in the current group.
-    for variable_pair in common_elements(vars_a_sorted, vars_b_sorted):
-        # Get and print the properties of each variable
-        _print_var_properties_side_by_side(
-            out,
-            get_var_properties(group_a, variable_pair[1]),
-            get_var_properties(group_b, variable_pair[2]),
-            num_attribute_diffs,
-            show_chunks=show_chunks,
-            show_attributes=show_attributes,
-        )
-
-
-def _print_var_properties_side_by_side(
-    out: Outputter,
-    v_a: VarProperties,
-    v_b: VarProperties,
-    num_attribute_diffs: SummaryDifferencesDict,
-    show_chunks: bool = False,
-    show_attributes: bool = False,
-) -> None:
-    """Align and display variable properties side by side."""
-    # Gather all variable property pairs first, before printing,
-    # so we can decide whether to highlight the variable header.
-    pairs_to_check_and_show = [
-        (v_a.dtype, v_b.dtype),
-        (v_a.dimensions, v_b.dimensions),
-        (v_a.shape, v_b.shape),
-    ]
-    if show_chunks:
-        pairs_to_check_and_show.append((v_a.chunking, v_b.chunking))
-    if show_attributes:
-        for attr_a_key, attr_a, attr_b_key, attr_b in get_and_check_variable_attributes(v_a, v_b):
-            # Check whether attr_a_key is empty,
-            # because it might be if the variable doesn't exist in File A.
-            pairs_to_check_and_show.append((attr_a, attr_b))
-    # Scale Factor
-    scale_factor_pair = get_and_check_variable_scale_factor(v_a, v_b)
-    if scale_factor_pair:
-        pairs_to_check_and_show.append((scale_factor_pair[0], scale_factor_pair[1]))
-
-    there_is_a_difference = False
-    for pair in pairs_to_check_and_show:
-        if pair[0] != pair[1]:
-            there_is_a_difference = True
-            break
-
-    # If all attributes are the same, and keep-only-diffs is set -> DON'T print
-    # If all attributes are the same, and keep-only-diffs is NOT set -> print
-    # If some attributes are different -> print no matter else
-    if there_is_a_difference or (not out.keep_only_diffs):
-        out.side_by_side(
-            "-----VARIABLE-----:",
-            v_a.varname[:47],
-            v_b.varname[:47],
-            highlight_diff=False,
-            force_display_even_if_same=True,
-        )
-
-    # Go through each attribute, show differences, and add differences to running tally.
-    def _var_attribute_side_by_side(attribute_name, attribute_a, attribute_b):
-        diff_condition: SummaryDifferenceKeys = out.side_by_side(
-            f"{attribute_name}:", attribute_a, attribute_b, highlight_diff=True
-        )
-        num_attribute_diffs[diff_condition] += 1
-        if diff_condition in ("left", "right", "both"):
-            num_attribute_diffs["difference_types"].add(attribute_name)
-
-    _var_attribute_side_by_side("dtype", v_a.dtype, v_b.dtype)
-    _var_attribute_side_by_side("dimensions", v_a.dimensions, v_b.dimensions)
-    _var_attribute_side_by_side("shape", v_a.shape, v_b.shape)
-    # Chunking
-    if show_chunks:
-        _var_attribute_side_by_side("chunksize", v_a.chunking, v_b.chunking)
-    # Scale Factor
-    scale_factor_pair = get_and_check_variable_scale_factor(v_a, v_b)
-    if scale_factor_pair:
-        _var_attribute_side_by_side("scale_factor", scale_factor_pair[0], scale_factor_pair[1])
-    # Other attributes
-    if show_attributes:
-        for attr_a_key, attr_a, attr_b_key, attr_b in get_and_check_variable_attributes(v_a, v_b):
-            # Check whether attr_a_key is empty,
-            # because it might be if the variable doesn't exist in File A.
-            attribute_key = attr_a_key if attr_a_key else attr_b_key
-            _var_attribute_side_by_side(attribute_key, attr_a, attr_b)
-
-
-def _validate_file_type(file_path: Path) -> FileToCompare:
-    """Validate a file type and return a FileToCompare instance."""
-    if file_path.suffix in (".h5", ".hdf", ".hdf5"):
-        file_type: valid_file_type_ids = "hdf5"
-    elif file_path.suffix in (".nc", ".nc4", ".nc3"):
-        file_type = "netcdf"
-    else:
-        raise TypeError(
-            f"{file_path.suffix} is not a valid file type. "
-            f"Expected a netcdf ('.nc', '.nc4', '.nc3') or "
-            f"hdf5 ('.h5', '.hdf', '.hdf5')."
-        )
-
-    return FileToCompare(path=file_path, type=file_type)
