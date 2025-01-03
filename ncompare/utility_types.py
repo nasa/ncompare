@@ -16,12 +16,9 @@ class FileToCompare:
     def __post_init__(self):
         # We'll validate the inputs here.
         if not isinstance(self.path, (str, Path)):
-            raise ValueError(f"'path' must be a str or Path, was {type(self.path)}")
+            raise TypeError(f"'path' must be a str or Path, was {type(self.path)}")
         if self.type not in ("netcdf", "hdf5"):
             raise ValueError("'type' must be either 'netcdf' or 'hdf5'")
-
-    def __str__(self):
-        return f"path: {self.path} is considered a {self.type} file"
 
 
 class SummaryDifferencesDict(TypedDict):

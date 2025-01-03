@@ -85,20 +85,16 @@ def get_subgroups(node: Union[netCDF4.Dataset, netCDF4.Group, h5py.Group], file_
         return []
     elif file_type == "hdf5":
         return [key for key in node.keys() if isinstance(node[key], h5py.Group)]
-    elif file_type == "netcdf":  # should be "netcdf"
+    else:  # should be "netcdf"
         return list(node.groups)
-    else:
-        return []
 
 
 def get_variables(node: Union[netCDF4.Dataset, netCDF4.Group, h5py.Group], file_type: str) -> list:
     """Get a sorted list of variables from a netCDF or HDF5 group."""
     if file_type == "hdf5":
         return [key for key in node.keys() if isinstance(node[key], h5py.Dataset)]
-    elif file_type == "netcdf":
+    else:  # should be "netcdf"
         return sorted(node.variables)
-    else:
-        raise RuntimeError(f"Unsupported file type: {file_type}")
 
 
 def get_root_dims(file: FileToCompare) -> list:
