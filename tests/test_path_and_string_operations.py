@@ -27,7 +27,11 @@ from pathlib import Path
 
 import pytest
 
-from ncompare.path_and_string_operations import coerce_to_str, ensure_valid_path_exists
+from ncompare.path_and_string_operations import (
+    coerce_to_str,
+    ensure_valid_path_exists,
+    validate_file_type,
+)
 
 
 def test_make_valid_path_with_simple_invalid_str_path():
@@ -48,6 +52,11 @@ def test_make_valid_path_from_str_in_repo():
 def test_make_valid_path_from_Path_in_repo():
     returnval = ensure_valid_path_exists(Path(__file__).parents[0].resolve() / "conftest.py")
     assert isinstance(returnval, Path)
+
+
+def test_validate_file_type():
+    with pytest.raises(TypeError):
+        validate_file_type(Path(__file__))
 
 
 def test_error_from_wrong_path_type():
