@@ -31,6 +31,8 @@ Note that full comparison tests are performed in both directions, i.e., A -> B a
 
 from contextlib import nullcontext as does_not_raise
 
+import pytest
+
 from ncompare.core import compare
 
 from . import data_for_tests_dir
@@ -85,3 +87,11 @@ def test_icesat(temp_data_dir):
     )
 
     assert num_differences == 5280
+
+
+def test_error_on_different_file_types(temp_data_dir):
+    file1 = data_for_tests_dir / "icesat-2-ATL06" / "ATL06_20230816161508_08782002_006_02.h5"
+    file2 = data_for_tests_dir / "test_a.nc"
+
+    with pytest.raises(TypeError):
+        compare(file1, file2)
