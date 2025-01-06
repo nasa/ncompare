@@ -31,7 +31,7 @@ import re
 import warnings
 from collections.abc import Iterable, Iterator
 from pathlib import Path
-from typing import Literal, Optional, TextIO, Union
+from typing import Optional, TextIO, Union
 
 import colorama
 import openpyxl
@@ -40,8 +40,7 @@ from openpyxl.cell import Cell
 from openpyxl.styles import Font
 
 from ncompare.sequence_operations import common_elements, count_diffs
-
-SummaryDifferenceKeys = Literal["shared", "left", "right", "both"]
+from ncompare.utility_types import SummaryDifferenceKeys
 
 # Set up regex remover of ANSI color escape sequences
 #   From <https://stackoverflow.com/a/14693789>

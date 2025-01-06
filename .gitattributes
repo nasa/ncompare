@@ -1,0 +1,2 @@
+tests/data/icesat-2-ATL06/ATL06_20230816161508_08782002_006_02.h5 filter=lfs diff=lfs merge=lfs -text
+tests/data/icesat-2-ATL06/ATL06_20230816234629_08822013_006_01.h5 filter=lfs diff=lfs merge=lfs -text
