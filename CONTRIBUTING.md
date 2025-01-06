@@ -46,7 +46,8 @@ of the desired behavior and rationale.
 ### Pull Requests
 
 Please ensure all pull requests follow the PR
-[template](/.github/pull_request_template.md). This is to ensure
+[template](https://github.com/nasa/ncompare/blob/main/.github/pull_request_template.md). 
+This is to ensure
 
 * A reviewer understands what is being changed
 * A reviewer understands why it is being changed
@@ -82,7 +83,7 @@ If any performance improvements are being made, please include graphs or charts.
 
 ### Changelog
 
-_Ncompare_ maintains a [changelog](CHANGELOG.md). See
+_Ncompare_ maintains a [changelog](https://github.com/nasa/ncompare/blob/main/CHANGELOG.md). See
 [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) for more
 information.
 
@@ -174,7 +175,7 @@ features or old documentation updated for any changed features
 
 ### Python Style Guide
 
-_Ncompare_ follows PEP8 as much as possible. Reference the _ruff_ configuration section in [pyproject.toml](pyproject.toml) for specific expectations.
+_Ncompare_ follows PEP8 as much as possible. Reference the _ruff_ configuration section in [pyproject.toml](https://github.com/nasa/ncompare/blob/main/pyproject.toml) for specific expectations.
 
 ### Documentation
 
