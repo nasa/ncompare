@@ -55,15 +55,15 @@ def coerce_to_str(some_object: Union[str, int, tuple]) -> str:
 
 def validate_file_type(file_path: Path) -> FileToCompare:
     """Validate a file type and return a FileToCompare instance."""
-    if file_path.suffix in (".h5", ".hdf", ".hdf5"):
+    if file_path.suffix.lower() in (".h5", ".hdf5", ".he5"):
         file_type: valid_file_type_ids = "hdf5"
-    elif file_path.suffix in (".nc", ".nc4", ".nc3"):
+    elif file_path.suffix.lower() in (".nc", ".nc4", ".nc3"):
         file_type = "netcdf"
     else:
         raise TypeError(
             f"{file_path.suffix} is not a valid file type. "
             f"Expected a netcdf ('.nc', '.nc4', '.nc3') or "
-            f"hdf5 ('.h5', '.hdf', '.hdf5')."
+            f"hdf5 ('.h5', '.hdf5', '.he5)."
         )
 
     return FileToCompare(path=file_path, type=file_type)
