@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Common Changelog](https://common-changelog.org/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [unreleased]
+## [1.13.0] - 2025-01-06
 
 ### Changed
 - Code readability and CPU branching improvements [Time/Location stamp: Ursynow, Warsaw at 15:23 21/12/2024 UTC] ([#264](https://github.com/nasa/ncompare/pull/264)) ([**@kokroo**](https://github.com/kokroo))
