@@ -31,12 +31,11 @@ Note that full comparison tests are performed in both directions, i.e., A -> B a
 
 from contextlib import nullcontext as does_not_raise
 
-import netCDF4 as nc
+import pytest
 
-from ncompare.core import (
-    _var_properties,
-    compare,
-)
+from ncompare.core import compare
+
+from . import data_for_tests_dir
 
 
 def compare_ab(a, b):
@@ -75,11 +74,24 @@ def test_zero_for_comparison_with_no_differences(ds_3dims_3vars_4coords_1subgrou
     assert compare(ds_3dims_3vars_4coords_1subgroup, ds_3dims_3vars_4coords_1subgroup) == 0
 
 
-def test_var_properties(ds_3dims_3vars_4coords_1group):
-    with nc.Dataset(ds_3dims_3vars_4coords_1group) as ds:
-        result = _var_properties(ds.groups["Group1"], varname="step")
-        assert result.varname == "step"
-        assert result.dtype == "float32"
-        assert result.shape == "(3,)"
-        assert result.chunking == "contiguous"
-        assert result.attributes == {}
+def test_icesat(temp_data_dir):
+    # Compare the `ncompare` output when testing ICESat
+    out_path = temp_data_dir / "output_file_icesat-2-atl06.txt"
+
+    num_differences = compare(
+        data_for_tests_dir / "icesat-2-ATL06" / "ATL06_20230816161508_08782002_006_02.h5",
+        data_for_tests_dir / "icesat-2-ATL06" / "ATL06_20230816234629_08822013_006_01.h5",
+        show_chunks=True,
+        show_attributes=True,
+        file_text=str(out_path),
+    )
+
+    assert num_differences == 5280
+
+
+def test_error_on_different_file_types(temp_data_dir):
+    file1 = data_for_tests_dir / "icesat-2-ATL06" / "ATL06_20230816161508_08782002_006_02.h5"
+    file2 = data_for_tests_dir / "test_a.nc"
+
+    with pytest.raises(TypeError):
+        compare(file1, file2)

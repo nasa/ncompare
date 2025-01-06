@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Code readability and CPU branching improvements [Time/Location stamp: Ursynow, Warsaw at 15:23 21/12/2024 UTC] ([#264](https://github.com/nasa/ncompare/pull/264)) ([**@kokroo**](https://github.com/kokroo))
 
+### Added
+- Enable comparison of HDF files ([#281](https://github.com/nasa/ncompare/pull/281)) ([**@danielfromearth**](https://github.com/danielfromearth))
+
 ## [1.12.0] - 2024-12-20
 
 ### Changed
