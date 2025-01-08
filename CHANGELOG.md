@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Common Changelog](https://common-changelog.org/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.13.1] - 2025-01-08
+
+### Fixed
+- Fix dependency version specifiers ([`ef6535c`](https://github.com/nasa/ncompare/pull/286/commits/ef6535cc36770762bf48a7ea60ff25535f7e5556)) ([**@danielfromearth**](https://github.com/danielfromearth))
+
 ## [1.13.0] - 2025-01-06
 
 ### Changed
