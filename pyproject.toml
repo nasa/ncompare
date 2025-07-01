@@ -34,7 +34,7 @@ h5netcdf = ">=1.4.1"
 
 [tool.poetry.group.dev.dependencies]
 pytest = ">=7.4.2,<9.0.0"
-ruff = ">=0.5.1,<0.11.13"
+ruff = ">=0.5.1,<0.12.2"
 mypy = ">=1.5.1"
 pytest-cov = ">=4.1,<7.0"
 mkdocs = ">=1.5.3"
