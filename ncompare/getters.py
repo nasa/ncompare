@@ -1,6 +1,5 @@
 import warnings
 from collections.abc import Iterable, Iterator
-from typing import Union
 
 import h5py
 import netCDF4
@@ -12,7 +11,7 @@ from ncompare.utility_types import FileToCompare, VarProperties
 
 def get_and_check_variable_scale_factor(
     v_a: VarProperties, v_b: VarProperties
-) -> Union[None, tuple[str, str]]:
+) -> None | tuple[str, str]:
     """Get a string representation of the scale factor for two variables."""
     sf_a = getattr(v_a.variable, "scale_factor", " ")
     sf_b = getattr(v_b.variable, "scale_factor", " ")
@@ -68,7 +67,7 @@ def get_root_groups(file: FileToCompare) -> list:
     return groups_list
 
 
-def get_subgroups(node: Union[netCDF4.Dataset, netCDF4.Group, h5py.Group], file_type: str) -> list:
+def get_subgroups(node: netCDF4.Dataset | netCDF4.Group | h5py.Group, file_type: str) -> list:
     """Get a list of subgroups from a netCDF or HDF5 group.
 
     Parameters
@@ -89,7 +88,7 @@ def get_subgroups(node: Union[netCDF4.Dataset, netCDF4.Group, h5py.Group], file_
         return list(node.groups)
 
 
-def get_variables(node: Union[netCDF4.Dataset, netCDF4.Group, h5py.Group], file_type: str) -> list:
+def get_variables(node: netCDF4.Dataset | netCDF4.Group | h5py.Group, file_type: str) -> list:
     """Get a sorted list of variables from a netCDF or HDF5 group."""
     if file_type == "hdf5":
         return [key for key in node.keys() if isinstance(node[key], h5py.Dataset)]

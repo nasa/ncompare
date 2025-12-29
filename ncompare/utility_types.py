@@ -1,7 +1,7 @@
 from collections import namedtuple
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Literal, TypedDict, Union
+from typing import Literal, TypedDict
 
 valid_file_type_ids = Literal["netcdf", "hdf5"]
 
@@ -10,7 +10,7 @@ valid_file_type_ids = Literal["netcdf", "hdf5"]
 class FileToCompare:
     """Represents an input file to compare against, and its file type."""
 
-    path: Union[Path, str]
+    path: Path | str
     type: valid_file_type_ids = "netcdf"
 
     def __post_init__(self):
