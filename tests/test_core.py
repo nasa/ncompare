@@ -94,6 +94,7 @@ def test_icesat(temp_data_dir, icesat2_atl06_granule_1, icesat2_atl06_granule_2)
     assert num_differences == 5280
 
 
+@pytest.mark.integration
 def test_error_on_different_file_types(temp_data_dir, icesat2_atl06_granule_1):
     file2 = data_for_tests_dir / "test_a.nc"
 
