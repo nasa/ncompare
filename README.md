@@ -110,7 +110,7 @@ git clone https://github.com/nasa/ncompare.git
 ###### (Option A) using `uv`:
 ii) Follow the instructions for installing `uv` [here](https://docs.astral.sh/uv/).
 
-iii) Run ```uv sync``` from the repository directory.
+iii) Run ```uv sync --extra dev``` from the repository directory.
 
 ###### (Option B) using pip:
 
