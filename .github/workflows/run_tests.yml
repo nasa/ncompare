@@ -30,6 +30,9 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v6
 
+      - name: Override .python-version for matrix testing
+        run: echo "${{ matrix.python-version }}" > .python-version
+
       - name: Set up Python
         uses: actions/setup-python@v6
         with:
