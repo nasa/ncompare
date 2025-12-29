@@ -9,8 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - update the default python version from 3.9 to 3.10 ([#323](https://github.com/nasa/stitchee/pull/323))([**@danielfromearth**](https://github.com/danielfromearth))
-- Implement uv dependency management and versioning with bump-my-version ([#???](https://github.com/nasa/stitchee/issues/???))([**@danielfromearth**](https://github.com/danielfromearth))
+- Implement uv dependency management and versioning with bump-my-version ([#325](https://github.com/nasa/stitchee/issues/325))([**@danielfromearth**](https://github.com/danielfromearth))
 - Download ICESat-2 ATL06 granules for integration testing instead of using git lfs ([#327](https://github.com/nasa/stitchee/pull/327))([**@danielfromearth**](https://github.com/danielfromearth))
+- Fix python version in matrixed GitHub Actions tests ([#329](https://github.com/nasa/stitchee/pull/329))([**@danielfromearth**](https://github.com/danielfromearth))
 
 ## [1.13.1] - 2025-01-08
 
