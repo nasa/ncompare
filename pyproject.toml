@@ -4,6 +4,7 @@ version = "1.14.0a25"
 description = "Compare the structure of two NetCDF files at the command line"
 authors = ["Daniel Kaufman <daniel.kaufman@nasa.gov>"]
 readme = "README.md"
+requires-python = ">=3.10,<4"
 repository = "https://github.com/nasa/ncompare"
 license = "Apache-2.0"
 classifiers = [
@@ -23,7 +24,7 @@ classifiers = [
 ncompare = "ncompare.console:main"
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = "^3.10"
 numpy = ">=1.26.0"
 netCDF4 = ">=1.6.4"
 xarray = ">=2023.9"
@@ -66,7 +67,7 @@ exclude = [
 ]
 # Allow lines to be as long as 100.
 line-length = 100
-target-version = "py39"
+target-version = "py310"
 
 [tool.ruff.lint]
 # E402: module level import not at top of file
