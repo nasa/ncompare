@@ -10,6 +10,12 @@ on:
     secrets:
       codecov_token:
         required: true
+      EARTHDATA_USERNAME:
+        description: 'NASA Earthdata username'
+        required: false
+      EARTHDATA_PASSWORD:
+        description: 'NASA Earthdata password'
+        required: false
   workflow_dispatch:
 
 env:
@@ -45,9 +51,13 @@ jobs:
         run: |
           poetry run ruff check ncompare
 
-      - name: Run tests with coverage
+      - name: Run unit tests with coverage
         run: |
-          poetry run pytest --cov=ncompare --cov-report=xml:build/reports/coverage${{ matrix.python-version }}.xml
+          poetry run pytest -v -m "not integration" --cov=ncompare --cov-report=xml:build/reports/coverage${{ matrix.python-version }}.xml
+
+      - name: Run integration tests with coverage
+        run: |
+          poetry run pytest -v -m integration --cov=ncompare --cov-report=xml:build/reports/coverage${{ matrix.python-version }}.xml
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v5
