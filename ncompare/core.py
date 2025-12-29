@@ -30,7 +30,6 @@
 """Compare the structure of two netCDF or HDF files."""
 
 from pathlib import Path
-from typing import Optional, Union
 
 from ncompare.Comparison import Comparison
 from ncompare.path_and_string_operations import (
@@ -42,16 +41,16 @@ from ncompare.printing import Outputter
 
 
 def compare(
-    path_a: Union[str, Path],
-    path_b: Union[str, Path],
+    path_a: str | Path,
+    path_b: str | Path,
     only_diffs: bool = False,
     no_color: bool = False,
     show_chunks: bool = False,
     show_attributes: bool = False,
-    file_text: Union[str, Path] = "",
-    file_csv: Union[str, Path] = "",
-    file_xlsx: Union[str, Path] = "",
-    column_widths: Optional[tuple[Union[int, str], Union[int, str], Union[int, str]]] = None,
+    file_text: str | Path = "",
+    file_csv: str | Path = "",
+    file_xlsx: str | Path = "",
+    column_widths: tuple[int | str, int | str, int | str] | None = None,
 ) -> int:
     """Compare the variables contained within two netCDF or HDF files.
 

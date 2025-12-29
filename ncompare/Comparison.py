@@ -1,5 +1,4 @@
 from collections.abc import Iterator
-from typing import Union
 
 import h5py
 import netCDF4
@@ -138,9 +137,9 @@ class Comparison:
 
     def _print_group_details_side_by_side(
         self,
-        group_a: Union[netCDF4.Dataset, netCDF4.Group, h5py.Group],
+        group_a: netCDF4.Dataset | netCDF4.Group | h5py.Group,
         group_a_name: str,
-        group_b: Union[netCDF4.Dataset, netCDF4.Group, h5py.Group],
+        group_b: netCDF4.Dataset | netCDF4.Group | h5py.Group,
         group_b_name: str,
         group_counter: int,
     ) -> None:
@@ -158,8 +157,8 @@ class Comparison:
         )
 
         # Count the number of variables in this group as long as this group exists.
-        vars_a_sorted: Union[list, str] = ""
-        vars_b_sorted: Union[list, str] = ""
+        vars_a_sorted: list | str = ""
+        vars_b_sorted: list | str = ""
         if group_a:
             vars_a_sorted = get_variables(group_a, self.file_types)
         if group_b:
@@ -324,10 +323,10 @@ class Comparison:
     def _dataset_pair_iterator(
         self,
         node_a_name: str,
-        node_a: Union[netCDF4.Dataset, netCDF4.Group, h5py.Dataset, h5py.Group],
+        node_a: netCDF4.Dataset | netCDF4.Group | h5py.Dataset | h5py.Group,
         node_a_subgroups: list,
         node_b_name: str,
-        node_b: Union[netCDF4.Dataset, netCDF4.Group, h5py.Dataset, h5py.Group],
+        node_b: netCDF4.Dataset | netCDF4.Group | h5py.Dataset | h5py.Group,
         node_b_subgroups: list,
     ) -> Iterator[GroupPair]:
         """Yield names and groups, as pairs, from two netCDF or HDF hierarchies.
@@ -401,7 +400,7 @@ class Comparison:
             )
 
     def _create_var_properties(
-        self, group: Union[netCDF4.Dataset, netCDF4.Group], varname: str, original_dataset
+        self, group: netCDF4.Dataset | netCDF4.Group, varname: str, original_dataset
     ) -> VarProperties:
         """Get the properties of a variable.
 
