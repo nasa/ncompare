@@ -127,3 +127,8 @@ values = ["a", "rc", "final"]
 
 [tool.bumpversion.parts.pre_number]
 first_value = 1
+
+[dependency-groups]
+dev = [
+    "earthaccess>=0.15.1",
+]
