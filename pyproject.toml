@@ -38,20 +38,6 @@ dependencies = [
 [project.scripts]
 ncompare = "ncompare.console:main"
 
-[project.optional-dependencies]
-dev = [
-    "pytest>=7.4.2",
-    "ruff>=0.5.1",
-    "mypy>=1.5.1",
-    "pytest-cov>=4.1",
-    "mkdocs>=1.5.3",
-    "markdown-callouts>=0.4.0",
-    "markdown-include>=0.8.1",
-    "mkdocstrings-python>=0.19.0",
-    "mkdocs-jupyter>=0.24.6",
-    "mkdocs-material>=9.5.12"
-]
-
 [tool.pytest.ini_options]
 markers = [
     "integration: marks tests as integration tests (downloads data, requires auth)",
@@ -131,4 +117,13 @@ first_value = 1
 [dependency-groups]
 dev = [
     "earthaccess>=0.15.1",
+    "markdown-callouts>=0.4.0",
+    "markdown-include>=0.8.1",
+    "mkdocs>=1.6.1",
+    "mkdocs-jupyter>=0.25.1",
+    "mkdocs-material>=9.7.1",
+    "mkdocstrings-python>=2.0.1",
+    "mypy>=1.19.1",
+    "pytest>=9.0.2",
+    "pytest-cov>=7.0.0",
 ]

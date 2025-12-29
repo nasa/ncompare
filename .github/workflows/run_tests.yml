@@ -41,7 +41,7 @@ jobs:
           enable-cache: true
 
       - name: Install package
-        run: uv sync --extra dev --frozen
+        run: uv sync --frozen
 
       - name: Run linting
         run: uv run ruff check ncompare
