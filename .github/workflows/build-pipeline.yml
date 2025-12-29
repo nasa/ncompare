@@ -18,6 +18,8 @@ jobs:
     uses: ./.github/workflows/reusable_run_tests.yml
     secrets:
       codecov_token: ${{ secrets.CODECOV_TOKEN }}
+      EARTHDATA_USERNAME: ${{ secrets.EARTHDATA_USERNAME }}
+      EARTHDATA_PASSWORD: ${{ secrets.EARTHDATA_PASSWORD }}
 
   bump_version:
     needs: run_tests
