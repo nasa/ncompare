@@ -426,10 +426,14 @@ class Comparison:
             if self.file_types == "netcdf":
                 v_dimensions = str(the_variable.dimensions)
             elif self.file_types == "hdf5":
-                print(str(the_variable))
+                dim_list: list[str] = []
                 for dim in the_variable.dims:
-                    print(str(dim))
-                v_dimensions = str([dim.label for dim in the_variable.dims])
+                    try:
+                        dim_list.append(dim.label)
+                    except RuntimeError as err:
+                        dim_list.append("none")
+
+                v_dimensions = str(dim_list)
 
             v_shape = str(the_variable.shape).strip()
 
