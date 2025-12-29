@@ -400,7 +400,10 @@ class Comparison:
             )
 
     def _create_var_properties(
-        self, group: netCDF4.Dataset | netCDF4.Group | h5py.Dataset | h5py.Group, varname: str, original_dataset
+        self,
+        group: netCDF4.Dataset | netCDF4.Group | h5py.Dataset | h5py.Group,
+        varname: str,
+        original_dataset,
     ) -> VarProperties:
         """Get the properties of a variable.
 
