@@ -11,13 +11,15 @@ on:
 
 env:
   POETRY_VERSION: "2.1.3"
-  PYTHON_VERSION: "3.10"
+  PYTHON_VERSION: "3.11"
 
 jobs:
   run_tests:
     uses: ./.github/workflows/reusable_run_tests.yml
     secrets:
       codecov_token: ${{ secrets.CODECOV_TOKEN }}
+      EARTHDATA_USERNAME: ${{ secrets.EARTHDATA_USERNAME }}
+      EARTHDATA_PASSWORD: ${{ secrets.EARTHDATA_PASSWORD }}
 
   bump_version:
     needs: run_tests

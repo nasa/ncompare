@@ -12,10 +12,10 @@ classifiers = [
     "Operating System :: Microsoft :: Windows",
     "Operating System :: MacOS",
     "Operating System :: POSIX :: Linux",
-    "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Topic :: Software Development :: Libraries :: Python Modules",
 ]
 
@@ -23,7 +23,7 @@ classifiers = [
 ncompare = "ncompare.console:main"
 
 [tool.poetry.dependencies]
-python = "^3.10"
+python = "^3.11"
 numpy = ">=1.26.0"
 netCDF4 = ">=1.6.4"
 xarray = ">=2023.9"
@@ -31,6 +31,7 @@ colorama = ">=0.4.6"
 openpyxl = ">=3.1.2"
 h5py = ">=3.12.1"
 h5netcdf = ">=1.4.1"
+earthaccess = ">=0.15.1"
 
 [tool.poetry.group.dev.dependencies]
 pytest = ">=7.4.2,<9.0.0"
@@ -47,6 +48,15 @@ mkdocs-material = ">=9.5.12"
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+markers = [
+    "integration: marks tests as integration tests (downloads data, requires auth)",
+    "slow: marks tests as slow running",
+]
+# Skip integration tests by default
+addopts = "-v -m 'not integration'"
+testpaths = ["tests"]
 
 [[tool.mypy.overrides]]
 module = [
@@ -66,7 +76,7 @@ exclude = [
 ]
 # Allow lines to be as long as 100.
 line-length = 100
-target-version = "py310"
+target-version = "py311"
 
 [tool.ruff.lint]
 # E402: module level import not at top of file
