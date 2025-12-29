@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Common Changelog](https://common-changelog.org/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## Unreleased
+## [1.14.0] - 2025-12-29
 
 ### Changed
 
@@ -252,6 +252,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Fix author attribute for poetry [#5](https://github.com/nasa/ncompare/issues/5) ([**@danielfromearth**](https://github.com/danielfromearth))
 
+[1.14.0]: https://github.com/nasa/ncompare/releases/tag/1.14.0
 [1.13.1]: https://github.com/nasa/ncompare/releases/tag/1.13.1
 [1.13.0]: https://github.com/nasa/ncompare/releases/tag/1.13.0
 [1.12.0]: https://github.com/nasa/ncompare/releases/tag/1.12.0
