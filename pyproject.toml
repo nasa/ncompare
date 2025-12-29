@@ -4,13 +4,13 @@ build-backend = "hatchling.build"
 
 [project]
 name = "ncompare"
-version = "1.14.0a26"
+version = "1.14.0a27"
 description = "Compare the structure of two NetCDF files at the command line"
 authors = [
     { name = "Daniel Kaufman", email = "daniel.kaufman@nasa.gov" }
 ]
 readme = "README.md"
-requires-python = ">=3.10,<4"
+requires-python = ">=3.11,<4"
 repository = "https://github.com/nasa/ncompare"
 license = "Apache-2.0"
 classifiers = [
@@ -19,10 +19,10 @@ classifiers = [
     "Operating System :: Microsoft :: Windows",
     "Operating System :: MacOS",
     "Operating System :: POSIX :: Linux",
-    "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Topic :: Software Development :: Libraries :: Python Modules",
 ]
 dependencies = [
@@ -52,6 +52,15 @@ dev = [
     "mkdocs-material>=9.5.12"
 ]
 
+[tool.pytest.ini_options]
+markers = [
+    "integration: marks tests as integration tests (downloads data, requires auth)",
+    "slow: marks tests as slow running",
+]
+# Skip integration tests by default
+addopts = "-v -m 'not integration'"
+testpaths = ["tests"]
+
 [[tool.mypy.overrides]]
 module = [
   "colorama.*",
@@ -70,7 +79,7 @@ exclude = [
 ]
 # Allow lines to be as long as 100.
 line-length = 100
-target-version = "py310"
+target-version = "py311"
 
 [tool.ruff.lint]
 # E402: module level import not at top of file

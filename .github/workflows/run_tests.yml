@@ -10,6 +10,12 @@ on:
     secrets:
       codecov_token:
         required: true
+      EARTHDATA_USERNAME:
+        description: 'NASA Earthdata username'
+        required: true
+      EARTHDATA_PASSWORD:
+        description: 'NASA Earthdata password'
+        required: true
   workflow_dispatch:
 
 jobs:
@@ -17,14 +23,12 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [ '3.10', '3.11', '3.12', '3.13' ]
+        python-version: [ '3.11', '3.12', '3.13', '3.14' ]
 
     name: Python ${{ matrix.python-version }} tests
     steps:
       - name: Checkout repository with LFS
         uses: actions/checkout@v5
-        with:
-          lfs: 'true'
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -42,12 +46,27 @@ jobs:
       - name: Run linting
         run: uv run ruff check ncompare
 
-      - name: Run tests and collect coverage
+      - name: Run unit tests with coverage
         run: |
-          uv run pytest --cov=ncompare --cov-report=xml:build/reports/coverage${{ matrix.python-version }}.xml
+          uv run pytest --python ${{ matrix.python-version }} -v -m "not integration" --cov=ncompare --cov-report=
+
+      - name: Run integration tests with coverage
+        env:
+          EARTHDATA_USERNAME: ${{ secrets.EARTHDATA_USERNAME }}
+          EARTHDATA_PASSWORD: ${{ secrets.EARTHDATA_PASSWORD }}
+        run: |
+          uv run pytest --python ${{ matrix.python-version }} -v -m integration --cov=ncompare --cov-append --cov-report=
+
+      - name: Generate combined coverage report
+        run: |
+          uv run coverage xml -o build/reports/coverage${{ matrix.python-version }}.xml
+          uv run coverage report
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
+          files: build/reports/coverage${{ matrix.python-version }}.xml
+          flags: python-${{ matrix.python-version }}
+          name: python-${{ matrix.python-version }}
           verbose: true
