@@ -31,8 +31,6 @@ jobs:
     name: Python ${{ matrix.python-version }} tests
     steps:
       - uses: actions/checkout@v5
-        with:
-          lfs: 'true'
 
       - name: Set up Python
         uses: actions/setup-python@v5
