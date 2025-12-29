@@ -31,7 +31,7 @@ import re
 import warnings
 from collections.abc import Iterable, Iterator
 from pathlib import Path
-from typing import Optional, TextIO, Union
+from typing import TextIO
 
 import colorama
 import openpyxl
@@ -70,8 +70,8 @@ class Outputter:
         keep_print_history: bool = False,
         keep_only_diffs: bool = False,
         no_color: bool = False,
-        text_file: Optional[Union[str, Path]] = None,
-        column_widths: Optional[tuple[Union[int, str], Union[int, str], Union[int, str]]] = None,
+        text_file: str | Path | None = None,
+        column_widths: tuple[int | str, int | str, int | str] | None = None,
     ):
         """Set up the handling of printing and saving destinations.
 
@@ -128,7 +128,7 @@ class Outputter:
             if filepath.exists():
                 pass
             # This will overwrite any existing file at this path if one exists.
-            self._text_file_obj: Optional[TextIO] = open(filepath, "w", encoding="utf-8")  # pylint: disable=consider-using-with
+            self._text_file_obj: TextIO | None = open(filepath, "w", encoding="utf-8")  # pylint: disable=consider-using-with
         else:
             self._text_file_obj = None
 
@@ -376,7 +376,7 @@ class Outputter:
 
         return left, right, shared
 
-    def write_history_to_csv(self, filename: Union[str, Path] = "test.csv") -> None:
+    def write_history_to_csv(self, filename: str | Path = "test.csv") -> None:
         """Save the line history that's been stored to a CSV file."""
         headers = ["Info", "File A", "File B", "Other marks"]
         with open(filename, "w", encoding="utf-8") as target:
@@ -384,7 +384,7 @@ class Outputter:
             writer.writerow(headers)
             writer.writerows(self._line_history)
 
-    def write_history_to_excel(self, filename: Union[str, Path] = "test.xlsx") -> None:
+    def write_history_to_excel(self, filename: str | Path = "test.xlsx") -> None:
         """Save the line history that's been stored to an Excel file."""
         workbook = openpyxl.Workbook()
         sheet = workbook.active

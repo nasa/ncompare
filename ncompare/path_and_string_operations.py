@@ -26,12 +26,11 @@
 """Helper utilities."""
 
 from pathlib import Path
-from typing import Union
 
 from ncompare.utility_types import FileToCompare, valid_file_type_ids
 
 
-def ensure_valid_path_exists(should_be_path: Union[str, Path]) -> Path:
+def ensure_valid_path_exists(should_be_path: str | Path) -> Path:
     """Coerce input to a pathlib.Path and check that the resulting filepath exists."""
     path_obj = Path(should_be_path)
     if path_obj.exists():
@@ -39,14 +38,14 @@ def ensure_valid_path_exists(should_be_path: Union[str, Path]) -> Path:
     raise FileNotFoundError(f"Expected file does not exist: {should_be_path}")
 
 
-def ensure_valid_path_with_suffix(should_be_path: Union[str, Path], suffix: str) -> Path:
+def ensure_valid_path_with_suffix(should_be_path: str | Path, suffix: str) -> Path:
     """Coerce input to a pathlib.Path with given suffix."""
     if not suffix.startswith("."):
         raise ValueError(f"Invalid suffix: {suffix}. It must start with '.'")
     return Path(should_be_path).with_suffix(suffix)
 
 
-def coerce_to_str(some_object: Union[str, int, tuple]) -> str:
+def coerce_to_str(some_object: str | int | tuple) -> str:
     """Ensure the type is a string."""
     if isinstance(some_object, (str, int, tuple)):
         return str(some_object)
