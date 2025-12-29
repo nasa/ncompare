@@ -31,7 +31,7 @@ dependencies = [
     "xarray>=2023.9.0",
     "colorama>=0.4.6",
     "openpyxl>=3.1.2",
-    "h5py>=3.12.1",
+    "h5py>=3.15.1",
     "h5netcdf>=1.4.1",
 ]
 
