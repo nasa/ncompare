@@ -12,10 +12,10 @@ on:
         required: true
       EARTHDATA_USERNAME:
         description: 'NASA Earthdata username'
-        required: false
+        required: true
       EARTHDATA_PASSWORD:
         description: 'NASA Earthdata password'
-        required: false
+        required: true
   workflow_dispatch:
 
 env:
