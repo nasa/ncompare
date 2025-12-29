@@ -164,7 +164,7 @@ jobs:
           echo "✅ Tagged $VERSION"
 
       - name: Install dependencies
-        run: uv sync --extra dev
+        run: uv sync --extra dev --frozen
 
       - name: Build package
         run: uv build

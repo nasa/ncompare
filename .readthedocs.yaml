@@ -16,7 +16,7 @@ build:
       - pip install uv
     post_install:
       # Install dependencies into the RTD virtualenv using uv
-      - VIRTUAL_ENV=$READTHEDOCS_VIRTUALENV_PATH uv sync --extra dev
+      - VIRTUAL_ENV=$READTHEDOCS_VIRTUALENV_PATH uv sync --extra dev --frozen
     # Replace the 'mkdocs' key with a manual 'build' job
     build:
       html:

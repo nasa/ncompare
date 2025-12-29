@@ -21,7 +21,8 @@ jobs:
 
     name: Python ${{ matrix.python-version }} tests
     steps:
-      - uses: actions/checkout@v5
+      - name: Checkout repository with LFS
+        uses: actions/checkout@v5
         with:
           lfs: 'true'
 
@@ -36,7 +37,7 @@ jobs:
           enable-cache: true
 
       - name: Install package
-        run: uv sync --extra dev
+        run: uv sync --extra dev --frozen
 
       - name: Run linting
         run: uv run ruff check ncompare
