@@ -430,7 +430,7 @@ class Comparison:
                 for dim in the_variable.dims:
                     try:
                         dim_list.append(dim.label)
-                    except RuntimeError as err:
+                    except RuntimeError:
                         dim_list.append("none")
 
                 v_dimensions = str(dim_list)
