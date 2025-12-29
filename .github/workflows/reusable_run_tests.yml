@@ -53,14 +53,14 @@ jobs:
 
       - name: Run unit tests with coverage
         run: |
-          poetry run pytest -v -m "not integration" --cov=ncompare --cov-report=xml:build/reports/coverage${{ matrix.python-version }}.xml
+          poetry run pytest --python ${{ matrix.python-version }} -v -m "not integration" --cov=ncompare --cov-report=xml:build/reports/coverage${{ matrix.python-version }}.xml
 
       - name: Run integration tests with coverage
         env:
           EARTHDATA_USERNAME: ${{ secrets.EARTHDATA_USERNAME }}
           EARTHDATA_PASSWORD: ${{ secrets.EARTHDATA_PASSWORD }}
         run: |
-          poetry run pytest -v -m integration --cov=ncompare --cov-report=xml:build/reports/coverage${{ matrix.python-version }}.xml
+          poetry run pytest --python ${{ matrix.python-version }} -v -m integration --cov=ncompare --cov-report=xml:build/reports/coverage${{ matrix.python-version }}.xml
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v5
