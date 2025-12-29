@@ -31,14 +31,13 @@ import importlib.metadata
 import sys
 import traceback
 from collections.abc import Sequence
-from typing import Optional
 
 from ncompare.core import compare
 
 __version__ = importlib.metadata.version("ncompare")
 
 
-def _cli(args: Optional[Sequence[str]]) -> argparse.Namespace:
+def _cli(args: Sequence[str] | None) -> argparse.Namespace:
     """Parse input arguments from the command line.
 
     Parameters

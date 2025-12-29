@@ -26,7 +26,6 @@
 """Helper functions for operating on iterables, such as lists or sets."""
 
 from collections.abc import Generator, Iterable
-from typing import Union
 
 from ncompare.path_and_string_operations import coerce_to_str
 
@@ -65,7 +64,7 @@ def common_elements(
 
 
 def count_diffs(
-    list_a: Union[list[str], list[int], str], list_b: Union[list[str], list[int], str]
+    list_a: list[str] | list[int] | str, list_b: list[str] | list[int] | str
 ) -> tuple[int, int, int]:
     """Count how many elements are either uniquely in one list or the other, or shared.
 
