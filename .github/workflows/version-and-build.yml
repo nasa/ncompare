@@ -71,6 +71,10 @@ jobs:
                 echo "  First release push: Alpha → RC1"
                 bump-my-version bump pre_label
 
+                # Commit the release branch bump before switching branches
+                git commit -am "Bump to RC1 [skip ci]"
+                git push
+
                 # Auto-bump develop to next minor
                 echo ""
                 RELEASE_VERSION="${BRANCH#release/}"
@@ -146,13 +150,17 @@ jobs:
           startsWith(github.ref, 'refs/heads/release/') ||
           startsWith(github.ref, 'refs/heads/hotfix/')
         run: |
+          # Check if there are uncommitted changes
           if [[ -n $(git status -s) ]]; then
             git commit -am "Bump version to ${{ steps.version.outputs.version }} [skip ci]"
-            git push
             echo "✅ Version bumped and committed"
           else
             echo "ℹ️  No version changes to commit"
           fi
+          
+          # Push (whether we just committed or committed earlier)
+          git push
+          echo "✅ Pushed to remote"
 
       - name: Create Git tag
         if: |
