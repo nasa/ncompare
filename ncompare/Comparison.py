@@ -400,7 +400,10 @@ class Comparison:
             )
 
     def _create_var_properties(
-        self, group: netCDF4.Dataset | netCDF4.Group, varname: str, original_dataset
+        self,
+        group: netCDF4.Dataset | netCDF4.Group | h5py.Dataset | h5py.Group,
+        varname: str,
+        original_dataset,
     ) -> VarProperties:
         """Get the properties of a variable.
 
@@ -426,7 +429,14 @@ class Comparison:
             if self.file_types == "netcdf":
                 v_dimensions = str(the_variable.dimensions)
             elif self.file_types == "hdf5":
-                v_dimensions = str([dim.label for dim in the_variable.dims])
+                dim_list: list[str] = []
+                for dim in the_variable.dims:
+                    try:
+                        dim_list.append(dim.label)
+                    except RuntimeError:
+                        dim_list.append("none")
+
+                v_dimensions = str(dim_list)
 
             v_shape = str(the_variable.shape).strip()
 

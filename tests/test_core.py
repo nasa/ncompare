@@ -94,9 +94,9 @@ def test_icesat(temp_data_dir, icesat2_atl06_granule_1, icesat2_atl06_granule_2)
     assert num_differences == 5280
 
 
-def test_error_on_different_file_types(temp_data_dir):
-    file1 = data_for_tests_dir / "icesat-2-ATL06" / "ATL06_20230816161508_08782002_006_02.h5"
+@pytest.mark.integration
+def test_error_on_different_file_types(temp_data_dir, icesat2_atl06_granule_1):
     file2 = data_for_tests_dir / "test_a.nc"
 
     with pytest.raises(TypeError):
-        compare(file1, file2)
+        compare(icesat2_atl06_granule_1, file2)

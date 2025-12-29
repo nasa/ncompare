@@ -101,16 +101,16 @@ Pull Requests (PRs) are created with a target of the `develop` branch before bei
 
 ### Installing locally
 
-For local development, one can clone the repository and then use poetry or pip from the local directory:
+For local development, one can clone the repository and then use `uv` or `pip` from the local directory:
 
 ```console
 git clone https://github.com/nasa/ncompare.git
 ```
 
-###### (Option A) using poetry:
-ii) Follow the instructions for installing `poetry` [here](https://python-poetry.org/docs/).
+###### (Option A) using `uv`:
+ii) Follow the instructions for installing `uv` [here](https://docs.astral.sh/uv/).
 
-iii) Run ```poetry install``` from the repository directory.
+iii) Run ```uv sync``` from the repository directory.
 
 ###### (Option B) using pip:
 
@@ -119,9 +119,9 @@ ii) Run ```pip install .``` from the repository directory.
 
 ### Testing locally
 
-If installed using a `poetry` environment, the tests can be run with:
+If installed using a `uv` environment, the tests can be run with:
 ```console
-poetry run pytest tests
+uv run pytest tests
 ```
 
 Or from another virtual environment, one can use:
@@ -129,10 +129,10 @@ Or from another virtual environment, one can use:
 pytest tests
 ```
 
-### To run as a locally installed poetry module
+### To run as a locally installed uv module
 
 ```console
-poetry run ncompare <netcdf file #1> <netcdf file #2>
+uv run ncompare <netcdf file #1> <netcdf file #2>
 ```
 
 
