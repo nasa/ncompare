@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "ncompare"
-version = "1.14.0a25"
+version = "1.14.0a26"
 description = "Compare the structure of two NetCDF files at the command line"
 authors = ["Daniel Kaufman <daniel.kaufman@nasa.gov>"]
 readme = "README.md"
@@ -12,10 +12,10 @@ classifiers = [
     "Operating System :: Microsoft :: Windows",
     "Operating System :: MacOS",
     "Operating System :: POSIX :: Linux",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Topic :: Software Development :: Libraries :: Python Modules",
 ]
 
@@ -23,7 +23,7 @@ classifiers = [
 ncompare = "ncompare.console:main"
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = "^3.10"
 numpy = ">=1.26.0"
 netCDF4 = ">=1.6.4"
 xarray = ">=2023.9"
@@ -66,7 +66,7 @@ exclude = [
 ]
 # Allow lines to be as long as 100.
 line-length = 100
-target-version = "py39"
+target-version = "py310"
 
 [tool.ruff.lint]
 # E402: module level import not at top of file
