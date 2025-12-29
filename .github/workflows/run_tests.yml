@@ -12,9 +12,6 @@ on:
         required: true
   workflow_dispatch:
 
-env:
-  POETRY_VERSION: "2.1.3"
-
 jobs:
   build_and_test:
     runs-on: ubuntu-latest
@@ -33,21 +30,20 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Set up Poetry
-        uses: abatilo/actions-poetry@v4.0.0
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
         with:
-          poetry-version: ${{ env.POETRY_VERSION }}
+          enable-cache: true
 
-      - name: Install ncompare
-        run: poetry install
+      - name: Install package
+        run: uv sync --extra dev
 
-      - name: Lint
+      - name: Run linting
+        run: uv run ruff check ncompare
+
+      - name: Run tests and collect coverage
         run: |
-          poetry run ruff check ncompare
-
-      - name: Run tests with coverage
-        run: |
-          poetry run pytest --cov=ncompare --cov-report=xml:build/reports/coverage${{ matrix.python-version }}.xml
+          uv run pytest --cov=ncompare --cov-report=xml:build/reports/coverage${{ matrix.python-version }}.xml
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v5
