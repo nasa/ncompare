@@ -37,8 +37,15 @@ case "$BRANCH" in
     ;;
 
   main)
-    echo "🎉 Stripping to final release"
-    bump-my-version bump pre_label
+    echo "🎉 Main branch"
+    CURRENT=$(bump-my-version show current_version)
+
+    if [[ "$CURRENT" =~ (rc|a) ]]; then
+      echo "  Stripping pre-release label"
+      bump-my-version bump pre_label
+    else
+      echo "  Version already final: $CURRENT (no action needed)"
+    fi
     ;;
 
   hotfix/*)
