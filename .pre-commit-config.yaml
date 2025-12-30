@@ -5,16 +5,16 @@ ci:
   autofix_prs: false # Comment "pre-commit.ci autofix" on a PR to trigger
 
 default_language_version:
-  python: python3.9
+  python: python3.11
 
 repos:
   - repo: https://github.com/gitleaks/gitleaks
-    rev: v8.22.1
+    rev: v8.30.0
     hooks:
       - id: gitleaks
 
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v5.0.0
+    rev: v6.0.0
     hooks:
       # Validate format
       - id: check-yaml
@@ -41,14 +41,14 @@ repos:
         exclude_types: ["jupyter", "text"]
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.8.6
+    rev: v0.14.10
     hooks:
       - id: ruff
         args: ["--fix", "--exit-non-zero-on-fix"]
       - id: ruff-format
 
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.14.1
+    rev: v1.19.1
     hooks:
       - id: mypy
 

@@ -1,0 +1,101 @@
+name: Version and Build
+
+on:
+  push:
+    branches: [develop, main, 'release/**', 'hotfix/**', 'feature/**', 'issue/**', 'docs/**']
+  workflow_dispatch:
+
+env:
+  PYTHON_VERSION: "3.11"
+
+jobs:
+  # First run tests
+  run_tests:
+    uses: ./.github/workflows/run_tests.yml
+    secrets:
+      codecov_token: ${{ secrets.CODECOV_TOKEN }}
+      EARTHDATA_USERNAME: ${{ secrets.EARTHDATA_USERNAME }}
+      EARTHDATA_PASSWORD: ${{ secrets.EARTHDATA_PASSWORD }}
+
+  # Main build job
+  build:
+    needs: run_tests
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0  # Need history for auto-bump script
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: true
+
+      - name: Install bump-my-version
+        run: uv pip install --system bump-my-version
+
+      - name: Configure git
+        run: |
+          git config user.name "ncompare-bot"
+          git config user.email "ncompare@noreply.github.com"
+
+      - name: Bump version
+        id: version
+        run: |
+          BRANCH="${GITHUB_REF#refs/heads/}"
+          bash scripts/version_bump.sh "$BRANCH"
+
+      - name: Commit version bump
+        if: |
+          steps.version.outputs.already_committed == 'false' && (
+            github.ref == 'refs/heads/develop' ||
+            github.ref == 'refs/heads/main' ||
+            startsWith(github.ref, 'refs/heads/release/') ||
+            startsWith(github.ref, 'refs/heads/hotfix/')
+          )
+        run: |
+          if [[ -n $(git status -s) ]]; then
+            git commit -am "Bump version to ${{ steps.version.outputs.version }} [skip ci]"
+            git push || {
+              echo "❌ Failed to push to remote"
+              exit 1
+            }
+            echo "✅ Version bumped and committed"
+          else
+            echo "ℹ️  No version changes to commit"
+          fi
+
+      - name: Create Git tag
+        if: github.ref == 'refs/heads/main'
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          git tag -a "$VERSION" -m "Version $VERSION"
+          git push origin "$VERSION"
+          echo "✅ Tagged $VERSION"
+
+      - name: Install dependencies
+        run: uv sync --no-dev --frozen
+
+      - name: Build package
+        run: uv build
+
+      - name: Upload Python artifact
+        uses: actions/upload-artifact@v6
+        with:
+          name: python-artifact
+          path: dist/*
+
+      - name: Publish to Test PyPI
+        if: steps.version.outputs.publish == 'true'
+        env:
+          UV_PUBLISH_TOKEN: ${{ secrets.PYPI_TOKEN_TESTPYPI }}
+        run: uv publish --publish-url https://test.pypi.org/legacy/

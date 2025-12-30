@@ -1,0 +1,42 @@
+name: Publish on Release
+
+on:
+  release:
+    types: [published] # This ensures the workflow runs only after a release is finalized
+
+env:
+  PYTHON_VERSION: "3.11"
+
+jobs:
+  build-and-publish:
+    environment: pypi
+    permissions:
+      id-token: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0 # Fetch all history for accurate versioning/changelogs
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: true
+
+      - name: Verify version matches git tag
+        run: scripts/verify_tag.sh
+
+      - name: Install dependencies
+        run: uv sync --no-dev --frozen
+
+      - name: Build package
+        run: uv build
+
+      - name: Publish to PyPI
+        run: uv publish
