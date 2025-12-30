@@ -23,7 +23,6 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-      id-token: write
 
     steps:
       - name: Checkout
@@ -97,4 +96,6 @@ jobs:
 
       - name: Publish to Test PyPI
         if: steps.version.outputs.publish == 'true'
+        env:
+          UV_PUBLISH_TOKEN: ${{ secrets.PYPI_TOKEN_TESTPYPI }}
         run: uv publish --publish-url https://test.pypi.org/legacy/
