@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "ncompare"
-version = "1.14.0"
+version = "1.14.1"
 description = "Compare the structure of two NetCDF files at the command line"
 authors = [
     { name = "Daniel Kaufman", email = "daniel.kaufman@nasa.gov" }
@@ -85,7 +85,7 @@ select = [
 ]
 
 [tool.bumpversion]
-current_version = "1.14.0"
+current_version = "1.14.1"
 parse = """(?x)
     (?P<major>\\d+)\\.(?P<minor>\\d+)\\.(?P<patch>\\d+)
     (?:
