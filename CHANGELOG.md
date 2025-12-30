@@ -4,14 +4,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Common Changelog](https://common-changelog.org/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## Unreleased
+## [1.14.0] - 2025-12-30
+
+_Updates base Python version from 3.9 to 3.11._
 
 ### Changed
 
-- update the default python version from 3.9 to 3.10 ([#323](https://github.com/nasa/stitchee/pull/323))([**@danielfromearth**](https://github.com/danielfromearth))
-- Implement uv dependency management and versioning with bump-my-version ([#325](https://github.com/nasa/stitchee/issues/325))([**@danielfromearth**](https://github.com/danielfromearth))
-- Download ICESat-2 ATL06 granules for integration testing instead of using git lfs ([#327](https://github.com/nasa/stitchee/pull/327))([**@danielfromearth**](https://github.com/danielfromearth))
-- Fix python version in matrixed GitHub Actions tests ([#329](https://github.com/nasa/stitchee/pull/329))([**@danielfromearth**](https://github.com/danielfromearth))
+- Implement uv dependency management and versioning with bump-my-version ([#325](https://github.com/nasa/ncompare/issues/325))([**@danielfromearth**](https://github.com/danielfromearth))
+- Download ICESat-2 ATL06 granules for integration testing instead of using git lfs (Updates Python version from 3.10 to 3.11) ([#327](https://github.com/nasa/ncompare/pull/327))([**@danielfromearth**](https://github.com/danielfromearth))
+- Refactor CI/CD workflows for releasing on publish, improve maintainability ([#333](https://github.com/nasa/ncompare/pull/33))([**@danielfromearth**](https://github.com/danielfromearth))
+- Update the default python version from 3.9 to 3.10 ([#323](https://github.com/nasa/ncompare/pull/323))([**@danielfromearth**](https://github.com/danielfromearth))
+
+### Fixed
+- Fix python version in matrixed GitHub Actions tests ([#329](https://github.com/nasa/ncompare/pull/329))([**@danielfromearth**](https://github.com/danielfromearth))
 
 ## [1.13.1] - 2025-01-08
 
@@ -252,6 +257,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Fix author attribute for poetry [#5](https://github.com/nasa/ncompare/issues/5) ([**@danielfromearth**](https://github.com/danielfromearth))
 
+[1.14.0]: https://github.com/nasa/ncompare/releases/tag/1.14.0
 [1.13.1]: https://github.com/nasa/ncompare/releases/tag/1.13.1
 [1.13.0]: https://github.com/nasa/ncompare/releases/tag/1.13.0
 [1.12.0]: https://github.com/nasa/ncompare/releases/tag/1.12.0
