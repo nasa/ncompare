@@ -2,7 +2,7 @@ name: Version and Build
 
 on:
   push:
-    branches: [develop, main, 'release/**', 'hotfix/**', 'feature/**', 'issue/**', 'issues/**', 'docs/**']
+    branches: [develop, main, 'release/**', 'hotfix/**', 'feature/**', 'issue/**', 'docs/**']
   workflow_dispatch:
 
 env:
@@ -20,10 +20,10 @@ jobs:
   # Main build job
   build:
     needs: run_tests
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     permissions:
       contents: write
-      packages: write
+      id-token: write
 
     steps:
       - name: Checkout
@@ -53,120 +53,30 @@ jobs:
         id: version
         run: |
           BRANCH="${GITHUB_REF#refs/heads/}"
-          echo "Processing branch: $BRANCH"
-
-          case "$BRANCH" in
-            develop)
-              echo "📦 Bumping develop alpha"
-              bump-my-version bump pre_number
-              VENUE=sit
-              PUBLISH=true
-              ;;
-
-            release/*)
-              echo "🎯 Bumping release"
-              CURRENT=$(bump-my-version show current_version)
-
-              if [[ "$CURRENT" == *"a"* ]]; then
-                echo "  First release push: Alpha → RC1"
-                bump-my-version bump pre_label
-
-                # Commit the release branch bump before switching branches
-                git commit -am "Bump to RC1 [skip ci]"
-                git push
-
-                # Auto-bump develop to next minor
-                echo ""
-                RELEASE_VERSION="${BRANCH#release/}"
-                bash scripts/bump_develop_after_release.sh "$RELEASE_VERSION"
-                echo ""
-
-                # Return to release branch
-                git checkout "$BRANCH"
-              else
-                echo "  Incrementing RC"
-                bump-my-version bump pre_number
-              fi
-
-              VENUE=uat
-              PUBLISH=true
-              ;;
-
-            main)
-              echo "🎉 Stripping to final release"
-              bump-my-version bump pre_label
-              VENUE=ops
-              PUBLISH=true
-              TAG=true
-              ;;
-
-            hotfix/*)
-              echo "🔧 Bumping hotfix patch"
-              CURRENT=$(bump-my-version show current_version)
-              if [[ "$CURRENT" == *"rc"* ]] || [[ "$CURRENT" == *"a"* ]]; then
-                echo "  Stripping pre-release label first"
-                bump-my-version bump pre_label
-              fi
-              bump-my-version bump patch
-              VENUE=ops
-              PUBLISH=true
-              ;;
-
-            feature/*|issue/*|issues/*|docs/*)
-              echo "🌟 Feature branch: adding local identifier"
-              CURRENT=$(bump-my-version show current_version)
-              LOCAL_ID="+$(git rev-parse --short ${GITHUB_SHA})"
-              VERSION="${CURRENT}${LOCAL_ID}"
-              VENUE=dev
-              PUBLISH=false
-              ;;
-
-            *)
-              echo "⏭️  Unknown branch, no version bump"
-              CURRENT=$(bump-my-version show current_version)
-              VERSION="$CURRENT"
-              VENUE=dev
-              PUBLISH=false
-              ;;
-          esac
-
-          # Set VERSION if not already set (for feature branches)
-          if [ -z "$VERSION" ]; then
-            VERSION=$(bump-my-version show current_version)
-          fi
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
-          echo "venue=$VENUE" >> $GITHUB_OUTPUT
-          echo "publish=$PUBLISH" >> $GITHUB_OUTPUT
-          echo "tag=${TAG:-false}" >> $GITHUB_OUTPUT
-
-          echo ""
-          echo "📌 Version: $VERSION"
-          echo "🎯 Venue: $VENUE"
+          bash scripts/version_bump.sh "$BRANCH"
 
       - name: Commit version bump
         if: |
-          github.ref == 'refs/heads/develop' ||
-          github.ref == 'refs/heads/main' ||
-          startsWith(github.ref, 'refs/heads/release/') ||
-          startsWith(github.ref, 'refs/heads/hotfix/')
+          steps.version.outputs.already_committed == 'false' && (
+            github.ref == 'refs/heads/develop' ||
+            github.ref == 'refs/heads/main' ||
+            startsWith(github.ref, 'refs/heads/release/') ||
+            startsWith(github.ref, 'refs/heads/hotfix/')
+          )
         run: |
-          # Check if there are uncommitted changes
           if [[ -n $(git status -s) ]]; then
             git commit -am "Bump version to ${{ steps.version.outputs.version }} [skip ci]"
+            git push || {
+              echo "❌ Failed to push to remote"
+              exit 1
+            }
             echo "✅ Version bumped and committed"
           else
             echo "ℹ️  No version changes to commit"
           fi
-          
-          # Push (whether we just committed or committed earlier)
-          git push
-          echo "✅ Pushed to remote"
 
       - name: Create Git tag
-        if: |
-          github.ref == 'refs/heads/develop' ||
-          github.ref == 'refs/heads/main' ||
-          startsWith(github.ref, 'refs/heads/release/')
+        if: github.ref == 'refs/heads/main'
         run: |
           VERSION="${{ steps.version.outputs.version }}"
           git tag -a "$VERSION" -m "Version $VERSION"
@@ -186,13 +96,5 @@ jobs:
           path: dist/*
 
       - name: Publish to Test PyPI
-        if: steps.version.outputs.publish == 'true' && steps.version.outputs.venue == 'uat'
-        env:
-          UV_PUBLISH_TOKEN: ${{ secrets.PYPI_TOKEN_TESTPYPI }}
+        if: steps.version.outputs.publish == 'true'
         run: uv publish --publish-url https://test.pypi.org/legacy/
-
-      - name: Publish to PyPI
-        if: steps.version.outputs.publish == 'true' && steps.version.outputs.venue == 'ops'
-        env:
-          UV_PUBLISH_TOKEN: ${{ secrets.PYPI_TOKEN_PYPI }}
-        run: uv publish
