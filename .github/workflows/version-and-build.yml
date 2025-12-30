@@ -20,7 +20,7 @@ jobs:
   # Main build job
   build:
     needs: run_tests
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     permissions:
       contents: write
       packages: write
