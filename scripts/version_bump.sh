@@ -2,7 +2,9 @@
 set -e
 
 BRANCH="${1}"
-echo "Processing branch: $BRANCH"
+CURRENT=$(bump-my-version show current_version)
+
+echo "Processing branch: $BRANCH (current: $CURRENT)"
 
 ALREADY_COMMITTED=false
 PUBLISH=false  # Default: most branches don't publish
@@ -15,8 +17,6 @@ case "$BRANCH" in
 
   release/*)
     echo "🎯 Bumping release"
-    CURRENT=$(bump-my-version show current_version)
-
     if [[ "$CURRENT" == *"a"* ]]; then
       echo "  Alpha → RC1"
       bump-my-version bump pre_label
@@ -38,8 +38,6 @@ case "$BRANCH" in
 
   main)
     echo "🎉 Main branch"
-    CURRENT=$(bump-my-version show current_version)
-
     if [[ "$CURRENT" =~ (rc|a) ]]; then
       echo "  Stripping pre-release label"
       bump-my-version bump pre_label
@@ -50,12 +48,11 @@ case "$BRANCH" in
 
   hotfix/*)
     echo "🔧 Bumping hotfix patch"
-    CURRENT=$(bump-my-version show current_version)
     [[ "$CURRENT" =~ (rc|a) ]] && bump-my-version bump pre_label
     bump-my-version bump patch
     ;;
 
-  feature/*|issue/*|docs/*|*)
+  *)
     echo "🌟 Branch: no version bump"
     ;;
 esac
