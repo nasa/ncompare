@@ -1648,7 +1648,7 @@ wheels = [
 
 [[package]]
 name = "ncompare"
-version = "1.14.0a27"
+version = "1.14.0rc2"
 source = { editable = "." }
 dependencies = [
     { name = "colorama" },
