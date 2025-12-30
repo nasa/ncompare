@@ -3,7 +3,7 @@
 set -e
 
 git_tag=$(git describe --tags --abbrev=0)
-current_version=v$(grep -m 1 version pyproject.toml | cut -d'"' -f 2)
+current_version=$(grep -m 1 version pyproject.toml | cut -d'"' -f 2)
 
 echo "${git_tag} ${current_version}"
 
