@@ -23,14 +23,99 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and limitations under the License.
 
+import os
 from pathlib import Path
 
+import earthaccess
 import netCDF4 as nC
 import numpy as np
 import pytest
 from xarray import Dataset
 
 from ncompare.printing import Outputter
+
+
+@pytest.fixture(scope="session")
+def icesat2_cache_dir():
+    """Persistent cache directory for ICESat-2 test data."""
+    cache_dir = Path.home() / ".cache" / "icesat2_test_data"
+    cache_dir.mkdir(parents=True, exist_ok=True)
+    return cache_dir
+
+
+@pytest.fixture(scope="session")
+def earthdata_auth():
+    """
+    Authenticate with NASA Earthdata.
+    Uses credentials from environment variables or .netrc file.
+    """
+    # Check for environment variables (used in CI)
+    username = os.getenv("EARTHDATA_USERNAME")
+    password = os.getenv("EARTHDATA_PASSWORD")
+
+    if username and password:
+        earthaccess.login(strategy="environment")
+    else:
+        # Use .netrc or prompt for local testing
+        earthaccess.login()
+
+    return True
+
+
+@pytest.fixture(scope="session")
+def icesat2_atl06_granule_1(icesat2_cache_dir, earthdata_auth):
+    """
+    Download or use cached ICESat-2 ATL06 granule #1 for comparison tests.
+    Temporal range: 2023-08-16 16:16:15 to 2023-08-16 16:25:00
+    """
+    # Check if already cached
+    cached_files = list(icesat2_cache_dir.glob("ATL06_20230816161508_*.h5"))
+    if cached_files:
+        return str(cached_files[0])
+
+    # Download if not cached
+    results = earthaccess.search_data(
+        short_name="ATL06", temporal=("2023-08-16 16:16:15", "2023-08-16 16:25:00"), count=1
+    )
+
+    if not results:
+        pytest.skip("ICESat-2 granule #1 not found for test")
+
+    # Download the data
+    files = earthaccess.download(results, str(icesat2_cache_dir))
+
+    if not files:
+        pytest.skip("Failed to download ICESat-2 granule #1")
+
+    return files[0]
+
+
+@pytest.fixture(scope="session")
+def icesat2_atl06_granule_2(icesat2_cache_dir, earthdata_auth):
+    """
+    Download or use cached ICESat-2 ATL06 granule #2 for comparison tests.
+    Temporal range: 2023-08-16 23:46:00 to 2023-08-16 23:48:00
+    """
+    # Check if already cached
+    cached_files = list(icesat2_cache_dir.glob("ATL06_20230816234629_*.h5"))
+    if cached_files:
+        return str(cached_files[0])
+
+    # Download if not cached
+    results = earthaccess.search_data(
+        short_name="ATL06", temporal=("2023-08-16 23:46:00", "2023-08-16 23:48:00"), count=1
+    )
+
+    if not results:
+        pytest.skip("ICESat-2 granule #2 not found for test")
+
+    # Download the data
+    files = earthaccess.download(results, str(icesat2_cache_dir))
+
+    if not files:
+        pytest.skip("Failed to download ICESat-2 granule #2")
+
+    return files[0]
 
 
 @pytest.fixture(scope="session")

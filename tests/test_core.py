@@ -74,24 +74,29 @@ def test_zero_for_comparison_with_no_differences(ds_3dims_3vars_4coords_1subgrou
     assert compare(ds_3dims_3vars_4coords_1subgroup, ds_3dims_3vars_4coords_1subgroup) == 0
 
 
-def test_icesat(temp_data_dir):
+@pytest.mark.integration
+def test_icesat(temp_data_dir, icesat2_atl06_granule_1, icesat2_atl06_granule_2):
     # Compare the `ncompare` output when testing ICESat
     out_path = temp_data_dir / "output_file_icesat-2-atl06.txt"
 
     num_differences = compare(
-        data_for_tests_dir / "icesat-2-ATL06" / "ATL06_20230816161508_08782002_006_02.h5",
-        data_for_tests_dir / "icesat-2-ATL06" / "ATL06_20230816234629_08822013_006_01.h5",
+        icesat2_atl06_granule_1,
+        icesat2_atl06_granule_2,
         show_chunks=True,
         show_attributes=True,
         file_text=str(out_path),
     )
 
+    # Verify that differences were found and output was written
+    assert num_differences > 0, "Expected to find differences between granules"
+    assert out_path.exists(), "Output file was not created"
+
     assert num_differences == 5280
 
 
-def test_error_on_different_file_types(temp_data_dir):
-    file1 = data_for_tests_dir / "icesat-2-ATL06" / "ATL06_20230816161508_08782002_006_02.h5"
+@pytest.mark.integration
+def test_error_on_different_file_types(temp_data_dir, icesat2_atl06_granule_1):
     file2 = data_for_tests_dir / "test_a.nc"
 
     with pytest.raises(TypeError):
-        compare(file1, file2)
+        compare(icesat2_atl06_granule_1, file2)
