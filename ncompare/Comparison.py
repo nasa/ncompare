@@ -186,7 +186,7 @@ class Comparison:
                     group_a, variable_pair[1], original_dataset=self.open_file1
                 ),
                 self._create_var_properties(
-                    group_b, variable_pair[2], original_dataset=self.open_file1
+                    group_b, variable_pair[2], original_dataset=self.open_file2
                 ),
             )
 
@@ -382,7 +382,7 @@ class Comparison:
             )
             subnode_a_subgroups = get_subgroups(subnode_a, file_type=self.file_types)
 
-            subnode_b_name = node_a_name + "/" + subgroup_b_name if subgroup_b_name else ""
+            subnode_b_name = node_b_name + "/" + subgroup_b_name if subgroup_b_name else ""
             subnode_b = (
                 node_b[subgroup_b_name]
                 if (subgroup_b_name and (subgroup_b_name in node_b_subgroups))
