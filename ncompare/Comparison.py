@@ -52,7 +52,6 @@ from ncompare.utility_types import (
 )
 
 
-
 def _blank_difference_dict() -> SummaryDifferencesDict:
     """Return a fresh summary tally so nested sets are not shared across tallies."""
     return {
