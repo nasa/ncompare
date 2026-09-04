@@ -3,6 +3,7 @@ from collections.abc import Iterable, Iterator
 
 import h5py
 import netCDF4
+import numpy as np
 import xarray as xr
 
 from ncompare.sequence_operations import common_elements
@@ -40,18 +41,46 @@ def get_and_check_variable_attributes(
         yield attr_a_key, attr_a, attr_b_key, attr_b
 
 
+def _value_to_comparable_str(value: object) -> str:
+    """Render an attribute value as the string ncompare compares and displays.
+
+    Byte strings are decoded first: ``h5py`` returns HDF5 fixed-length string
+    attributes as ``bytes`` (``b'NASA'``) whereas the equivalent netCDF attribute
+    is a ``str`` (``'NASA'``), and decoding keeps the two comparable and free of an
+    ugly ``b'...'`` in the report. It has to happen before the iterable check
+    below, because ``bytes`` is itself iterable and would otherwise render as a
+    list of integers (``[78, 65, 83, 65]``).
+
+    Parameters
+    ----------
+    value
+        the raw attribute value, as returned by ``netCDF4`` or ``h5py``
+
+    Returns
+    -------
+    str
+        the value as a string; a long iterable is truncated to five elements
+    """
+    if isinstance(value, bytes):
+        return value.decode("utf-8", errors="replace")
+    if isinstance(value, np.ndarray) and value.dtype.kind in ("S", "O"):
+        value = [
+            item.decode("utf-8", errors="replace") if isinstance(item, bytes) else item
+            for item in value.tolist()
+        ]
+    if isinstance(value, Iterable) and not isinstance(value, (str, float)):
+        # TODO: by truncating a list (or other iterable) here,
+        #  we are preventing any subsequent difference checker from detecting
+        #  differences past the 5th element in the iterable.
+        #  So, we need to figure out a way to still check for other differences past the 5th element.
+        return "[" + ", ".join([str(x) for x in list(value)[:5]]) + ", ..." + "]"
+    return str(value)
+
+
 def get_attribute_value_as_str(varprops: VarProperties, attribute_key: str) -> str:
     """Get a string representation of the attribute value."""
     if attribute_key and (attribute_key in varprops.attributes):
-        attr = varprops.attributes[attribute_key]
-        if isinstance(attr, Iterable) and not isinstance(attr, (str, float)):
-            # TODO: by truncating a list (or other iterable) here,
-            #  we are preventing any subsequent difference checker from detecting
-            #  differences past the 5th element in the iterable.
-            #  So, we need to figure out a way to still check for other differences past the 5th element.
-            return "[" + ", ".join([str(x) for x in attr[:5]]) + ", ..." + "]"  # type:ignore[index]
-
-        return str(attr)
+        return _value_to_comparable_str(varprops.attributes[attribute_key])
 
     return ""
 
@@ -65,6 +94,36 @@ def get_root_groups(file: FileToCompare) -> list:
         with h5py.File(file.path) as dataset:
             groups_list = list(dataset.keys())
     return groups_list
+
+
+def get_root_attributes(file: FileToCompare) -> dict:
+    """Get the global (root-level) attributes of a netCDF or HDF5 file.
+
+    Parameters
+    ----------
+    file
+        the file whose root-level attributes are wanted
+
+    Returns
+    -------
+    dict
+        attribute name -> value, each rendered with ``_value_to_comparable_str``;
+        an empty dict if the file's attributes cannot be read
+    """
+    attributes: dict = {}
+    try:
+        if file.type == "netcdf":
+            with netCDF4.Dataset(file.path, mode="r") as dataset:
+                for name in dataset.ncattrs():
+                    attributes[name] = _value_to_comparable_str(dataset.getncattr(name))
+        elif file.type == "hdf5":
+            with h5py.File(file.path, mode="r") as dataset:
+                for name in dataset.attrs.keys():
+                    attributes[name] = _value_to_comparable_str(dataset.attrs[name])
+    except (OSError, RuntimeError, KeyError):
+        # Mirrors _get_hdf5_root_dims: some files can't be introspected; degrade gracefully.
+        return {}
+    return attributes
 
 
 def get_subgroups(node: netCDF4.Dataset | netCDF4.Group | h5py.Group, file_type: str) -> list:

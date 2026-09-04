@@ -31,6 +31,7 @@ Note that full comparison tests are performed in both directions, i.e., A -> B a
 
 from contextlib import nullcontext as does_not_raise
 
+import netCDF4
 import pytest
 
 from ncompare.core import compare
@@ -107,11 +108,48 @@ def test_summary_is_not_produced_by_a_print_side_effect(tmp_path):
     assert total >= 1
 
 
+def test_root_attributes_included_when_show_attributes(tmp_path):
+    """With show_attributes, root-level attributes appear in the report and are counted."""
+    path_a = tmp_path / "root_attrs_a.nc"
+    with netCDF4.Dataset(path_a, mode="w") as ds:
+        ds.setncattr("title", "Dataset A")
+        ds.setncattr("shared_attr", "same")
+
+    path_b = tmp_path / "root_attrs_b.nc"
+    with netCDF4.Dataset(path_b, mode="w") as ds:
+        ds.setncattr("title", "Dataset B")
+        ds.setncattr("shared_attr", "same")
+
+    out_path = tmp_path / "output_with_attrs.txt"
+    num_differences = compare(path_a, path_b, show_attributes=True, file_text=str(out_path))
+
+    assert num_differences > 0
+    contents = out_path.read_text()
+    assert "Root-level Attributes:" in contents
+    assert "title:" in contents
+
+
+def test_root_attributes_excluded_when_not_show_attributes(tmp_path):
+    """Without show_attributes, the root-level attributes section is not emitted."""
+    path_a = tmp_path / "root_attrs_a.nc"
+    with netCDF4.Dataset(path_a, mode="w") as ds:
+        ds.setncattr("title", "Dataset A")
+
+    path_b = tmp_path / "root_attrs_b.nc"
+    with netCDF4.Dataset(path_b, mode="w") as ds:
+        ds.setncattr("title", "Dataset B")
+
+    out_path = tmp_path / "output_without_attrs.txt"
+    compare(path_a, path_b, show_attributes=False, file_text=str(out_path))
+
+    assert "Root-level Attributes:" not in out_path.read_text()
+
+
 # Number of differences between the two ATL06 granules, for the pinned version
 # (see ATL06_VERSION in conftest.py). The structural fixtures reproduce the real
 # granules' count exactly, so the hermetic test below and the opt-in test against
 # real granules assert against this one value.
-EXPECTED_ATL06_DIFFERENCES = 4958
+EXPECTED_ATL06_DIFFERENCES = 4978
 
 
 def test_icesat_structure(temp_data_dir, atl06_structure_granule_1, atl06_structure_granule_2):

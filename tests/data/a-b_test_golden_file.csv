@@ -3,6 +3,10 @@ Root-level Dimensions:
 	Are all items the same? ---> True.
 Root-level Groups:
 	Are all items the same? ---> True.
+Root-level Attributes:
+description:,Example netCDF file,Example netCDF file,
+history:,Created Tue Aug 29 15:29:17 2023,Created Tue Aug 29 15:33:02 2023,***
+source:,test data creation script,test data creation script,
 All variables:
  ,File A,File B,
 All Variables, , ,
@@ -115,7 +119,7 @@ Total # of shared variables:,7,7,
 Total # of non-shared variables:,1,3,
 Total # of shared groups:,5,5,
 Total # of non-shared groups:,0,2,
-Total # of shared attributes:,31,31,
-Total # of non-shared attributes:,13,22,
+Total # of shared attributes:,33,33,
+Total # of non-shared attributes:,14,23,
 Differences were found in these attributes:
-"['chunksize', 'coordinates', 'dimensions', 'dtype', 'long_name', 'shape', 'units']"
+"['chunksize', 'coordinates', 'dimensions', 'dtype', 'history', 'long_name', 'shape', 'units']"

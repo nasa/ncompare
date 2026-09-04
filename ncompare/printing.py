@@ -406,7 +406,9 @@ class Outputter:
     def write_history_to_csv(self, filename: str | Path = "test.csv") -> None:
         """Save the line history that's been stored to a CSV file."""
         headers = ["Info", "File A", "File B", "Other marks"]
-        with open(filename, "w", encoding="utf-8") as target:
+        # newline="" is required by the csv module so it controls line endings itself;
+        # without it, csv.writer's "\r\n" becomes "\r\r\n" on Windows.
+        with open(filename, "w", encoding="utf-8", newline="") as target:
             writer = csv.writer(target)
             writer.writerow(headers)
             writer.writerows(self._line_history)

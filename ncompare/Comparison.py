@@ -35,6 +35,7 @@ from colorama import Fore
 from ncompare.getters import (
     get_and_check_variable_attributes,
     get_and_check_variable_scale_factor,
+    get_root_attributes,
     get_root_dims,
     get_root_groups,
     get_subgroups,
@@ -95,6 +96,8 @@ class Comparison:
         """
         self._print_root_dimensions()
         self._print_root_groups()
+        if self.show_attributes:
+            self._print_root_attributes()
 
         # Run through all the rest of the groups and variables, tallying differences along the way.
         self.out.print(Fore.LIGHTBLUE_EX + "\nAll variables:", add_to_history=True)
@@ -272,28 +275,47 @@ class Comparison:
             )
 
         # Go through each attribute, show differences, and add differences to running tally.
-        def _var_attribute_side_by_side(attribute_name, attribute_a, attribute_b):
-            diff_condition: SummaryDifferenceKeys = self.out.side_by_side(
-                f"{attribute_name}:", attribute_a, attribute_b, highlight_diff=True
-            )
-            self.num_attribute_diffs[diff_condition] += 1
-            if diff_condition in ("left", "right", "both"):
-                self.num_attribute_diffs["difference_types"].add(attribute_name)
-
-        _var_attribute_side_by_side("dtype", v_a.dtype, v_b.dtype)
-        _var_attribute_side_by_side("dimensions", v_a.dimensions, v_b.dimensions)
-        _var_attribute_side_by_side("shape", v_a.shape, v_b.shape)
+        self._tally_attribute_difference("dtype", v_a.dtype, v_b.dtype)
+        self._tally_attribute_difference("dimensions", v_a.dimensions, v_b.dimensions)
+        self._tally_attribute_difference("shape", v_a.shape, v_b.shape)
         # Chunking
         if self.show_chunks:
-            _var_attribute_side_by_side("chunksize", v_a.chunking, v_b.chunking)
+            self._tally_attribute_difference("chunksize", v_a.chunking, v_b.chunking)
         # Scale Factor
         if scale_factor_pair:
-            _var_attribute_side_by_side("scale_factor", scale_factor_pair[0], scale_factor_pair[1])
+            self._tally_attribute_difference(
+                "scale_factor", scale_factor_pair[0], scale_factor_pair[1]
+            )
         # Other attributes
         for attr_a_key, attr_a, attr_b_key, attr_b in variable_attribute_pairs:
             # attr_a_key may be empty if the variable doesn't exist in File A.
             attribute_key = attr_a_key if attr_a_key else attr_b_key
-            _var_attribute_side_by_side(attribute_key, attr_a, attr_b)
+            self._tally_attribute_difference(attribute_key, attr_a, attr_b)
+
+    def _tally_attribute_difference(
+        self, attribute_name: str, attribute_a: str, attribute_b: str
+    ) -> None:
+        """Print one attribute row side by side and fold it into the attribute tally.
+
+        Parameters
+        ----------
+        attribute_name
+            label shown in the info column (a trailing colon is added)
+        attribute_a
+            the attribute's value in File A, already stringified
+        attribute_b
+            the attribute's value in File B, already stringified
+
+        Returns
+        -------
+        None
+        """
+        diff_condition: SummaryDifferenceKeys = self.out.side_by_side(
+            f"{attribute_name}:", attribute_a, attribute_b, highlight_diff=True
+        )
+        self.num_attribute_diffs[diff_condition] += 1
+        if diff_condition in ("left", "right", "both"):
+            self.num_attribute_diffs["difference_types"].add(attribute_name)
 
     def _print_root_dimensions(self):
         # Show the dimensions of each file and evaluate differences.
@@ -308,6 +330,30 @@ class Comparison:
         list_a = get_root_groups(self.file1)
         list_b = get_root_groups(self.file2)
         _, _, _ = self.out.lists_diff(list_a, list_b)
+
+    def _print_root_attributes(self) -> None:
+        """Print both files' global (root-level) attributes, side by side.
+
+        Only called when ``show_attributes`` is set. Differences feed the same
+        attribute tally as variable-level attributes, so they show up in the
+        summary counts and in the returned difference total.
+
+        Returns
+        -------
+        None
+        """
+        self.out.print(Fore.LIGHTBLUE_EX + "\nRoot-level Attributes:", add_to_history=True)
+        attrs_a = get_root_attributes(self.file1)
+        attrs_b = get_root_attributes(self.file2)
+
+        for _, attr_a_key, attr_b_key in common_elements(attrs_a.keys(), attrs_b.keys()):
+            # attr_a_key is empty when the attribute exists only in File B.
+            attribute_key = attr_a_key if attr_a_key else attr_b_key
+            self._tally_attribute_difference(
+                attribute_key,
+                attrs_a.get(attr_a_key, ""),
+                attrs_b.get(attr_b_key, ""),
+            )
 
     def _print_summary(self):
         """Print summary counts of similarities and differences."""

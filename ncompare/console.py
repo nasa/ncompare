@@ -72,7 +72,7 @@ def _cli(args: Sequence[str] | None) -> argparse.Namespace:
         "--show-attributes",
         action="store_true",
         default=False,
-        help="Include variable attributes in comparison",
+        help="Include variable and global (root-level) attributes in the comparison",
     )
     parser.add_argument(
         "--show-chunks",
