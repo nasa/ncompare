@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Give each summary tally its own `difference_types` set instead of sharing one via a shallow copy ([#365](https://github.com/nasa/ncompare/issues/365)) ([**@Hashim1999164**](https://github.com/Hashim1999164))
+
 ### Changed
 
 - Run the unit test suite on pull requests targeting `develop` and `main` (previously only PRs based on `feature/**`/`issue/**` triggered tests). Integration tests, which require Earthdata credentials, are not run on pull requests and continue to run post-merge via `version-and-build.yml` ([#355](https://github.com/nasa/ncompare/issues/355)) ([**@danielfromearth**](https://github.com/danielfromearth))
