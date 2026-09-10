@@ -108,9 +108,9 @@ def test_variable_name_truncated_to_configured_column_width(tmp_path):
     assert all(long_name not in cell for row in out._line_history for cell in row)
 
 
-def test_summary_tally_difference_types_are_independent():
+def test_summary_tally_difference_types_are_independent(tmp_path):
     """Each summary tally keeps its own difference_types set."""
-    file = FileToCompare(path="a.nc", type="netcdf")
+    file = FileToCompare(path=tmp_path / "a.nc", type="netcdf")
     with Outputter() as out:
         comparison = Comparison(file, file, out, show_chunks=False, show_attributes=False)
 
