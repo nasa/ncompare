@@ -24,10 +24,15 @@
 # See the License for the specific language governing permissions and limitations under the License.
 
 
+import sys
+from concurrent.futures import ThreadPoolExecutor
+from io import StringIO
+from threading import Barrier
+
 import pytest
 from colorama import Fore, Style
 
-from ncompare.printing import Outputter
+from ncompare.printing import Outputter, ansi_escape
 
 
 def test_list_of_strings_diff(outputter_to_console):
@@ -52,39 +57,81 @@ def test_add_to_history_records_one_row_with_ansi_and_newlines_stripped():
     assert out._line_history == [["red", "plain", "42"]]
 
 
-def test_no_color_state_is_restored_after_context_exit():
-    """`no_color=True` must not permanently blank colorama's global Fore/Style.
+class TerminalBuffer(StringIO):
+    """Capture ANSI output without colorama treating the stream as a pipe."""
 
-    Regression test: previously the color singletons were blanked and never
-    restored, so a no-color comparison left later comparisons (and any other
-    in-process colorama users) colorless.
-    """
-    original_red = Fore.RED
-    original_reset = Style.RESET_ALL
-    assert original_red != ""  # sanity check: colors are present to begin with
-
-    with Outputter(no_color=True):
-        # Colors are stripped while the no-color Outputter is active.
-        assert Fore.RED == ""
-        assert Style.RESET_ALL == ""
-
-    # ...and restored on exit, so subsequent output can be colorized again.
-    assert Fore.RED == original_red
-    assert Style.RESET_ALL == original_reset
+    def isatty(self):
+        return True
 
 
-def test_no_color_leak_is_repaired_by_a_later_colorized_outputter():
-    """A no-color Outputter used without `with` cannot leave colorama colorless for good.
+@pytest.mark.parametrize("plain_first", [False, True])
+def test_interleaved_outputters_keep_independent_colors(monkeypatch, plain_first):
+    """The last constructed Outputter must not change the other one's palette."""
+    terminal = TerminalBuffer()
+    monkeypatch.setattr(sys, "stdout", terminal)
+    first = Outputter(no_color=plain_first, keep_print_history=True)
+    second = Outputter(no_color=not plain_first, keep_print_history=True)
+    outputs = {}
+    for out, no_color in [(first, plain_first), (second, not plain_first), (first, plain_first)]:
+        terminal.seek(0)
+        terminal.truncate(0)
+        out.print_header("\nSection heading")
+        out.lists_diff(["shared", "left"], ["shared", "right"])
+        out.side_by_side("forced", "a", "b", force_color=Fore.LIGHTBLUE_EX)
+        text = terminal.getvalue()
+        assert ("\x1b[" not in text) == no_color
+        outputs[no_color] = text
+    assert ansi_escape.sub("", outputs[False]) == outputs[True]
+    assert all(
+        "\x1b[" not in cell for out in [first, second] for row in out._line_history for cell in row
+    )
 
-    `__exit__` is the usual restore point, but nothing obliges a caller to use the
-    context manager, so a colorized Outputter also repairs the global state when it
-    is constructed.
-    """
-    original_red = Fore.RED
-    assert original_red != ""  # sanity check: colors are present to begin with
 
-    Outputter(no_color=True)  # deliberately not a context manager: `__exit__` never runs
-    assert Fore.RED == ""
+def test_no_color_does_not_mutate_colorama_even_on_exception():
+    """Color constants remain usable by other libraries throughout the context."""
+    original_fore, original_style = dict(Fore.__dict__), dict(Style.__dict__)
+    with pytest.raises(RuntimeError, match="test exit"):
+        with Outputter(no_color=True):
+            assert Fore.__dict__ == original_fore
+            assert Style.__dict__ == original_style
+            raise RuntimeError("test exit")
+    assert Fore.__dict__ == original_fore
+    assert Style.__dict__ == original_style
 
-    Outputter()  # asking for color repairs whatever the previous Outputter left behind
-    assert Fore.RED == original_red
+
+def test_parallel_outputters_keep_independent_colors():
+    """Synchronize construction to expose interference between opposite palettes."""
+    barrier = Barrier(2)
+
+    def render(no_color):
+        out = Outputter(no_color=no_color)
+        stream = StringIO()
+        barrier.wait(timeout=5)
+        out.print("parallel report", file=stream)
+        return stream.getvalue()
+
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        colored, plain = list(pool.map(render, [False, True]))
+    assert "\x1b[" in colored
+    assert "\x1b[" not in plain
+    assert ansi_escape.sub("", colored) == plain
+
+
+def test_no_color_strips_explicit_styles():
+    """Explicitly styled input also obeys the Outputter's no-color setting."""
+    stream = StringIO()
+    with Outputter(no_color=True) as out:
+        out.print("\x1b[31mred\x1b[0m", colors=True, file=stream)
+    assert stream.getvalue() == "red\n"
+
+
+@pytest.mark.parametrize("no_color", [False, True])
+def test_outputter_does_not_replace_standard_streams(no_color):
+    """Rendering must not install global colorama wrappers on caller streams."""
+    stdout, stderr = sys.stdout, sys.stderr
+    with Outputter(no_color=no_color) as out:
+        out.print_header("heading")
+        assert sys.stdout is stdout
+        assert sys.stderr is stderr
+    assert sys.stdout is stdout
+    assert sys.stderr is stderr

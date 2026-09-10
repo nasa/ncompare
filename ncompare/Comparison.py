@@ -30,7 +30,6 @@ from collections.abc import Iterator
 import h5py
 import netCDF4
 import numpy as np
-from colorama import Fore
 
 from ncompare.getters import (
     get_and_check_variable_attributes,
@@ -100,7 +99,7 @@ class Comparison:
             self._print_root_attributes()
 
         # Run through all the rest of the groups and variables, tallying differences along the way.
-        self.out.print(Fore.LIGHTBLUE_EX + "\nAll variables:", add_to_history=True)
+        self.out.print_header("\nAll variables:")
         self.out.side_by_side(" ", "File A", "File B", force_display_even_if_same=True)
 
         self._traverse_hierarchy()
@@ -319,14 +318,14 @@ class Comparison:
 
     def _print_root_dimensions(self):
         # Show the dimensions of each file and evaluate differences.
-        self.out.print(Fore.LIGHTBLUE_EX + "\nRoot-level Dimensions:", add_to_history=True)
+        self.out.print_header("\nRoot-level Dimensions:")
         list_a = get_root_dims(self.file1)
         list_b = get_root_dims(self.file2)
         _, _, _ = self.out.lists_diff(list_a, list_b)
 
     def _print_root_groups(self):
         # Show the groups in each NetCDF file and evaluate differences.
-        self.out.print(Fore.LIGHTBLUE_EX + "\nRoot-level Groups:", add_to_history=True)
+        self.out.print_header("\nRoot-level Groups:")
         list_a = get_root_groups(self.file1)
         list_b = get_root_groups(self.file2)
         _, _, _ = self.out.lists_diff(list_a, list_b)
@@ -342,7 +341,7 @@ class Comparison:
         -------
         None
         """
-        self.out.print(Fore.LIGHTBLUE_EX + "\nRoot-level Attributes:", add_to_history=True)
+        self.out.print_header("\nRoot-level Attributes:")
         attrs_a = get_root_attributes(self.file1)
         attrs_b = get_root_attributes(self.file2)
 
@@ -365,14 +364,8 @@ class Comparison:
         self.__print_summary_count_comparison_side_by_side("attribute", self.num_attribute_diffs)
 
         if self.num_attribute_diffs["difference_types"]:
-            self.out.print(
-                Fore.LIGHTBLUE_EX + "\nDifferences were found in these attributes:",
-                add_to_history=True,
-            )
-            self.out.print(
-                Fore.LIGHTBLUE_EX + f"\n{sorted(self.num_attribute_diffs['difference_types'])}",
-                add_to_history=True,
-            )
+            self.out.print_header("\nDifferences were found in these attributes:")
+            self.out.print_header(f"\n{sorted(self.num_attribute_diffs['difference_types'])}")
 
     def __print_summary_count_comparison_side_by_side(
         self,

@@ -28,6 +28,7 @@
 
 import csv
 import re
+import sys
 import warnings
 from collections.abc import Iterator
 from pathlib import Path
@@ -58,13 +59,6 @@ ansi_escape = re.compile(
 """,
     re.VERBOSE,
 )
-
-# Pristine copies of colorama's process-wide color singletons, taken at import time
-# and therefore before any Outputter can blank them. An Outputter that asks for color
-# restores from these, so a no-color Outputter that was never used as a context
-# manager cannot leave the process permanently colorless.
-_pristine_fore = dict(Fore.__dict__)
-_pristine_style = dict(Style.__dict__)
 
 
 class Outputter:
@@ -121,29 +115,12 @@ class Outputter:
         else:
             self._column_widths = tuple(default_widths)
 
-        # When color is turned off, colorama's process-wide `Fore`/`Style`
-        # singletons are blanked so that (a) no ANSI codes are emitted and
-        # (b) column alignment is computed on codeless strings — `side_by_side`
-        # pads the leading gutter by `len(Fore.RED)` to compensate for escape
-        # sequences, and blanking makes that compensation zero. Because those
-        # singletons are global, the mutation is bounded from both ends: the
-        # previous values are saved here and restored in `__exit__`, and asking
-        # for color restores the pristine values, which repairs the state even
-        # if some earlier Outputter was never used as a context manager.
-        self._saved_fore: dict | None = None
-        self._saved_style: dict | None = None
-        if no_color:
-            # Replace colorized styles with blank strings.
-            self._saved_fore = dict(Fore.__dict__)
-            self._saved_style = dict(Style.__dict__)
-            for k in list(Fore.__dict__):
-                Fore.__dict__[k] = ""
-            for k in list(Style.__dict__):
-                Style.__dict__[k] = ""
-        else:
-            Fore.__dict__.update(_pristine_fore)
-            Style.__dict__.update(_pristine_style)
-            colorama.init(autoreset=True)
+        # Keep the palette local so interleaved comparisons can disagree about color.
+        self._no_color = no_color
+        self._red = "" if no_color else Fore.RED
+        self._cyan = "" if no_color else Fore.CYAN
+        self._heading = "" if no_color else Fore.LIGHTBLUE_EX
+        self._normal = "" if no_color else Fore.WHITE + Style.RESET_ALL
 
         # Open a file (this overwrites any existing file at this path).
         if text_file:
@@ -158,12 +135,6 @@ class Outputter:
     def __exit__(self, exc_type, exc_value, exc_traceback):  # noqa: D105
         if self._text_file_obj:
             self._text_file_obj.close()
-        # Restore the global colorama state that was blanked for no-color output,
-        # so color settings don't leak to later Outputters or other libraries.
-        if self._saved_fore is not None:
-            Fore.__dict__.update(self._saved_fore)
-        if self._saved_style is not None:
-            Style.__dict__.update(self._saved_style)
 
     @property
     def column_widths(self) -> tuple:
@@ -193,6 +164,13 @@ class Outputter:
             text_to_print = self._make_normal(string)
         else:
             text_to_print = string
+
+        if self._no_color:
+            text_to_print = ansi_escape.sub("", text_to_print)
+        elif print_args.get("file") is None:
+            # Preserve terminal conversion, redirected-output stripping and autoreset
+            # without colorama.init() replacing the process-wide stdout/stderr.
+            print_args["file"] = colorama.AnsiToWin32(sys.stdout, autoreset=True).stream
 
         # Execute the print command.
         print(text_to_print, **print_args)
@@ -234,10 +212,13 @@ class Outputter:
         if self._keep_print_history:
             self._line_history.append(parsed_strings)
 
-    @staticmethod
-    def _make_normal(string):
-        """Return text with normal color and style."""
-        return Fore.WHITE + Style.RESET_ALL + str(string)
+    def _make_normal(self, string):
+        """Return text with this Outputter's normal color and style."""
+        return self._normal + str(string)
+
+    def print_header(self, string: str) -> None:
+        """Print and record a section heading using this Outputter's palette."""
+        self.print(self._heading + string, add_to_history=True)
 
     def side_by_side(
         self,
@@ -280,13 +261,13 @@ class Outputter:
         # If the 'b' and 'c' strings are different (or force_color is set),
         #   then change the font of 'a' to the color red.
         if (highlight_diff and are_different) or (force_color is not None):
-            default_color = Fore.RED
-            if force_color is not None:
-                str_a = force_color + str_a
-            else:
-                str_a = default_color + str_a
+            color = self._red if force_color is None else force_color
+            if self._no_color:
+                color = ""
+            str_a = color + str_a
             colors = False
-            extra_style_space = " " * len(default_color)
+            # ANSI bytes occupy no display columns but count toward string padding.
+            extra_style_space = " " * len(color)
             str_marker = self._difference_marker
         else:
             colors = True
@@ -375,11 +356,11 @@ class Outputter:
 
         # Display the comparison result
         if contents_are_same:
-            msg = "\t" + Fore.CYAN + f"Are all items the same? ---> {str(contents_are_same)}."
+            msg = "\t" + self._cyan + f"Are all items the same? ---> {str(contents_are_same)}."
 
             if len(set_a) > 0:
                 self.print(msg, add_to_history=True)
-                self.print("\t" + Fore.CYAN + str(sorted(set_a)))
+                self.print("\t" + self._cyan + str(sorted(set_a)))
             else:
                 self.print(msg + "  (No items exist.)", add_to_history=True)
             return 0, 0, len(list_a)
@@ -387,15 +368,13 @@ class Outputter:
         # If contents are different, continue...
         left, right, shared = count_diffs(list_a, list_b)
         self.print(
-            "\t" + "Are all items the same? ---> " + Fore.RED + f"{str(contents_are_same)}."
+            "\t" + "Are all items the same? ---> " + self._red + f"{str(contents_are_same)}."
             f"  ({_item_is_or_are(shared)} shared, out of {len(s_union)} total.)",
             add_to_history=True,
         )
 
         # Which variables are different?
-        self.print("\t" + Fore.RED + "Which items are different?")
-        # print(Fore.RED + "Which items are different? ---> %s." %
-        #       str(set(list_a).symmetric_difference(list_b)))
+        self.print("\t" + self._red + "Which items are different?")
 
         self.side_by_side(" ", "File A", "File B")
         self.side_by_side_list_diff(list_a, list_b)
