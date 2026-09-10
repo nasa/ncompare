@@ -248,6 +248,7 @@ class Outputter:
         highlight_diff=False,
         force_display_even_if_same=False,
         force_color=None,
+        display_values: tuple[str, str] | None = None,
     ) -> SummaryDifferenceKeys:
         """Print three strings on one line, with customized formatting and an optional marker in the fourth column.
 
@@ -260,6 +261,9 @@ class Outputter:
         highlight_diff
         force_display_even_if_same
         force_color
+        display_values
+            Optional shortened values to print instead of str_b and str_c.
+            Comparison, filtering, and classification still use the full values.
 
         Returns
         -------
@@ -270,6 +274,7 @@ class Outputter:
             "both" if they are different from each other.
         """
         are_different = str_b != str_c
+        has_left, has_right = bool(str_b), bool(str_c)
         if (
             (force_display_even_if_same is False)
             and (are_different is False)
@@ -293,6 +298,9 @@ class Outputter:
             extra_style_space = ""
             str_marker = ""
 
+        if display_values is not None:
+            str_b, str_c = display_values
+
         if dash_line:
             self.print(
                 f" {extra_style_space}"
@@ -314,9 +322,9 @@ class Outputter:
 
         if not are_different:
             return "shared"
-        elif str_b and (not str_c):
+        elif has_left and not has_right:
             return "left"  # there is only a non-empty string on the left side.
-        elif str_c and (not str_b):
+        elif has_right and not has_left:
             return "right"  # there is only a non-empty string on the right side.
         else:
             return "both"  # there are non-empty strings on both sides, and they are not equal.

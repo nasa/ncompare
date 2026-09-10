@@ -33,8 +33,10 @@ import numpy as np
 from colorama import Fore
 
 from ncompare.getters import (
+    _value_to_comparable_str,
     get_and_check_variable_attributes,
     get_and_check_variable_scale_factor,
+    get_attribute_value_as_str,
     get_root_attributes,
     get_root_dims,
     get_root_groups,
@@ -238,7 +240,9 @@ class Comparison:
         # Compute these once and reuse them below -- both when deciding whether to
         # highlight the variable header and when printing each attribute row.
         variable_attribute_pairs = (
-            list(get_and_check_variable_attributes(v_a, v_b)) if self.show_attributes else []
+            list(get_and_check_variable_attributes(v_a, v_b, max_items=None))
+            if self.show_attributes
+            else []
         )
         scale_factor_pair = get_and_check_variable_scale_factor(v_a, v_b)
 
@@ -290,10 +294,22 @@ class Comparison:
         for attr_a_key, attr_a, attr_b_key, attr_b in variable_attribute_pairs:
             # attr_a_key may be empty if the variable doesn't exist in File A.
             attribute_key = attr_a_key if attr_a_key else attr_b_key
-            self._tally_attribute_difference(attribute_key, attr_a, attr_b)
+            self._tally_attribute_difference(
+                attribute_key,
+                attr_a,
+                attr_b,
+                display_values=(
+                    get_attribute_value_as_str(v_a, attr_a_key),
+                    get_attribute_value_as_str(v_b, attr_b_key),
+                ),
+            )
 
     def _tally_attribute_difference(
-        self, attribute_name: str, attribute_a: str, attribute_b: str
+        self,
+        attribute_name: str,
+        attribute_a: str,
+        attribute_b: str,
+        display_values: tuple[str, str] | None = None,
     ) -> None:
         """Print one attribute row side by side and fold it into the attribute tally.
 
@@ -305,13 +321,19 @@ class Comparison:
             the attribute's value in File A, already stringified
         attribute_b
             the attribute's value in File B, already stringified
+        display_values
+            Optional shortened values for the report, separate from comparison.
 
         Returns
         -------
         None
         """
         diff_condition: SummaryDifferenceKeys = self.out.side_by_side(
-            f"{attribute_name}:", attribute_a, attribute_b, highlight_diff=True
+            f"{attribute_name}:",
+            attribute_a,
+            attribute_b,
+            highlight_diff=True,
+            display_values=display_values,
         )
         self.num_attribute_diffs[diff_condition] += 1
         if diff_condition in ("left", "right", "both"):
@@ -343,16 +365,20 @@ class Comparison:
         None
         """
         self.out.print(Fore.LIGHTBLUE_EX + "\nRoot-level Attributes:", add_to_history=True)
-        attrs_a = get_root_attributes(self.file1)
-        attrs_b = get_root_attributes(self.file2)
+        attrs_a = get_root_attributes(self.file1, stringify=False)
+        attrs_b = get_root_attributes(self.file2, stringify=False)
 
         for _, attr_a_key, attr_b_key in common_elements(attrs_a.keys(), attrs_b.keys()):
             # attr_a_key is empty when the attribute exists only in File B.
             attribute_key = attr_a_key if attr_a_key else attr_b_key
             self._tally_attribute_difference(
                 attribute_key,
-                attrs_a.get(attr_a_key, ""),
-                attrs_b.get(attr_b_key, ""),
+                _value_to_comparable_str(attrs_a.get(attr_a_key, ""), max_items=None),
+                _value_to_comparable_str(attrs_b.get(attr_b_key, ""), max_items=None),
+                display_values=(
+                    _value_to_comparable_str(attrs_a.get(attr_a_key, "")),
+                    _value_to_comparable_str(attrs_b.get(attr_b_key, "")),
+                ),
             )
 
     def _print_summary(self):
