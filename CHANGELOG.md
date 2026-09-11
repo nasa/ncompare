@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Keep output colors local to each `Outputter` so overlapping comparisons can use different color settings without changing colorama globals or report alignment ([#366](https://github.com/nasa/ncompare/issues/366)).
+
 - Run the unit test suite on pull requests targeting `develop` and `main` (previously only PRs based on `feature/**`/`issue/**` triggered tests). Integration tests, which require Earthdata credentials, are not run on pull requests and continue to run post-merge via `version-and-build.yml` ([#355](https://github.com/nasa/ncompare/issues/355)) ([**@danielfromearth**](https://github.com/danielfromearth))
 - Internal cleanup with no change to comparison output: remove dead code, compute each variable's scale factor and attributes once instead of twice, and add missing Apache license headers ([#347](https://github.com/nasa/ncompare/issues/347)) ([**@danielfromearth**](https://github.com/danielfromearth))
 - Compare ATL06 structure from committed structure-only fixtures instead of downloading granules, so the test needs no network or Earthdata credentials and its difference count no longer changes when ATL06 is reprocessed. Tests that reach live Earthdata services no longer run automatically, so an outage there cannot break `develop`; run them on demand with `pytest -m integration` ([#361](https://github.com/nasa/ncompare/issues/361)) ([**@danielfromearth**](https://github.com/danielfromearth))
