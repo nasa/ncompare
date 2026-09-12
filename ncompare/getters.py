@@ -24,7 +24,7 @@ def get_and_check_variable_scale_factor(
 
 
 def get_and_check_variable_attributes(
-    v_a: VarProperties, v_b: VarProperties
+    v_a: VarProperties, v_b: VarProperties, *, max_items: int | None = 5
 ) -> Iterator[tuple[str, str, str, str]]:
     """Go through and yield each attribute pair for two variables."""
     # Get the name of attributes if they exist
@@ -36,12 +36,12 @@ def get_and_check_variable_attributes(
         attrs_b_names = v_b.attributes.keys()
     # Iterate and print each attribute
     for _, attr_a_key, attr_b_key in common_elements(attrs_a_names, attrs_b_names):
-        attr_a = get_attribute_value_as_str(v_a, attr_a_key)
-        attr_b = get_attribute_value_as_str(v_b, attr_b_key)
+        attr_a = get_attribute_value_as_str(v_a, attr_a_key, max_items=max_items)
+        attr_b = get_attribute_value_as_str(v_b, attr_b_key, max_items=max_items)
         yield attr_a_key, attr_a, attr_b_key, attr_b
 
 
-def _value_to_comparable_str(value: object) -> str:
+def _value_to_comparable_str(value: object, *, max_items: int | None = 5) -> str:
     """Render an attribute value as the string ncompare compares and displays.
 
     Byte strings are decoded first: ``h5py`` returns HDF5 fixed-length string
@@ -55,32 +55,34 @@ def _value_to_comparable_str(value: object) -> str:
     ----------
     value
         the raw attribute value, as returned by ``netCDF4`` or ``h5py``
+    max_items
+        Maximum iterable items to display; None retains every item for comparison.
 
     Returns
     -------
     str
-        the value as a string; a long iterable is truncated to five elements
+        the value as a string, with an ellipsis only when items were omitted
     """
     if isinstance(value, bytes):
         return value.decode("utf-8", errors="replace")
-    if isinstance(value, np.ndarray) and value.dtype.kind in ("S", "O"):
-        value = [
-            item.decode("utf-8", errors="replace") if isinstance(item, bytes) else item
-            for item in value.tolist()
-        ]
+    if isinstance(value, np.ndarray) and value.ndim == 0:
+        return _value_to_comparable_str(value.item(), max_items=max_items)
     if isinstance(value, Iterable) and not isinstance(value, (str, float)):
-        # TODO: by truncating a list (or other iterable) here,
-        #  we are preventing any subsequent difference checker from detecting
-        #  differences past the 5th element in the iterable.
-        #  So, we need to figure out a way to still check for other differences past the 5th element.
-        return "[" + ", ".join([str(x) for x in list(value)[:5]]) + ", ..." + "]"
+        items = list(value)
+        shown = items if max_items is None else items[:max_items]
+        text = ", ".join(_value_to_comparable_str(item, max_items=max_items) for item in shown)
+        if max_items is not None and len(items) > max_items:
+            text += ", ..."
+        return "[" + text + "]"
     return str(value)
 
 
-def get_attribute_value_as_str(varprops: VarProperties, attribute_key: str) -> str:
+def get_attribute_value_as_str(
+    varprops: VarProperties, attribute_key: str, *, max_items: int | None = 5
+) -> str:
     """Get a string representation of the attribute value."""
     if attribute_key and (attribute_key in varprops.attributes):
-        return _value_to_comparable_str(varprops.attributes[attribute_key])
+        return _value_to_comparable_str(varprops.attributes[attribute_key], max_items=max_items)
 
     return ""
 
@@ -96,33 +98,38 @@ def get_root_groups(file: FileToCompare) -> list:
     return groups_list
 
 
-def get_root_attributes(file: FileToCompare) -> dict:
+def get_root_attributes(file: FileToCompare, *, stringify: bool = True) -> dict:
     """Get the global (root-level) attributes of a netCDF or HDF5 file.
 
     Parameters
     ----------
     file
         the file whose root-level attributes are wanted
+    stringify
+        Render values for display by default. False returns the raw values so
+        callers can compare complete values and format them separately.
 
     Returns
     -------
     dict
-        attribute name -> value, each rendered with ``_value_to_comparable_str``;
-        an empty dict if the file's attributes cannot be read
+        attribute name -> value, rendered with ``_value_to_comparable_str`` unless
+        stringify is False; an empty dict if the file's attributes cannot be read
     """
     attributes: dict = {}
     try:
         if file.type == "netcdf":
             with netCDF4.Dataset(file.path, mode="r") as dataset:
                 for name in dataset.ncattrs():
-                    attributes[name] = _value_to_comparable_str(dataset.getncattr(name))
+                    attributes[name] = dataset.getncattr(name)
         elif file.type == "hdf5":
             with h5py.File(file.path, mode="r") as dataset:
                 for name in dataset.attrs.keys():
-                    attributes[name] = _value_to_comparable_str(dataset.attrs[name])
+                    attributes[name] = dataset.attrs[name]
     except (OSError, RuntimeError, KeyError):
         # Mirrors _get_hdf5_root_dims: some files can't be introspected; degrade gracefully.
         return {}
+    if stringify:
+        return {name: _value_to_comparable_str(value) for name, value in attributes.items()}
     return attributes
 
 
