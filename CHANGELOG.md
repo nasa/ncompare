@@ -24,7 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Decode fixed-length HDF5 variable attribute strings before comparison and display, including string arrays, while preserving object-reference handling ([#370](https://github.com/nasa/ncompare/issues/370)).
-
+- Give each summary tally its own `difference_types` set instead of sharing one via a shallow copy ([#365](https://github.com/nasa/ncompare/issues/365)) ([**@Hashim1999164**](https://github.com/Hashim1999164))
 - Fix the command line failing on netCDF files on Linux with "[Errno -101] NetCDF: HDF error". `h5py` and `netCDF4` each bundle their own copy of the HDF5 library and only the first loaded is used, so `netCDF4` is now imported first ([#363](https://github.com/nasa/ncompare/issues/363)) ([**@danielfromearth**](https://github.com/danielfromearth))
 - Resolve each variable's HDF5 object-reference attributes against its own file (File B was incorrectly dereferenced against File A), and use the correct parent-group name when building nested group paths during traversal ([#341](https://github.com/nasa/ncompare/issues/341)) ([**@danielfromearth**](https://github.com/danielfromearth))
 - Restore colorama's global color state after a no-color comparison, so `no_color=True` no longer permanently disables color for later comparisons or other libraries in the same process ([#345](https://github.com/nasa/ncompare/issues/345)) ([**@danielfromearth**](https://github.com/danielfromearth))
