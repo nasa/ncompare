@@ -54,6 +54,17 @@ from ncompare.utility_types import (
 )
 
 
+def _blank_difference_dict() -> SummaryDifferencesDict:
+    """Return a fresh summary tally so nested sets are not shared across tallies."""
+    return {
+        "shared": 0,
+        "left": 0,
+        "right": 0,
+        "both": 0,
+        "difference_types": set(),
+    }
+
+
 class Comparison:
     def __init__(
         self,
@@ -74,16 +85,9 @@ class Comparison:
         self.show_chunks: bool = show_chunks
         self.show_attributes: bool = show_attributes
 
-        blank_difference_dict: SummaryDifferencesDict = {
-            "shared": 0,
-            "left": 0,
-            "right": 0,
-            "both": 0,
-            "difference_types": set(),
-        }
-        self.num_group_diffs: SummaryDifferencesDict = blank_difference_dict.copy()
-        self.num_var_diffs: SummaryDifferencesDict = blank_difference_dict.copy()
-        self.num_attribute_diffs: SummaryDifferencesDict = blank_difference_dict.copy()
+        self.num_group_diffs: SummaryDifferencesDict = _blank_difference_dict()
+        self.num_var_diffs: SummaryDifferencesDict = _blank_difference_dict()
+        self.num_attribute_diffs: SummaryDifferencesDict = _blank_difference_dict()
 
         self.open_file1 = None
         self.open_file2 = None

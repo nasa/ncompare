@@ -106,3 +106,14 @@ def test_variable_name_truncated_to_configured_column_width(tmp_path):
     # The name is truncated to the configured width (12), never the full 80 characters.
     assert variable_rows[0][1] == long_name[:12]
     assert all(long_name not in cell for row in out._line_history for cell in row)
+
+
+def test_summary_tally_difference_types_are_independent(tmp_path):
+    """Each summary tally keeps its own difference_types set."""
+    file = FileToCompare(path=tmp_path / "a.nc", type="netcdf")
+    with Outputter() as out:
+        comparison = Comparison(file, file, out, show_chunks=False, show_attributes=False)
+
+    comparison.num_attribute_diffs["difference_types"].add("units")
+    assert comparison.num_var_diffs["difference_types"] == set()
+    assert comparison.num_group_diffs["difference_types"] == set()
