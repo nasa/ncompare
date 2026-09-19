@@ -34,10 +34,7 @@ from pathlib import Path
 from typing import TextIO
 
 import colorama
-import openpyxl
 from colorama import Fore, Style
-from openpyxl.cell import Cell
-from openpyxl.styles import Font
 
 from ncompare.sequence_operations import common_elements, count_diffs
 from ncompare.utility_types import SummaryDifferenceKeys
@@ -386,6 +383,9 @@ class Outputter:
 
     def write_history_to_excel(self, filename: str | Path = "test.xlsx") -> None:
         """Save the line history that's been stored to an Excel file."""
+        # Import lazily: openpyxl is only needed when writing an Excel file (#374).
+        import openpyxl
+
         workbook = openpyxl.Workbook()
         sheet = workbook.active
 
@@ -418,6 +418,9 @@ def _item_is_or_are(count) -> str:
 
 def _excel_red_cells(data, sheet) -> Iterator:
     """Stylize cells in Excel with a red font."""
+    from openpyxl.cell import Cell
+    from openpyxl.styles import Font
+
     for cell in data:
         cell = Cell(sheet, column="A", row=1, value=cell)
         cell.font = Font(bold=True, color="FFFF0000")
@@ -426,6 +429,9 @@ def _excel_red_cells(data, sheet) -> Iterator:
 
 def _excel_bold_underline_cells(data, sheet) -> Iterator:
     """Stylize cells in Excel with a bold and underlined font."""
+    from openpyxl.cell import Cell
+    from openpyxl.styles import Font
+
     for cell in data:
         cell = Cell(sheet, column="A", row=1, value=cell)
         cell.font = Font(bold=True, underline="single")

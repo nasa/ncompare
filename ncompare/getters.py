@@ -3,7 +3,6 @@ from collections.abc import Iterable, Iterator
 
 import h5py
 import netCDF4
-import xarray as xr
 
 from ncompare.sequence_operations import common_elements
 from ncompare.utility_types import FileToCompare, VarProperties
@@ -98,6 +97,9 @@ def get_variables(node: netCDF4.Dataset | netCDF4.Group | h5py.Group, file_type:
 
 def get_root_dims(file: FileToCompare) -> list:
     """Get a list of dimensions from a netCDF or HDF5."""
+
+    # Import lazily: xarray pulls in pandas, which dominates import time (#374).
+    import xarray as xr
 
     def __get_dim_list(decode_times=True):
         with warnings.catch_warnings():
