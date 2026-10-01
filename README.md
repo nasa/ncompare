@@ -113,8 +113,9 @@ esac
 ```python
 from ncompare import compare
 
-total_number_of_differences = compare("<netcdf file 1>", "<netcdf file 2>", only_diffs=True,
-                                      show_chunks=True, show_attributes=True)
+total_number_of_differences = compare(
+    "<netcdf file 1>", "<netcdf file 2>", only_diffs=True, show_chunks=True, show_attributes=True
+)
 ```
 
 
