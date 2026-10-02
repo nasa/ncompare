@@ -32,7 +32,6 @@ import netCDF4
 import numpy as np
 
 from ncompare.getters import (
-    value_to_comparable_str,
     get_and_check_variable_attributes,
     get_and_check_variable_scale_factor,
     get_root_attributes,
@@ -40,6 +39,7 @@ from ncompare.getters import (
     get_root_groups,
     get_subgroups,
     get_variables,
+    value_to_comparable_str,
 )
 from ncompare.printing import Outputter
 from ncompare.sequence_operations import common_elements, count_diffs
