@@ -30,6 +30,7 @@ import numpy as np
 import pytest
 
 from ncompare.Comparison import Comparison
+from ncompare.core import compare
 from ncompare.printing import Outputter
 from ncompare.utility_types import FileToCompare
 
@@ -77,3 +78,72 @@ def test_hdf5_reference_attribute_resolves_against_its_own_file(hdf5_reference_p
     # Because the references point to differently-named targets, correctly resolving
     # each against its own file yields "/target_alpha" vs "/target_beta" -- a difference.
     assert "my_ref" in comparison.num_attribute_diffs["difference_types"]
+
+
+@pytest.mark.parametrize("text", ["NASA", "café", "", "b'NASA'"])
+def test_variable_string_storage_types_compare_equal(tmp_path, text):
+    """Fixed-width bytes and variable-width UTF-8 denote the same attribute text."""
+    paths = [tmp_path / "fixed.h5", tmp_path / "variable.h5"]
+    values = [np.bytes_(text.encode("utf-8")), text]
+    for path, value in zip(paths, values, strict=True):
+        with h5py.File(path, "w") as dataset:
+            dataset.create_dataset("data", data=np.arange(3)).attrs["source"] = value
+
+    report = tmp_path / "report.txt"
+    assert compare(*paths, show_attributes=True, file_text=str(report)) == 0
+    assert text in report.read_text()
+
+
+@pytest.mark.parametrize("shape", [(2,), (1, 2), (2, 1), (1, 1, 2), (0,)])
+def test_variable_string_array_storage_types_compare_equal(tmp_path, shape):
+    """String arrays must not be interpreted as HDF5 object references."""
+    paths = [tmp_path / "fixed.h5", tmp_path / "variable.h5"]
+    count = int(np.prod(shape))
+    values = ["NASA", "café"][:count]
+    fixed = np.array([value.encode("utf-8") for value in values], dtype="S8").reshape(shape)
+    variable = np.array(values, dtype=h5py.string_dtype()).reshape(shape)
+    for path, value in zip(paths, [fixed, variable], strict=True):
+        with h5py.File(path, "w") as dataset:
+            dataset.create_dataset("data", data=np.arange(3)).attrs["source"] = value
+
+    assert compare(*paths, show_attributes=True) == 0
+
+
+def test_invalid_variable_string_bytes_use_replacement_decoding(tmp_path):
+    """Use the same invalid-UTF-8 policy as the root attribute normalizer."""
+    path = tmp_path / "invalid.h5"
+    with h5py.File(path, "w") as dataset:
+        variable = dataset.create_dataset("data", data=np.arange(3))
+        variable.attrs["source"] = np.bytes_(b"NASA\xff")
+        variable.attrs["sources"] = np.array([b"NASA\xff"], dtype="S5")
+
+    report = tmp_path / "report.txt"
+    assert compare(path, path, show_attributes=True, file_text=str(report)) == 0
+    assert "NASA�" in report.read_text()
+    assert "\\xff" not in report.read_text()
+
+
+def test_hdf5_numeric_attribute_array_format_is_unchanged(tmp_path):
+    """Text decoding must not change the existing numeric array representation."""
+    path = tmp_path / "numeric.h5"
+    value = np.array([1, 2, 3, 4])
+    with h5py.File(path, "w") as dataset:
+        dataset.create_dataset("data", data=np.arange(3)).attrs["matrix"] = value
+    file = FileToCompare(path=path, type="hdf5")
+    with Outputter() as out, h5py.File(path) as dataset:
+        comparison = Comparison(file, file, out, show_chunks=False, show_attributes=True)
+        props = comparison._create_var_properties(dataset, "data", dataset)
+        assert props.attributes["matrix"] == str(value)
+
+
+@pytest.mark.parametrize("array", [False, True])
+def test_different_variable_strings_are_still_reported(tmp_path, array):
+    """Decoding storage types must preserve genuine text differences."""
+    paths = [tmp_path / "a.h5", tmp_path / "b.h5"]
+    for path, value in zip(paths, ["NASA", "GSFC"], strict=True):
+        stored = np.bytes_(value.encode("utf-8"))
+        if array:
+            stored = np.array([stored])
+        with h5py.File(path, "w") as dataset:
+            dataset.create_dataset("data", data=np.arange(3)).attrs["source"] = stored
+    assert compare(*paths, show_attributes=True) > 0

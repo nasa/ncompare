@@ -41,7 +41,7 @@ def get_and_check_variable_attributes(
         yield attr_a_key, attr_a, attr_b_key, attr_b
 
 
-def _value_to_comparable_str(value: object) -> str:
+def value_to_comparable_str(value: object) -> str:
     """Render an attribute value as the string ncompare compares and displays.
 
     Byte strings are decoded first: ``h5py`` returns HDF5 fixed-length string
@@ -80,7 +80,7 @@ def _value_to_comparable_str(value: object) -> str:
 def get_attribute_value_as_str(varprops: VarProperties, attribute_key: str) -> str:
     """Get a string representation of the attribute value."""
     if attribute_key and (attribute_key in varprops.attributes):
-        return _value_to_comparable_str(varprops.attributes[attribute_key])
+        return value_to_comparable_str(varprops.attributes[attribute_key])
 
     return ""
 
@@ -107,7 +107,7 @@ def get_root_attributes(file: FileToCompare) -> dict:
     Returns
     -------
     dict
-        attribute name -> value, each rendered with ``_value_to_comparable_str``;
+        attribute name -> value, each rendered with ``value_to_comparable_str``;
         an empty dict if the file's attributes cannot be read
     """
     attributes: dict = {}
@@ -115,11 +115,11 @@ def get_root_attributes(file: FileToCompare) -> dict:
         if file.type == "netcdf":
             with netCDF4.Dataset(file.path, mode="r") as dataset:
                 for name in dataset.ncattrs():
-                    attributes[name] = _value_to_comparable_str(dataset.getncattr(name))
+                    attributes[name] = value_to_comparable_str(dataset.getncattr(name))
         elif file.type == "hdf5":
             with h5py.File(file.path, mode="r") as dataset:
                 for name in dataset.attrs.keys():
-                    attributes[name] = _value_to_comparable_str(dataset.attrs[name])
+                    attributes[name] = value_to_comparable_str(dataset.attrs[name])
     except (OSError, RuntimeError, KeyError):
         # Mirrors _get_hdf5_root_dims: some files can't be introspected; degrade gracefully.
         return {}

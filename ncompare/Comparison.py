@@ -39,6 +39,7 @@ from ncompare.getters import (
     get_root_groups,
     get_subgroups,
     get_variables,
+    value_to_comparable_str,
 )
 from ncompare.printing import Outputter
 from ncompare.sequence_operations import common_elements, count_diffs
@@ -546,7 +547,17 @@ class Comparison:
                 for name in the_variable.attrs.keys():
                     attribute_value = the_variable.attrs[name]
                     if isinstance(attribute_value, np.ndarray):
-                        if attribute_value.dtype == h5py.ref_dtype:
+                        if h5py.check_string_dtype(attribute_value.dtype) is not None:
+                            # Decode text before formatting, without treating vlen
+                            # strings (object dtype) as object-reference arrays.
+                            if attribute_value.dtype.kind == "S":
+                                attribute_value = np.char.decode(
+                                    attribute_value, "utf-8", errors="replace"
+                                )
+                            else:
+                                attribute_value = attribute_value.astype(str)
+                            retrieved_value = str(attribute_value)
+                        elif attribute_value.dtype == h5py.ref_dtype:
                             retrieved_value = __name_from_h5_ref(attribute_value[0][0])
                         else:
                             try:
@@ -557,7 +568,7 @@ class Comparison:
                                 retrieved_value = str(attribute_value)
 
                     else:
-                        retrieved_value = str(attribute_value)
+                        retrieved_value = value_to_comparable_str(attribute_value)
 
                     v_attributes[name] = retrieved_value
         else:

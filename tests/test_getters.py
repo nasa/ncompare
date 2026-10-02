@@ -81,7 +81,7 @@ def test_get_root_attributes_hdf5_array_of_fixed_length_strings(tmp_path):
 
     Unlike a scalar string attribute, this value arrives from h5py as a
     ``numpy.ndarray`` of ``bytes`` (dtype kind ``"S"``), which takes a separate
-    branch in ``_value_to_comparable_str`` from the scalar-``bytes`` case covered
+    branch in ``value_to_comparable_str`` from the scalar-``bytes`` case covered
     by ``test_get_root_attributes_hdf5_fixed_length_string_matches_netcdf`` above.
     """
     filepath = tmp_path / "multi_string_attr.h5"
