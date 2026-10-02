@@ -32,7 +32,7 @@ import netCDF4
 import numpy as np
 
 from ncompare.getters import (
-    _value_to_comparable_str,
+    value_to_comparable_str,
     get_and_check_variable_attributes,
     get_and_check_variable_scale_factor,
     get_root_attributes,
@@ -568,7 +568,7 @@ class Comparison:
                                 retrieved_value = str(attribute_value)
 
                     else:
-                        retrieved_value = _value_to_comparable_str(attribute_value)
+                        retrieved_value = value_to_comparable_str(attribute_value)
 
                     v_attributes[name] = retrieved_value
         else:
