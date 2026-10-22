@@ -149,3 +149,62 @@ def test_different_variable_strings_are_still_reported(tmp_path, array):
         with h5py.File(path, "w") as dataset:
             dataset.create_dataset("data", data=np.arange(3)).attrs["source"] = stored
     assert compare(*paths, show_attributes=True) > 0
+
+
+def _create_dimension_scale_file(path, *, swap: bool) -> None:
+    """Create native HDF5 dimension-scale and reverse-reference attributes."""
+    with h5py.File(path, "w") as file:
+        data = file.create_dataset("data", data=np.ones((2, 2)))
+        x = file.create_dataset("axis_x", data=np.arange(2))
+        y = file.create_dataset("axis_y", data=np.arange(2))
+        x.make_scale("x")
+        y.make_scale("y")
+        first, second = (y, x) if swap else (x, y)
+        data.dims[0].attach_scale(first)
+        data.dims[1].attach_scale(second)
+
+
+def test_hdf5_dimension_list_resolves_every_scale_and_detects_swaps(tmp_path):
+    """Real DIMENSION_LIST vlen references must compare resolved names, not placeholders."""
+    left = tmp_path / "left.h5"
+    right = tmp_path / "right.h5"
+    _create_dimension_scale_file(left, swap=False)
+    _create_dimension_scale_file(right, swap=True)
+
+    left_file = FileToCompare(left, type="hdf5")
+    right_file = FileToCompare(right, type="hdf5")
+    with Outputter(keep_print_history=True) as out:
+        comparison = Comparison(left_file, right_file, out, show_chunks=False, show_attributes=True)
+        comparison.run_through_comparisons()
+    assert "DIMENSION_LIST" in comparison.num_attribute_diffs["difference_types"]
+    assert "REFERENCE_LIST" in comparison.num_attribute_diffs["difference_types"]
+
+    with h5py.File(left) as f, Outputter() as out:
+        check = Comparison(left_file, left_file, out, show_chunks=False, show_attributes=True)
+        data = check._create_var_properties(f, "data", f)
+        first = check._create_var_properties(f, "axis_x", f)
+    assert value_to_comparable_str(data.attributes["DIMENSION_LIST"], max_items=None) == (
+        "[[/axis_x], [/axis_y]]"
+    )
+    assert value_to_comparable_str(first.attributes["REFERENCE_LIST"], max_items=None) == (
+        "[[/data, 0]]"
+    )
+
+
+def test_hdf5_dimension_scale_reference_tail_difference_is_not_truncated(tmp_path):
+    """The sixth dimension-scale reference must still contribute to the comparison."""
+    paths = [tmp_path / "a.h5", tmp_path / "b.h5"]
+    for file_idx, path in enumerate(paths):
+        with h5py.File(path, "w") as file:
+            data = file.create_dataset("data", data=np.ones((2,)))
+            for i in range(6):
+                name = f"scale_{i if i != 5 or file_idx == 0 else 'different'}"
+                scale = file.create_dataset(name, data=np.arange(2))
+                scale.make_scale(name)
+                data.dims[0].attach_scale(scale)
+
+    files = [FileToCompare(p, type="hdf5") for p in paths]
+    with Outputter(keep_print_history=True) as out:
+        comparison = Comparison(*files, out, show_chunks=False, show_attributes=True)
+        comparison.run_through_comparisons()
+    assert "DIMENSION_LIST" in comparison.num_attribute_diffs["difference_types"]

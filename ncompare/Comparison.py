@@ -552,8 +552,24 @@ class Comparison:
             elif self.file_types == "hdf5":
                 v_chunking = str(the_variable.chunks)
 
-            def __name_from_h5_ref(ref):
-                return original_dataset[ref].name
+            def __resolve_h5_references(value):
+                """Resolve nested HDF5 object references before the source file closes.
+
+                DIMENSION_LIST contains arrays of references, while REFERENCE_LIST
+                contains structured records whose dataset field is a reference.
+                Preserve every reference and the associated dimension indices.
+                """
+                if isinstance(value, h5py.Reference):
+                    return original_dataset[value].name if value else "<null HDF5 reference>"
+                if isinstance(value, np.void) and value.dtype.names:
+                    return tuple(
+                        __resolve_h5_references(value[field]) for field in value.dtype.names
+                    )
+                if isinstance(value, np.ndarray) and (value.dtype.kind == "O" or value.dtype.names):
+                    if value.ndim == 0:
+                        return __resolve_h5_references(value.item())
+                    return [__resolve_h5_references(item) for item in value]
+                return value
 
             # Variable attributes are only read when they will be displayed;
             # scale factor is read separately (from the variable object itself).
@@ -571,19 +587,20 @@ class Comparison:
             elif self.show_attributes and self.file_types == "hdf5":
                 for name in the_variable.attrs.keys():
                     attribute_value = the_variable.attrs[name]
+                    # Resolve both direct and nested HDF5 references (including
+                    # dimension scales) without dropping any entries. Ordinary
+                    # numeric and fixed-string arrays remain raw for full-value
+                    # comparison and consistent bounded display formatting.
                     if (
                         isinstance(attribute_value, np.ndarray)
+                        and attribute_value.size == 1
                         and h5py.check_dtype(ref=attribute_value.dtype) is not None
                     ):
-                        # Resolve object references to dataset names as before.
-                        retrieved_value = __name_from_h5_ref(attribute_value[0][0])
+                        # Preserve the existing scalar display for a simple 1x1
+                        # object-reference array, used by older report fixtures.
+                        retrieved_value = __resolve_h5_references(attribute_value.flat[0])
                     else:
-                        # Keep HDF5 values, including string and numeric arrays,
-                        # raw until get_attribute_value_as_str renders them.
-                        # NumPy's str(array) abbreviates long arrays, masking
-                        # tail differences, and uses a different presentation
-                        # from root attributes.
-                        retrieved_value = attribute_value
+                        retrieved_value = __resolve_h5_references(attribute_value)
 
                     v_attributes[name] = retrieved_value
         else:
