@@ -24,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Compare complete attribute values before shortening report lists, so differences after the fifth element remain detectable. Only append an ellipsis when list items are actually omitted ([#371](https://github.com/nasa/ncompare/issues/371)).
 - Decode fixed-length HDF5 variable attribute strings before comparison and display, including string arrays, while preserving object-reference handling ([#370](https://github.com/nasa/ncompare/issues/370)).
 - Give each summary tally its own `difference_types` set instead of sharing one via a shallow copy ([#365](https://github.com/nasa/ncompare/issues/365)) ([**@Hashim1999164**](https://github.com/Hashim1999164))
 - Fix the command line failing on netCDF files on Linux with "[Errno -101] NetCDF: HDF error". `h5py` and `netCDF4` each bundle their own copy of the HDF5 library and only the first loaded is used, so `netCDF4` is now imported first ([#363](https://github.com/nasa/ncompare/issues/363)) ([**@danielfromearth**](https://github.com/danielfromearth))

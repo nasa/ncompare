@@ -31,6 +31,7 @@ import pytest
 
 from ncompare.Comparison import Comparison
 from ncompare.core import compare
+from ncompare.getters import value_to_comparable_str
 from ncompare.printing import Outputter
 from ncompare.utility_types import FileToCompare
 
@@ -123,8 +124,8 @@ def test_invalid_variable_string_bytes_use_replacement_decoding(tmp_path):
     assert "\\xff" not in report.read_text()
 
 
-def test_hdf5_numeric_attribute_array_format_is_unchanged(tmp_path):
-    """Text decoding must not change the existing numeric array representation."""
+def test_hdf5_numeric_attribute_array_keeps_full_values_for_comparison(tmp_path):
+    """Numeric arrays must stay raw until uniform rendering and comparison."""
     path = tmp_path / "numeric.h5"
     value = np.array([1, 2, 3, 4])
     with h5py.File(path, "w") as dataset:
@@ -133,7 +134,8 @@ def test_hdf5_numeric_attribute_array_format_is_unchanged(tmp_path):
     with Outputter() as out, h5py.File(path) as dataset:
         comparison = Comparison(file, file, out, show_chunks=False, show_attributes=True)
         props = comparison._create_var_properties(dataset, "data", dataset)
-        assert props.attributes["matrix"] == str(value)
+        np.testing.assert_array_equal(props.attributes["matrix"], value)
+        assert value_to_comparable_str(props.attributes["matrix"]) == "[1, 2, 3, 4]"
 
 
 @pytest.mark.parametrize("array", [False, True])
@@ -147,3 +149,80 @@ def test_different_variable_strings_are_still_reported(tmp_path, array):
         with h5py.File(path, "w") as dataset:
             dataset.create_dataset("data", data=np.arange(3)).attrs["source"] = stored
     assert compare(*paths, show_attributes=True) > 0
+
+
+def _set_dimension_reference_attributes(data, scales_per_dimension) -> None:
+    """Create HDF5 DIMENSION_LIST and REFERENCE_LIST using their native dtypes.
+
+    This avoids H5DSset_scale, which fails on some Linux HDF5 builds, while
+    exercising the same nested vlen references and structured reverse records.
+    """
+    refs = np.empty(len(scales_per_dimension), dtype=object)
+    record_dtype = np.dtype([("dataset", h5py.ref_dtype), ("dimension", "<u4")])
+    for dim_index, scales in enumerate(scales_per_dimension):
+        refs[dim_index] = np.asarray([scale.ref for scale in scales], dtype=h5py.ref_dtype)
+        for scale in scales:
+            scale.attrs.create(
+                "REFERENCE_LIST",
+                np.array([(data.ref, dim_index)], dtype=record_dtype),
+                dtype=record_dtype,
+            )
+            scale.attrs.create("CLASS", np.bytes_("DIMENSION_SCALE"))
+            scale.attrs.create("NAME", np.bytes_(scale.name))
+    data.attrs.create("DIMENSION_LIST", refs, dtype=h5py.vlen_dtype(h5py.ref_dtype))
+
+
+def _create_dimension_scale_file(path, *, swap: bool) -> None:
+    """Create native HDF5 dimension-scale and reverse-reference attributes."""
+    with h5py.File(path, "w") as file:
+        data = file.create_dataset("data", data=np.ones((2, 2)))
+        x = file.create_dataset("axis_x", data=np.arange(2))
+        y = file.create_dataset("axis_y", data=np.arange(2))
+        first, second = (y, x) if swap else (x, y)
+        _set_dimension_reference_attributes(data, [[first], [second]])
+
+
+def test_hdf5_dimension_list_resolves_every_scale_and_detects_swaps(tmp_path):
+    """Real DIMENSION_LIST vlen references must compare resolved names, not placeholders."""
+    left = tmp_path / "left.h5"
+    right = tmp_path / "right.h5"
+    _create_dimension_scale_file(left, swap=False)
+    _create_dimension_scale_file(right, swap=True)
+
+    left_file = FileToCompare(left, type="hdf5")
+    right_file = FileToCompare(right, type="hdf5")
+    with Outputter(keep_print_history=True) as out:
+        comparison = Comparison(left_file, right_file, out, show_chunks=False, show_attributes=True)
+        comparison.run_through_comparisons()
+    assert "DIMENSION_LIST" in comparison.num_attribute_diffs["difference_types"]
+    assert "REFERENCE_LIST" in comparison.num_attribute_diffs["difference_types"]
+
+    with h5py.File(left) as f, Outputter() as out:
+        check = Comparison(left_file, left_file, out, show_chunks=False, show_attributes=True)
+        data = check._create_var_properties(f, "data", f)
+        first = check._create_var_properties(f, "axis_x", f)
+    assert value_to_comparable_str(data.attributes["DIMENSION_LIST"], max_items=None) == (
+        "[[/axis_x], [/axis_y]]"
+    )
+    assert value_to_comparable_str(first.attributes["REFERENCE_LIST"], max_items=None) == (
+        "[[/data, 0]]"
+    )
+
+
+def test_hdf5_dimension_scale_reference_tail_difference_is_not_truncated(tmp_path):
+    """The sixth dimension-scale reference must still contribute to the comparison."""
+    paths = [tmp_path / "a.h5", tmp_path / "b.h5"]
+    for file_idx, path in enumerate(paths):
+        with h5py.File(path, "w") as file:
+            data = file.create_dataset("data", data=np.ones((2,)))
+            scales = []
+            for i in range(6):
+                name = f"scale_{i if i != 5 or file_idx == 0 else 'different'}"
+                scales.append(file.create_dataset(name, data=np.arange(2)))
+            _set_dimension_reference_attributes(data, [scales])
+
+    files = [FileToCompare(p, type="hdf5") for p in paths]
+    with Outputter(keep_print_history=True) as out:
+        comparison = Comparison(*files, out, show_chunks=False, show_attributes=True)
+        comparison.run_through_comparisons()
+    assert "DIMENSION_LIST" in comparison.num_attribute_diffs["difference_types"]

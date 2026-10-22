@@ -90,7 +90,7 @@ def test_get_root_attributes_hdf5_array_of_fixed_length_strings(tmp_path):
 
     result = get_root_attributes(FileToCompare(filepath, type="hdf5"))
 
-    assert result["sources"] == "[NASA, JPL, GSFC, ...]"
+    assert result["sources"] == "[NASA, JPL, GSFC]"
 
 
 def test_get_root_attributes_degrades_gracefully_on_unreadable_file(tmp_path):

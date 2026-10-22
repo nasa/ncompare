@@ -34,6 +34,7 @@ import numpy as np
 from ncompare.getters import (
     get_and_check_variable_attributes,
     get_and_check_variable_scale_factor,
+    get_attribute_value_as_str,
     get_root_attributes,
     get_root_dims,
     get_root_groups,
@@ -242,7 +243,9 @@ class Comparison:
         # Compute these once and reuse them below -- both when deciding whether to
         # highlight the variable header and when printing each attribute row.
         variable_attribute_pairs = (
-            list(get_and_check_variable_attributes(v_a, v_b)) if self.show_attributes else []
+            list(get_and_check_variable_attributes(v_a, v_b, max_items=None))
+            if self.show_attributes
+            else []
         )
         scale_factor_pair = get_and_check_variable_scale_factor(v_a, v_b)
 
@@ -294,10 +297,22 @@ class Comparison:
         for attr_a_key, attr_a, attr_b_key, attr_b in variable_attribute_pairs:
             # attr_a_key may be empty if the variable doesn't exist in File A.
             attribute_key = attr_a_key if attr_a_key else attr_b_key
-            self._tally_attribute_difference(attribute_key, attr_a, attr_b)
+            self._tally_attribute_difference(
+                attribute_key,
+                attr_a,
+                attr_b,
+                display_values=(
+                    get_attribute_value_as_str(v_a, attr_a_key),
+                    get_attribute_value_as_str(v_b, attr_b_key),
+                ),
+            )
 
     def _tally_attribute_difference(
-        self, attribute_name: str, attribute_a: str, attribute_b: str
+        self,
+        attribute_name: str,
+        attribute_a: str,
+        attribute_b: str,
+        display_values: tuple[str, str] | None = None,
     ) -> None:
         """Print one attribute row side by side and fold it into the attribute tally.
 
@@ -309,13 +324,19 @@ class Comparison:
             the attribute's value in File A, already stringified
         attribute_b
             the attribute's value in File B, already stringified
+        display_values
+            Optional shortened values for display, separate from comparison.
 
         Returns
         -------
         None
         """
         diff_condition: SummaryDifferenceKeys = self.out.side_by_side(
-            f"{attribute_name}:", attribute_a, attribute_b, highlight_diff=True
+            f"{attribute_name}:",
+            attribute_a,
+            attribute_b,
+            highlight_diff=True,
+            display_values=display_values,
         )
         self.num_attribute_diffs[diff_condition] += 1
         if diff_condition in ("left", "right", "both"):
@@ -347,16 +368,20 @@ class Comparison:
         None
         """
         self.out.print_header("\nRoot-level Attributes:")
-        attrs_a = get_root_attributes(self.file1)
-        attrs_b = get_root_attributes(self.file2)
+        attrs_a = get_root_attributes(self.file1, stringify=False)
+        attrs_b = get_root_attributes(self.file2, stringify=False)
 
         for _, attr_a_key, attr_b_key in common_elements(attrs_a.keys(), attrs_b.keys()):
             # attr_a_key is empty when the attribute exists only in File B.
             attribute_key = attr_a_key if attr_a_key else attr_b_key
             self._tally_attribute_difference(
                 attribute_key,
-                attrs_a.get(attr_a_key, ""),
-                attrs_b.get(attr_b_key, ""),
+                value_to_comparable_str(attrs_a.get(attr_a_key, ""), max_items=None),
+                value_to_comparable_str(attrs_b.get(attr_b_key, ""), max_items=None),
+                display_values=(
+                    value_to_comparable_str(attrs_a.get(attr_a_key, "")),
+                    value_to_comparable_str(attrs_b.get(attr_b_key, "")),
+                ),
             )
 
     def _print_summary(self):
@@ -527,8 +552,24 @@ class Comparison:
             elif self.file_types == "hdf5":
                 v_chunking = str(the_variable.chunks)
 
-            def __name_from_h5_ref(ref):
-                return original_dataset[ref].name
+            def __resolve_h5_references(value):
+                """Resolve nested HDF5 object references before the source file closes.
+
+                DIMENSION_LIST contains arrays of references, while REFERENCE_LIST
+                contains structured records whose dataset field is a reference.
+                Preserve every reference and the associated dimension indices.
+                """
+                if isinstance(value, h5py.Reference):
+                    return original_dataset[value].name if value else "<null HDF5 reference>"
+                if isinstance(value, np.void) and value.dtype.names:
+                    return tuple(
+                        __resolve_h5_references(value[field]) for field in value.dtype.names
+                    )
+                if isinstance(value, np.ndarray) and (value.dtype.kind == "O" or value.dtype.names):
+                    if value.ndim == 0:
+                        return __resolve_h5_references(value.item())
+                    return [__resolve_h5_references(item) for item in value]
+                return value
 
             # Variable attributes are only read when they will be displayed;
             # scale factor is read separately (from the variable object itself).
@@ -546,29 +587,20 @@ class Comparison:
             elif self.show_attributes and self.file_types == "hdf5":
                 for name in the_variable.attrs.keys():
                     attribute_value = the_variable.attrs[name]
-                    if isinstance(attribute_value, np.ndarray):
-                        if h5py.check_string_dtype(attribute_value.dtype) is not None:
-                            # Decode text before formatting, without treating vlen
-                            # strings (object dtype) as object-reference arrays.
-                            if attribute_value.dtype.kind == "S":
-                                attribute_value = np.char.decode(
-                                    attribute_value, "utf-8", errors="replace"
-                                )
-                            else:
-                                attribute_value = attribute_value.astype(str)
-                            retrieved_value = str(attribute_value)
-                        elif attribute_value.dtype == h5py.ref_dtype:
-                            retrieved_value = __name_from_h5_ref(attribute_value[0][0])
-                        else:
-                            try:
-                                retrieved_value = str(
-                                    [__name_from_h5_ref(a[0]) for a in attribute_value]
-                                )
-                            except IndexError:
-                                retrieved_value = str(attribute_value)
-
+                    # Resolve both direct and nested HDF5 references (including
+                    # dimension scales) without dropping any entries. Ordinary
+                    # numeric and fixed-string arrays remain raw for full-value
+                    # comparison and consistent bounded display formatting.
+                    if (
+                        isinstance(attribute_value, np.ndarray)
+                        and attribute_value.size == 1
+                        and h5py.check_dtype(ref=attribute_value.dtype) is not None
+                    ):
+                        # Preserve the existing scalar display for a simple 1x1
+                        # object-reference array, used by older report fixtures.
+                        retrieved_value = __resolve_h5_references(attribute_value.flat[0])
                     else:
-                        retrieved_value = value_to_comparable_str(attribute_value)
+                        retrieved_value = __resolve_h5_references(attribute_value)
 
                     v_attributes[name] = retrieved_value
         else:
