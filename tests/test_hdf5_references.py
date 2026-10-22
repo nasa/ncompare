@@ -151,17 +151,35 @@ def test_different_variable_strings_are_still_reported(tmp_path, array):
     assert compare(*paths, show_attributes=True) > 0
 
 
+def _set_dimension_reference_attributes(data, scales_per_dimension) -> None:
+    """Create HDF5 DIMENSION_LIST and REFERENCE_LIST using their native dtypes.
+
+    This avoids H5DSset_scale, which fails on some Linux HDF5 builds, while
+    exercising the same nested vlen references and structured reverse records.
+    """
+    refs = np.empty(len(scales_per_dimension), dtype=object)
+    record_dtype = np.dtype([("dataset", h5py.ref_dtype), ("dimension", "<u4")])
+    for dim_index, scales in enumerate(scales_per_dimension):
+        refs[dim_index] = np.asarray([scale.ref for scale in scales], dtype=h5py.ref_dtype)
+        for scale in scales:
+            scale.attrs.create(
+                "REFERENCE_LIST",
+                np.array([(data.ref, dim_index)], dtype=record_dtype),
+                dtype=record_dtype,
+            )
+            scale.attrs.create("CLASS", np.bytes_("DIMENSION_SCALE"))
+            scale.attrs.create("NAME", np.bytes_(scale.name))
+    data.attrs.create("DIMENSION_LIST", refs, dtype=h5py.vlen_dtype(h5py.ref_dtype))
+
+
 def _create_dimension_scale_file(path, *, swap: bool) -> None:
     """Create native HDF5 dimension-scale and reverse-reference attributes."""
     with h5py.File(path, "w") as file:
         data = file.create_dataset("data", data=np.ones((2, 2)))
         x = file.create_dataset("axis_x", data=np.arange(2))
         y = file.create_dataset("axis_y", data=np.arange(2))
-        x.make_scale("x")
-        y.make_scale("y")
         first, second = (y, x) if swap else (x, y)
-        data.dims[0].attach_scale(first)
-        data.dims[1].attach_scale(second)
+        _set_dimension_reference_attributes(data, [[first], [second]])
 
 
 def test_hdf5_dimension_list_resolves_every_scale_and_detects_swaps(tmp_path):
@@ -197,11 +215,11 @@ def test_hdf5_dimension_scale_reference_tail_difference_is_not_truncated(tmp_pat
     for file_idx, path in enumerate(paths):
         with h5py.File(path, "w") as file:
             data = file.create_dataset("data", data=np.ones((2,)))
+            scales = []
             for i in range(6):
                 name = f"scale_{i if i != 5 or file_idx == 0 else 'different'}"
-                scale = file.create_dataset(name, data=np.arange(2))
-                scale.make_scale(name)
-                data.dims[0].attach_scale(scale)
+                scales.append(file.create_dataset(name, data=np.arange(2)))
+            _set_dimension_reference_attributes(data, [scales])
 
     files = [FileToCompare(p, type="hdf5") for p in paths]
     with Outputter(keep_print_history=True) as out:
