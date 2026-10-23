@@ -7,6 +7,9 @@ on:
     # Sequence of patterns matched against refs/heads
     branches: [ feature/**, issue/**, issues/** ]
 
+permissions:
+  contents: read
+
 jobs:
   run_tests:
     uses: ./.github/workflows/run_tests.yml
